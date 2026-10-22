@@ -21,7 +21,7 @@ from urllib.parse import urlparse
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 DATA = Path(os.environ.get("REEL_ANATOMY_HOME", Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "ReelAnatomy"))
 DATA.mkdir(parents=True, exist_ok=True)
-APP_VERSION = "0.1.1"
+APP_VERSION = "0.2.0"
 MAX_BYTES = 220 * 1024 * 1024
 MAX_VIDEO_BYTES = 200 * 1024 * 1024
 ANALYSIS_LOCK = threading.Lock()
@@ -265,7 +265,10 @@ def validate_intervals(items, duration, speech):
         if speech:
             if item["role"] not in TAGS or not isinstance(item["text"], str):
                 raise ValueError("Invalid speech segment.")
-            out.update(text=item["text"][:4000], role=item["role"],
+            labels=item.get("roles",[item["role"]])
+            if not isinstance(labels,list) or any(x not in TAGS for x in labels):
+                raise ValueError("Invalid narrative labels.")
+            out.update(roles=labels, text=item["text"][:4000], role=item["role"],
                        reason=str(item.get("reason", "Manually reviewed"))[:500],
                        edited=bool(item.get("edited", False)))
         else:
@@ -310,9 +313,12 @@ class Handler(BaseHTTPRequestHandler):
         if not self.trusted_request():
             return self.send(403, {"error": "Local origin required"})
         path = urlparse(self.path).path
+        if path.startswith("/api/studio/"):
+            import studio_api
+            return studio_api.get(sys.modules[__name__], self)
         if path == "/":
             return self.send(200, (ROOT/"web"/"index.html").read_bytes(), "text/html")
-        if path in ("/web/style.css", "/web/app.js"):
+        if path in ("/web/style.css", "/web/app.js", "/web/studio.css", "/web/studio.js"):
             name = path.rsplit("/", 1)[-1]
             mime = "text/css" if name.endswith(".css") else "application/javascript"
             return self.send(200, (ROOT/"web"/name).read_bytes(), mime)
@@ -396,6 +402,9 @@ class Handler(BaseHTTPRequestHandler):
         if length<=0 or length>MAX_BYTES: return self.send(413,{"error":"Request too large or empty"})
         content_type=self.headers.get("Content-Type","")
         raw=self.rfile.read(length)
+        if path.startswith("/api/studio/"):
+            import studio_api
+            return studio_api.post(sys.modules[__name__], self, path, content_type, raw)
         if path == "/api/analyze":
             if "multipart/form-data" not in content_type: return self.send(415,{"error":"Expected multipart form"})
             try:
@@ -448,11 +457,15 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     port=int(os.environ.get("REEL_ANATOMY_PORT","8765"))
     srv=ThreadingHTTPServer(("127.0.0.1",port),Handler)
+    import studio_api
+    studio_api.start(sys.modules[__name__])
     url="http://127.0.0.1:"+str(port)
     print("Reel Anatomy running at "+url,flush=True)
     if os.environ.get("REEL_ANATOMY_NO_BROWSER")!="1":
         threading.Timer(1,lambda:webbrowser.open(url)).start()
     try: srv.serve_forever()
     except KeyboardInterrupt: pass
-    finally: srv.server_close()
+    finally:
+        srv.server_close()
+        studio_api.stop(sys.modules[__name__])
 if __name__ == "__main__": main()

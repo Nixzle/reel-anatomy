@@ -43,6 +43,7 @@ async function loadLibrary() {
 function showStart() {
   if (dirty && !window.confirm("Discard unsaved corrections?")) return;
   dirty = false; $("player").pause();
+  if(window.StudioUI)window.StudioUI.show("breakdown");
   current = null; $("analysis-view").hidden = true; $("start-view").hidden = false;
   $("video-file").value = ""; $("captions-file").value = ""; $("chosen-name").textContent = "NO FILE SELECTED";
   $("transcript-input").value = ""; window.scrollTo(0,0);loadLibrary().catch(console.error);
@@ -51,6 +52,7 @@ async function openProject(id) {
   if (dirty && !window.confirm("Discard unsaved corrections?")) return;
   try {
     current = await api("/api/project/"+id); dirty = false;
+    if(window.StudioUI)window.StudioUI.show("breakdown");
     $("start-view").hidden = true; $("analysis-view").hidden = false;
     renderCurrent(); await loadLibrary(); window.scrollTo(0,0);
   } catch(err){ notice(err.message); }
@@ -130,7 +132,7 @@ function renderSentences() {
   ).join("");
   rows.querySelectorAll(".time-button").forEach(b=>b.addEventListener("click",()=>seek(Number(b.dataset.time))));
   rows.querySelectorAll(".role-select").forEach(sel=>sel.addEventListener("change",()=>{
-    const x=current.segments[Number(sel.dataset.index)];x.role=sel.value;x.edited=true;x.reason="Manually reviewed";markDirty();renderRoles();renderTimeline();
+    const x=current.segments[Number(sel.dataset.index)];x.role=sel.value;x.roles=[sel.value];x.edited=true;x.reason="Manually reviewed";markDirty();renderRoles();renderTimeline();
   }));
   rows.querySelectorAll(".row-text").forEach(field=>field.addEventListener("input",()=>{
     const x=current.segments[Number(field.dataset.index)];x.text=field.value;x.edited=true;markDirty();

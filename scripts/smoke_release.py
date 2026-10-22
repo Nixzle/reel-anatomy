@@ -1,5 +1,6 @@
 """Exercise the packaged executable with an empty cache and no system FFmpeg."""
 import argparse
+import ast
 import json
 import os
 import subprocess
@@ -15,6 +16,7 @@ def run(executable, output):
         checks.append(name)
         print("PASS " + name, flush=True)
     root=Path(__file__).resolve().parents[1]
+    expected=next(ast.literal_eval(n.value) for n in ast.parse((root/"app.py").read_text(encoding="utf-8")).body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="APP_VERSION" for t in n.targets))
     with tempfile.TemporaryDirectory(prefix="ReelAnatomy-release-") as directory:
         tmp=Path(directory)
         env=dict(os.environ, REEL_ANATOMY_HOME=str(tmp/"data"), REEL_ANATOMY_PORT="18869",
@@ -35,7 +37,7 @@ def run(executable, output):
                 except (OSError,ValueError):
                     if process.poll() is not None: raise RuntimeError("Executable exited early")
                     time.sleep(.2)
-            assert health and health["version"]=="0.1.1" and health["speech"] and health["ffmpeg"],health
+            assert health and health["version"]==expected and health["speech"] and health["ffmpeg"],health
             ok("portable startup without Python, system FFmpeg or cached models on PATH")
             ff=next((executable.parent/"_internal/imageio_ffmpeg/binaries").glob("ffmpeg*.exe"))
             video=tmp/"synthetic.mp4"
@@ -61,6 +63,14 @@ def run(executable, output):
             ok("partial-range video playback")
             assert not list((tmp/"empty-hf").rglob("*.bin")),"unexpected model download"
             ok("empty external model cache remained empty")
+            bootstrap=get("/api/studio/bootstrap")
+            assert bootstrap["research"] and bootstrap["model"].get("enabled") is False
+            ok("research database and disabled local-model state survive portable packaging")
+            payload={"workspace":"default","topic":"Synthetic software test","audience":"Test users","goal":"Saves","promise":"See the two-shot example","method":"Open the timeline and compare shots.","proof":"The test video has two generated colour fields.","footage":"Synthetic fixture","cta":"Review the evidence.","duration":30,"pattern_key":"early_demo","pattern_window":"72h","pattern_definition":"instagram_views"}
+            request=urllib.request.Request(base+"/api/studio/plan",data=json.dumps(payload).encode(),headers={"Content-Type":"application/json"})
+            with urllib.request.urlopen(request,timeout=30) as response:plan=json.load(response)
+            assert len(plan["beats"])==5 and plan["pattern_basis"]["feature"]["status"]=="insufficient matched evidence"
+            ok("packaged production planner retains sparse-evidence warnings without a language-model service")
             Path(output).write_text(json.dumps({"passed":True,"version":health["version"],"checks":checks},indent=2),encoding="utf-8")
         finally:
             process.terminate()

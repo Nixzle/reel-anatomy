@@ -1,4 +1,5 @@
 """Build an auditable portable package without publishing or replacing releases."""
+import ast
 import hashlib
 import importlib.metadata as metadata
 import json
@@ -10,8 +11,8 @@ import zipfile
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
-version="0.1.1"
-receipt=root/".local/resume-20261022"
+version=next(ast.literal_eval(n.value) for n in ast.parse((root/"app.py").read_text(encoding="utf-8")).body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="APP_VERSION" for t in n.targets))
+receipt=root/(".local/release-"+version)
 receipt.mkdir(parents=True,exist_ok=True)
 
 def call(args,name):
@@ -21,6 +22,7 @@ def call(args,name):
         raise RuntimeError(name+" failed; see retained log")
     print("PASS "+name,flush=True)
 
+assert not subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True).strip(),"Commit the reviewed source before packaging. The build must match a clean commit."
 sha=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
 tracked=subprocess.check_output(["git","ls-files"],cwd=root,text=True).splitlines()
 manifest={"version":version,"source_commit":sha,"python":platform.python_version(),
@@ -29,7 +31,7 @@ manifest={"version":version,"source_commit":sha,"python":platform.python_version
           "dependencies":{d.metadata["Name"]:d.version for d in metadata.distributions()}}
 call([sys.executable,"-m","PyInstaller","--noconfirm","--onedir","--name","ReelAnatomy",
       "--add-data","web;web","--add-data","models/base.en;models/base.en",
-      "--collect-all","faster_whisper","--collect-all","ctranslate2","--collect-all","imageio_ffmpeg","app.py"],"build")
+      "--collect-all","faster_whisper","--collect-all","ctranslate2","--collect-all","imageio_ffmpeg","--hidden-import","studio_api","--hidden-import","studio_jobs","--hidden-import","studio_store","app.py"],"build")
 dist=root/"dist/ReelAnatomy"
 for name in ("README.md","LICENSE","THIRD_PARTY_NOTICES.md"):
     shutil.copy2(root/name,dist/name)

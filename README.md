@@ -1,73 +1,82 @@
-# Reel Anatomy
+# Reel Anatomy Studio
 
-A local-first workbench for breaking down short-form video, speech, edits and manually supplied performance metrics.
+A local-first Windows research and production app for short-form video.
 
-Version **0.1.1**. [Windows releases](https://github.com/Nixzle/reel-anatomy/releases/latest).
+**Current version: 0.2.0 beta.** It joins a research library, resumable video processing, descriptive pattern comparisons, filming briefs, rough-cut checks and outcome tracking. It does not promise virality.
 
-## What it does
+## Download and run
 
-- Import one video or a batch of MP4, MOV, M4V or WEBM files, up to 200 MB and one hour each.
-- Transcribe English speech when the optional faster-whisper package and base.en model are available. Otherwise import SRT/VTT or paste the transcript.
-- Segment spoken material with timestamps, editable narrative roles (Hook, Problem, Context, Explanation, Demonstration, Proof, Payoff, Objection, CTA, Other) and visible classification reasons.
-- Estimate video cut boundaries using FFmpeg, inspect frame thumbnails, seek and edit shot labels.
-- Save projects privately and compare entered views, likes, comments, saves and shares. No invented Instagram data or causal performance claims.
-- Export project JSON, sentence CSV, cross-project comparison CSV and a readable Markdown report.
-- Import performance CSV using title/filename matching. Duplicate titles are skipped rather than guessed. Unknown engagement values stay unknown.
+Download **ReelAnatomy-Windows-x64.zip** from the v0.2.0 GitHub Release, extract the entire folder, and run **ReelAnatomy.exe**. Keep the `_internal` directory beside the executable. The interface opens in your browser; the server and analysis run on your computer. The portable Windows x64 package includes Python, English speech recognition and FFmpeg. It is unsigned; verify its checksum and respect device policy.
 
-These classifications are heuristics, not Jev predictions or an equivalent proprietary model. Shot-boundary detection cannot identify camera intentions. Uploaded video and metrics must come from authorised sources.
+Existing v0.1.1 analyses remain in the same local data directory. They appear under **My research** with unknown creator, rights and distribution metadata until you supply those details. Do not run two versions against the same library simultaneously.
 
-## Windows packaged download
+## The workflow
 
-Open the repository's Releases page. When a verified build exists, download ReelAnatomy-Windows-x64.zip, extract the entire folder and run ReelAnatomy.exe. The package includes a local English speech model and FFmpeg. Manual GitHub Actions runs build a tested artifact; release publication is a separate verified step. The executable is not code-signed. Check its provenance and respect your device policy.
+### Library: define a question and collect relevant posts
 
-## Source installation
+Create a research project with its topic, audience, platform and objective. Keep **References**, **Our published posts** and **Our drafts** separate. Include ordinary and unsuccessful posts as well as strong ones.
 
-Python 3.10+ and FFmpeg are recommended. No internet connection or third-party AI account is required to run basic local analysis.
+Upload authorised MP4, MOV, M4V or WEBM footage. Each file may be up to 200 MB; the queue accepts up to 200 unfinished jobs. Optional SRT/VTT/TXT files are matched by filename. Processing uses one worker, survives browser reloads, reuses identical media/transcript analysis and keeps distinct publication records separate. Interrupted jobs pause for explicit resume after an app restart; queued work can continue while the app is running. Pause affects the next job, not a currently running operation.
 
-1. Open a terminal in this folder.
-2. Run: python app.py
-3. Visit: http://127.0.0.1:8765
+Enter creator, topic cohort, publication time, source link, collection and whether distribution was organic, paid or unknown. Source links document provenance; they do not trigger downloading or scraping. Metadata CSV templates use exact post IDs to avoid ambiguous matches.
 
-For optional local speech recognition install the packages isolated to an environment:
+### Breakdown: inspect evidence
+
+Speech transcription and estimated scene boundaries have separate seekable timelines. Edit the transcript, primary narrative role and shot descriptions. Roles from the included deterministic rules are suggestions, not semantic-model predictions. Imported plain-text timestamps are explicitly approximate; timed captions preserve their supplied timing.
+
+### Patterns: compare similar observations
+
+Append actual snapshots with a source and a timezone-aware capture timestamp. Supported windows are 24 hours, 72 hours, seven days and lifetime. Age-window checks reject mislabeled snapshots. Missing metrics remain unknown. The app accepts observed views, engagement counts, qualified conversions, average watch time, three-second retention and completion percentages when supplied by your source.
+
+The Patterns screen keeps view definitions separate. It normalises to at least three earlier matched posts from the same creator, then compares only creator/topic/duration/format strata containing both feature states. It shows sample sizes, supporting examples, counterexamples and exploratory creator-cluster bootstrap intervals when enough matched data exists. Lifetime totals do not become age-matched data. There is no calibrated virality score, causal-effect claim or guarantee that patterns generalise.
+
+Choose **Use as a test hypothesis** to bring a pattern into Studio. The evidence state, comparison window and counterexamples are retained with the new brief. Sparse evidence remains visibly sparse.
+
+### Studio: plan an original post
+
+Supply a topic, audience, goal, honest promise, actual proof, method, available footage and call to action. The included **structured planner** creates three opening alternatives and a five-beat filming plan from those facts. It retrieves relevant reference structures without copying reference scripts. This default planner is not learned AI.
+
+Edit and save the script with revision history. Export a standalone, phone-friendly HTML filming brief or Markdown. Exported HTML has no application scripts and does not expose the local server. Upload a rough cut to compare actual length, speech timing, role-based demonstration timing and CTA observations with the plan. Visual truth, caption readability and claim support still need human review unless supported by inspected evidence.
+
+### Results: learn from our own posts
+
+Before publishing, record the one change, hypothesis, primary metric, observation window and draft. The app freezes the script revision. After publication, enter the real publication time and append outcomes. Earlier comparable own posts form a descriptive baseline when at least three are available. Save what happened, including disappointing outcomes. Organic uploads are not randomised A/B experiments.
+
+## Optional learned semantic analysis
+
+A local-only Ollama connector is implemented at **127.0.0.1:11434**. Settings lists already installed models. No runtime, weights or paid service is installed or purchased by this app. Declared cloud-backed models are rejected, and no cloud fallback is made. A modified local service could still forward requests; control and trust your local service configuration.
+
+A configured text model can suggest multiple narrative roles and refine scripts. A vision-capable model can describe sampled still frames. Inference uses the documented Ollama chat/schema API, validates returned evidence indices, pins model identity, caches results and keeps performance metadata out of the classification prompt. Suggestions require explicit application. Frame descriptions do not establish camera movement, sound design or unsampled content.
+
+**Release verification boundary:** this version's local-model transport and validation are tested with synthetic responses. No compatible service/model was available on the build host. Real semantic quality, throughput and accuracy on representative creator videos have not been measured. The default research/planning/media workflow works without that optional service.
+
+Official integration references: https://docs.ollama.com/api/chat and https://docs.ollama.com/capabilities/structured-outputs .
+
+## Privacy and storage
+
+Data stays under `%LOCALAPPDATA%/ReelAnatomy` on Windows or `~/ReelAnatomy` elsewhere. The studio stores metadata in `studio.sqlite3`; original analyses remain JSON files. `REEL_ANATOMY_HOME` selects a different directory and `REEL_ANATOMY_PORT` changes localhost port 8765. The server binds only to loopback and checks Host and browser-origin boundaries. It is for one trusted local user, not public internet hosting.
+
+Back up the entire data directory with the app closed to include media and all research state. The research JSON export includes metadata, snapshots, plans and experiments, not videos. It is an export, not a claimed full restore/import format. Close the app before moving or deleting its data.
+
+## Developer setup and verification
+
+Python 3.13 is used for the verified Windows build. Create an isolated virtual environment and install the reviewed requirements only when intentionally setting up a developer environment:
 
     python -m venv .venv
-    .venv\Scripts\python.exe -m pip install -r requirements-speech.txt
+    .venv\Scripts\python.exe -m pip install -r requirements-build.txt
     .venv\Scripts\python.exe app.py
 
-The application uses local_files_only for the speech model and will not silently download weights. Put a compatible faster-whisper base.en model under models/base.en, or use an existing local Hugging Face cache.
+Speech uses an existing cached `Systran/faster-whisper-base.en` model or `models/base.en`; it never downloads one during analysis. Model weights are not in Git. Python 3.10+ source use is intended, but other operating systems and Python versions are not independently qualified by this release.
 
-## Security and data
-
-All requests use the local 127.0.0.1 interface. The app does not send video, transcripts or metrics to Instagram or an AI provider. Uploaded assets and projects are stored under LOCALAPPDATA/ReelAnatomy on Windows or HOME/ReelAnatomy elsewhere. REEL_ANATOMY_HOME overrides the storage location; REEL_ANATOMY_PORT overrides port 8765.
-
-Delete that folder to remove local data. Never commit imported third-party videos, credentials, private transcripts or personal information. Import only footage you are entitled to analyse.
-
-## Tests
-
-    python -m unittest -v test_app
-    python -m unittest -v test_reliability
+    .venv\Scripts\python.exe -m unittest discover -v
     node test_frontend.cjs
     node scripts/browser-smoke.mjs
+    node scripts/studio-smoke.mjs
 
-The tests cover caption parsing, role rules, path validation, project persistence, HTTP routes, origin checks, a synthetic MP4 upload, cut detection and partial-range playback.
+Browser tests use an existing Chrome installation and Node, with isolated profiles and synthetic media. They install nothing. `scripts/package_release.py` requires a clean committed tree, packages the current application version and runs real executable media checks with an empty external model cache. The release must be downloaded again, hash-checked and tested before handback. The model-contract fixtures are not semantic-model benchmarks.
 
-## Evidence limits
+## Boundaries still open
 
-- User-entered metrics are not independently verified.
-- Views and engagement ratios can be compared descriptively, not treated as proof that editing caused performance.
-- Speech accuracy varies with noise, accent, model and language. This initial packaged model is English-specific.
-- A shot change is not the same as a camera-shot-type classification. Thumbnail labels start as "Detected shot" and are editable.
-- The app does not scrape Instagram or connect to professional-account Insights.
-- The local server is intended for one trusted user, not public network deployment.
+No native Instagram/TikTok/YouTube account connectors, private analytics, automatic web scraping, automatic publishing or generated imagery are included. Native text posts and carousels are not ingestion formats in this video-first release. A native iPhone application, shared hosted workspace, a second physical test computer and human usability review remain separate acceptance gates. See HANDOFF.md for ownership and next acceptance criteria.
 
-## Build and verify a Windows package
-
-Install the pinned build dependencies into an isolated environment, provide the pinned model under models/base.en, then run:
-
-    python scripts/package_release.py
-
-This builds and tests the executable before writing the ZIP and SHA256SUMS.txt. BUILD_INFO.json records the source commit, file hashes and package versions. The executable uses its bundled media engine, not whichever unrelated FFmpeg happens to be installed.
-
-The packaged self-test uses an empty external model cache and a minimal PATH. It does not establish compatibility with every Windows configuration or constitute human usability acceptance. See HANDOFF.md for remaining semantic-analysis work.
-
-This original code is MIT licensed. Read THIRD_PARTY_NOTICES.md and the bundled licenses directory for third-party attribution and provenance.
+Original source is MIT licensed. Bundled libraries, the speech model and FFmpeg retain their own notices and licences; see THIRD_PARTY_NOTICES.md and the packaged licenses directory.

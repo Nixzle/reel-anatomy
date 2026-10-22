@@ -1,26 +1,29 @@
-# Reel Anatomy delivery checkpoint
+# Reel Anatomy Studio checkpoint
 
 ## Active objective
 
-Deliver a shareable Windows app and GitHub source for timestamped speech/shot breakdowns, editable hook/content labels, batch imports, actual performance comparisons and exports. Keep media local and do not invent analytical certainty.
+Deliver the complete research-to-creation loop proposed to the owner: authorised bulk imports, evidence-linked breakdowns, honest comparisons, original filming briefs, rough-cut review and prospective result tracking. Preserve the existing Windows executable, GitHub distribution, local privacy and correct release provenance. Do not replace required learned analysis with rules while calling it complete.
 
-## v0.1.1 changes
+## v0.2.0 implemented scope
 
-Fixed the obsolete FFmpeg sync option, selected the packaged media engine, and stopped turning failed detection into a fake single-shot result. Added finite-value validation, local Host/origin protections, revision conflict checks and bounded CPU speech reuse. Missing engagement counts stay unknown. Plain-text timing estimates stay inside the video. Added report export, malformed CSV rejection and duplicate-title safeguards.
+Research projects and collections; SQLite metadata and append-only snapshots; persistent single-worker queue; media/transcript reuse without merging publication records; timed metrics with provenance; creator/cohort/format/duration comparisons and counterexamples; pattern-to-brief handoff; structured original scripts and filming plans; revision history; offline phone-friendly exports; timestamp-linked draft review; prospective tests with frozen script revisions; real outcome comparisons to earlier own posts.
 
-## Verification gates
+A bounded, opt-in local Ollama adapter supports structured text and sampled-frame evidence, multi-label suggestions and script refinement. It rejects declared cloud models, hides performance metadata, validates evidence identities and does not auto-install or download models. The structured planner is explicitly labelled as such. Sparse evidence is never promoted to a winning formula.
 
-Run Python regressions, JavaScript checks, and scripts/browser-smoke.mjs. The package builder then runs real offline speech, known-cut, thumbnail and range-playback checks with an empty external cache and no Python/FFmpeg on PATH. Download the published archive back and repeat the executable and browser checks before a final handback. Exact local logs are retained in .local/resume-20261022; they are not public project data.
+## Verification and recovery
 
-## Remaining original-scope acceptance
+Source regressions, legacy media browser workflow and studio browser workflow live in test_*.py and scripts/*smoke*. Exact logs for this iteration are under .local/studio-v020 and .local/studio-browser-*; generated fixtures and browser profiles remain ignored. Recovered intermediate code from the interrupted run is preserved by hash and diff in .local/studio-v020.
 
-Owner: Ultron Prime. Milestone: semantic-analysis version after this reliability release.
+Package from a clean committed tree, align APP_VERSION, release tag, BUILD_INFO source hashes and archive checksum. Build logs and receipts are in .local/release-0.2.0. Download the uploaded draft release into a new directory, repeat executable and browser checks, then publish only that verified asset. Never replace an already released ZIP under the same tag.
 
-- Learned semantic hook/content classification and automatic camera-shot descriptions are not implemented. Current roles are transparent editable rules; shot descriptions are user-reviewed. Acceptance: inspect actual audiovisual evidence, show uncertainty and provenance, and evaluate on representative labelled videos. No paid provider or new model download is authorised by this checkpoint.
-- Personalised generated scripts/filming plans are not implemented; the exported report provides observations and a generic test checklist. Acceptance: produce evidence-grounded suggestions without copying a creator's protected script or claiming causal virality.
-- Account connections/link imports remain optional; current inputs are uploaded videos and user-supplied metrics. Acceptance: authorised platform access and rights checks, never private-insight guessing.
-- A real second computer and human usability review remain untested. A fresh extracted directory and isolated environment on the build host are not a second physical machine.
+## Material corrections retained
 
-## Publication rules
+The first browser acceptance test exposed an async DOM event.currentTarget lifetime bug: project creation persisted but the form could not refresh. Capture the form before awaiting the request. Subtitle matching must use the same filename normaliser on both sides. Reset snapshot inputs between different posts. Compare feature states only within overlapping creator/cohort strata, and do not silently substitute a 24-hour outcome for a recorded 72-hour test. Do not claim full frame coverage when model output omits sampled frames. No unrelated settings or project state was changed.
 
-Keep tags, source commit, BUILD_INFO and checksum aligned. Create a new version after code changes; do not replace a released ZIP under an old tag. The workflow builds an artifact for review and has no release-write permission. Publishing is a separate verified action. Earlier v0.1.0 had a tag/checksum mismatch and is superseded, not a trusted build provenance example.
+## Remaining acceptance, owner: Ultron Prime
+
+- Learned semantic quality and actual inference: no compatible local service/model was available on this host. The adapter's protocol, privacy and validation are tested with synthetic responses only. Milestone: explicitly configured licensed local vision model plus authorised representative videos and independent human labels. Acceptance: measured timestamp/role/visual accuracy, error analysis, hardware usage and a real end-to-end provider run. No existing checkpoint authorises an unrequested installer, paid fallback or model download.
+- Empirical effectiveness: no real campaign corpus or outcomes have been imported into the release. Milestone: one actual research cohort, ordinary and weak posts included, followed by prospective own-post trials. Acceptance: out-of-time evaluation, counterexamples and improvement measured against a stated baseline. No promise of virality or returns.
+- Platform account connections and automatic retrieval: remain outside the shipped upload/CSV path. Milestone: separately authorised platform integration. Acceptance: permissions, platform policy, provenance and data-scope checks; no private-insight guessing.
+- Native text/carousel ingestion, a shared hosted workspace and a native phone app remain deferred. Mobile filming briefs are supported as offline exports; the localhost server is not exposed publicly.
+- A second physical computer and human usability review remain untested. Fresh extraction, empty cache and clean browser profile on the build host are separate evidence classes, not a second device.
