@@ -2,20 +2,23 @@
 
 A local-first workbench for breaking down short-form video, speech, edits and manually supplied performance metrics.
 
+Version **0.1.1**. [Windows releases](https://github.com/Nixzle/reel-anatomy/releases/latest).
+
 ## What it does
 
-- Import MP4, MOV, M4V or WEBM files up to 200 MB.
+- Import one video or a batch of MP4, MOV, M4V or WEBM files, up to 200 MB and one hour each.
 - Transcribe English speech when the optional faster-whisper package and base.en model are available. Otherwise import SRT/VTT or paste the transcript.
 - Segment spoken material with timestamps, editable narrative roles (Hook, Problem, Context, Explanation, Demonstration, Proof, Payoff, Objection, CTA, Other) and visible classification reasons.
 - Estimate video cut boundaries using FFmpeg, inspect frame thumbnails, seek and edit shot labels.
 - Save projects privately and compare entered views, likes, comments, saves and shares. No invented Instagram data or causal performance claims.
-- Export project JSON, sentence CSV and cross-project comparison CSV.
+- Export project JSON, sentence CSV, cross-project comparison CSV and a readable Markdown report.
+- Import performance CSV using title/filename matching. Duplicate titles are skipped rather than guessed. Unknown engagement values stay unknown.
 
 These classifications are heuristics, not Jev predictions or an equivalent proprietary model. Shot-boundary detection cannot identify camera intentions. Uploaded video and metrics must come from authorised sources.
 
 ## Windows packaged download
 
-Open the repository's Releases page. When a verified build exists, download ReelAnatomy-Windows-x64.zip, extract the entire folder and run ReelAnatomy.exe. A tagged release is built by GitHub Actions with a local English speech model and packaged FFmpeg. The executable is not code-signed. Check its provenance and respect your device policy.
+Open the repository's Releases page. When a verified build exists, download ReelAnatomy-Windows-x64.zip, extract the entire folder and run ReelAnatomy.exe. The package includes a local English speech model and FFmpeg. Manual GitHub Actions runs build a tested artifact; release publication is a separate verified step. The executable is not code-signed. Check its provenance and respect your device policy.
 
 ## Source installation
 
@@ -42,7 +45,9 @@ Delete that folder to remove local data. Never commit imported third-party video
 ## Tests
 
     python -m unittest -v test_app
-    node --check web/app.js
+    python -m unittest -v test_reliability
+    node test_frontend.cjs
+    node scripts/browser-smoke.mjs
 
 The tests cover caption parsing, role rules, path validation, project persistence, HTTP routes, origin checks, a synthetic MP4 upload, cut detection and partial-range playback.
 
@@ -55,4 +60,14 @@ The tests cover caption parsing, role rules, path validation, project persistenc
 - The app does not scrape Instagram or connect to professional-account Insights.
 - The local server is intended for one trusted user, not public network deployment.
 
-This original code is MIT licensed. Third-party binaries and model weights retain their own licenses; verify notices and redistribution conditions for the chosen packaged components.
+## Build and verify a Windows package
+
+Install the pinned build dependencies into an isolated environment, provide the pinned model under models/base.en, then run:
+
+    python scripts/package_release.py
+
+This builds and tests the executable before writing the ZIP and SHA256SUMS.txt. BUILD_INFO.json records the source commit, file hashes and package versions. The executable uses its bundled media engine, not whichever unrelated FFmpeg happens to be installed.
+
+The packaged self-test uses an empty external model cache and a minimal PATH. It does not establish compatibility with every Windows configuration or constitute human usability acceptance. See HANDOFF.md for remaining semantic-analysis work.
+
+This original code is MIT licensed. Read THIRD_PARTY_NOTICES.md and the bundled licenses directory for third-party attribution and provenance.

@@ -12,3 +12,5 @@ models/
 *.webm
 *.srt
 *.vtt
+
+release/

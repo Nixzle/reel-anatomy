@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 import os
 import re
 import shutil
@@ -20,52 +21,75 @@ from urllib.parse import urlparse
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 DATA = Path(os.environ.get("REEL_ANATOMY_HOME", Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "ReelAnatomy"))
 DATA.mkdir(parents=True, exist_ok=True)
+APP_VERSION = "0.1.1"
 MAX_BYTES = 220 * 1024 * 1024
+MAX_VIDEO_BYTES = 200 * 1024 * 1024
+ANALYSIS_LOCK = threading.Lock()
+SPEECH_LOCK = threading.Lock()
+_SPEECH_MODEL = None
 LOCK = threading.RLock()
 TAGS = ("Hook", "Problem", "Context", "Explanation", "Demonstration", "Proof", "Payoff", "Objection", "CTA", "Other")
 
 def media_bin(name):
-    found = shutil.which(name)
-    if found: return found
-    try:
-        import imageio_ffmpeg
-        if name == "ffmpeg": return imageio_ffmpeg.get_ffmpeg_exe()
-    except ImportError: pass
-    return None
+    # The portable release must use the media engine it was tested with.
+    if name == "ffmpeg":
+        try:
+            import imageio_ffmpeg
+            return imageio_ffmpeg.get_ffmpeg_exe()
+        except (ImportError, RuntimeError):
+            pass
+    return shutil.which(name)
 
 def command(args, timeout=150):
-    return subprocess.run(args, capture_output=True, text=True, timeout=timeout, check=False)
+    return subprocess.run(args, capture_output=True, text=True, encoding="utf-8",
+                          errors="replace", timeout=timeout, check=False,
+                          creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
 
 def duration_seconds(path):
-    probe = media_bin("ffprobe")
-    if probe:
-        p = command([probe, "-v", "error", "-show_entries", "format=duration", "-of", "default=nokey=1:noprint_wrappers=1", str(path)], 30)
-        if p.returncode == 0:
-            try: return round(float(p.stdout.strip()), 3)
-            except ValueError: pass
+    # PyAV is bundled with speech, so a clean recipient machine needs no ffprobe.
+    try:
+        import av
+        with av.open(str(path)) as media:
+            if not media.streams.video:
+                return 0
+            if media.duration:
+                value = float(media.duration) / 1_000_000
+                if math.isfinite(value) and value > 0:
+                    return round(value, 3)
+    except (ImportError, OSError, ValueError):
+        pass
     ff = media_bin("ffmpeg")
     if ff:
-        p = command([ff, "-hide_banner", "-i", str(path), "-f", "null", "-"], 30)
+        # Read headers only. Do not decode the whole movie just to find duration.
+        p = command([ff, "-hide_banner", "-nostdin", "-i", str(path)], 30)
         m = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", p.stderr)
-        if m: return round(3600 * int(m[1]) + 60 * int(m[2]) + float(m[3]), 3)
+        if m and "Video:" in p.stderr:
+            return round(3600 * int(m[1]) + 60 * int(m[2]) + float(m[3]), 3)
     return 0
 
 def shot_boundaries(path, duration):
     ff = media_bin("ffmpeg")
-    if not ff or duration <= 0: return [], "FFmpeg unavailable or video duration unknown."
-    # FFmpeg is a scene-change estimator. It cannot identify camera angles or intent.
+    if not ff or duration <= 0:
+        return [], "Shot detection unavailable: media engine or duration missing."
     try:
-        proc = command([ff, "-hide_banner", "-nostdin", "-i", str(path), "-vf",
-                        "select=gt(scene\\,0.30),showinfo", "-an", "-vsync", "vfr", "-f", "null", "-"], 150)
-        cuts = [float(x) for x in re.findall(r"pts_time:([\d.]+)", proc.stderr)]
-        cuts = [x for x in cuts if 0.35 < x < duration - 0.35]
-        edges = [0.0] + sorted(set(round(x, 2) for x in cuts))[:199] + [duration]
-        shots = [{"index": i, "start": round(a, 2), "end": round(b, 2), "kind": "Detected shot", "note": "", "confidence": "estimated"}
+        proc = command([ff, "-hide_banner", "-nostdin", "-threads", "2", "-i", str(path),
+                        "-vf", "scale=320:-2,select=gt(scene\\,0.30),showinfo",
+                        "-an", "-fps_mode", "vfr", "-f", "null", "-"], 150)
+        if proc.returncode != 0:
+            if os.environ.get("REEL_ANATOMY_DIAGNOSTIC") == "1":
+                print(proc.stderr[-2000:], file=sys.stderr, flush=True)
+            return [], "Shot detection failed. No cut count is available for this video."
+        cuts = sorted(set(round(float(x), 3) for x in re.findall(r"pts_time:([\d.]+)", proc.stderr)))
+        cuts = [x for x in cuts if 0.05 < x < duration - 0.05]
+        notice = "Shot map capped at 500 intervals; later cuts are not represented." if len(cuts) > 499 else ""
+        edges = [0.0] + cuts[:499] + [duration]
+        shots = [{"index": i, "start": round(a, 3), "end": round(b, 3),
+                  "kind": "Detected shot", "note": "", "confidence": "estimated"}
                  for i, (a, b) in enumerate(zip(edges, edges[1:])) if b > a]
-        if not shots: shots = [{"index": 0, "start": 0.0, "end": duration, "kind": "Single interval", "note": "", "confidence": "estimated"}]
-        return shots, "" if proc.returncode == 0 else "FFmpeg reported warnings; inspect the shot timeline."
+        return shots, notice
     except (OSError, subprocess.TimeoutExpired):
-        return [], "Scene detection failed or timed out. Transcription may still work."
+        return [], "Shot detection failed or timed out. No cut count is available."
+
 
 def stamp(value):
     parts = value.strip().replace(",", ".").split(":")
@@ -108,11 +132,15 @@ def parse_captions(raw, duration):
         if idx < 0: continue
         mt = pattern.search(lines[idx])
         text = re.sub(r"<[^>]+>", "", " ".join(lines[idx + 1:])).strip()
-        if text: timed.append((stamp(mt[1]), stamp(mt[2]), text))
+        if text:
+            start, end = stamp(mt[1]), stamp(mt[2])
+            if start < 0 or end <= start or (duration > 0 and start >= duration):
+                raise ValueError("Caption timestamps are outside the video.")
+            timed.append((start, min(end, duration) if duration > 0 else end, text))
     if timed: return timed, False
     raw = re.sub(r"^WEBVTT\s*", "", raw, flags=re.I)
     pieces = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", raw) if s.strip()]
-    total = max(duration, len(pieces) * 3.0)
+    total = duration if duration > 0 else len(pieces) * 3.0
     weights = [max(3, len(x.split())) for x in pieces]
     denom = sum(weights) or 1
     t = 0.0
@@ -130,7 +158,12 @@ def transcribe(path):
     try:
         bundled = ROOT / "models" / "base.en"
         model_name = str(bundled) if bundled.is_dir() else os.environ.get("REEL_ANATOMY_MODEL", "base.en")
-        model = WhisperModel(model_name, device="cpu", compute_type="int8", local_files_only=True)
+        global _SPEECH_MODEL
+        with SPEECH_LOCK:
+            if _SPEECH_MODEL is None:
+                _SPEECH_MODEL = WhisperModel(model_name, device="cpu", compute_type="int8",
+                                            cpu_threads=2, num_workers=1, local_files_only=True)
+            model = _SPEECH_MODEL
         segments, _ = model.transcribe(str(path), language="en", vad_filter=True, word_timestamps=True, beam_size=3)
         out = []
         for seg in segments:
@@ -147,7 +180,7 @@ def transcribe(path):
                     out.append((start, float(word.end), "".join(group).strip()))
                     group, start = [], None
             if group:
-                out.append((start or float(seg.start), float(words[-1].end), "".join(group).strip()))
+                out.append((start if start is not None else float(seg.start), float(words[-1].end), "".join(group).strip()))
         return out, ""
     except Exception as exc:
         # Diagnostic output is opt-in for local developers only; UI never includes provider details.
@@ -172,6 +205,9 @@ def load_project(project_id):
 
 def analyse(video_path, title, raw_transcript, metrics):
     duration = duration_seconds(video_path)
+    if not math.isfinite(duration) or duration <= 0 or duration > 3600:
+        raise ValueError("Use a readable video between 0 and 3600 seconds.")
+    metrics = validate_metrics(metrics)
     shots, shot_warning = shot_boundaries(video_path, duration)
     transcript, estimated = parse_captions(raw_transcript, duration)
     transcribe_warning = ""
@@ -188,9 +224,57 @@ def analyse(video_path, title, raw_transcript, metrics):
     project = {"id": pid, "title": title, "media": "/media/" + pid, "duration": duration, "shots": shots,
                "segments": segments, "metrics": metrics, "notices": notice,
                "transcript_source": "imported" if raw_transcript else ("local speech model" if segments else "none"),
-               "version": 1}
+               "version": 1, "app_version": APP_VERSION, "revision": 1}
     save_project(project)
     return project
+
+METRIC_KEYS = ("views", "likes", "saves", "shares", "comments")
+
+def finite_number(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError("Expected a finite number.")
+    return float(value)
+
+def validate_metrics(value):
+    if not isinstance(value, dict):
+        raise ValueError("Metrics must be an object.")
+    result = {}
+    for key in METRIC_KEYS:
+        if key not in value:
+            continue
+        if value[key] is None:
+            result[key] = None
+            continue
+        n = finite_number(value[key])
+        if n < 0 or n != int(n) or n > 9_007_199_254_740_991:
+            raise ValueError("Metrics must be nonnegative whole numbers.")
+        result[key] = int(n)
+    return result
+
+def validate_intervals(items, duration, speech):
+    if not isinstance(items, list) or len(items) > (5000 if speech else 1000):
+        raise ValueError("Invalid interval list.")
+    clean = []
+    for i, item in enumerate(items):
+        if not isinstance(item, dict):
+            raise ValueError("Invalid interval.")
+        start, end = finite_number(item["start"]), finite_number(item["end"])
+        if start < 0 or end < start or (duration > 0 and end > duration + .05):
+            raise ValueError("Invalid timestamps.")
+        out = {"index": i, "start": start, "end": end}
+        if speech:
+            if item["role"] not in TAGS or not isinstance(item["text"], str):
+                raise ValueError("Invalid speech segment.")
+            out.update(text=item["text"][:4000], role=item["role"],
+                       reason=str(item.get("reason", "Manually reviewed"))[:500],
+                       edited=bool(item.get("edited", False)))
+        else:
+            if not isinstance(item.get("kind", ""), str):
+                raise ValueError("Invalid shot label.")
+            out.update(kind=item.get("kind", "Detected shot")[:160],
+                       note=str(item.get("note", ""))[:1000], confidence="estimated")
+        clean.append(out)
+    return clean
 
 def parse_multipart(content_type, data):
     parsed = BytesParser(policy=default).parsebytes(b"Content-Type: " + content_type.encode("utf-8") +
@@ -203,8 +287,14 @@ def parse_multipart(content_type, data):
 
 class Handler(BaseHTTPRequestHandler):
     server_version = "ReelAnatomy/1"
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(20)
     def log_message(self, fmt, *args):
         pass
+    def trusted_request(self):
+        allowed = {"127.0.0.1:" + str(self.server.server_port), "localhost:" + str(self.server.server_port)}
+        return self.headers.get("Host", "") in allowed and self.headers.get("Sec-Fetch-Site", "") != "cross-site"
     def send(self, status, body, mime="application/json", extra=None):
         data = body if isinstance(body, bytes) else (json.dumps(body).encode("utf-8") if mime == "application/json" else str(body).encode("utf-8"))
         self.send_response(status)
@@ -217,6 +307,8 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
     def do_GET(self):
+        if not self.trusted_request():
+            return self.send(403, {"error": "Local origin required"})
         path = urlparse(self.path).path
         if path == "/":
             return self.send(200, (ROOT/"web"/"index.html").read_bytes(), "text/html")
@@ -225,7 +317,7 @@ class Handler(BaseHTTPRequestHandler):
             mime = "text/css" if name.endswith(".css") else "application/javascript"
             return self.send(200, (ROOT/"web"/name).read_bytes(), mime)
         if path == "/api/health":
-            return self.send(200, {"ok": True, "ffmpeg": bool(media_bin("ffmpeg")), "speech": self.speech_status(), "local_only": True})
+            return self.send(200, {"ok": True, "version": APP_VERSION, "ffmpeg": bool(media_bin("ffmpeg")), "speech": self.speech_status(), "local_only": True})
         if path == "/api/projects":
             projects = []
             for f in DATA.glob("*.json"):
@@ -291,9 +383,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         path=urlparse(self.path).path
         origin=self.headers.get("Origin","")
-        length=int(self.headers.get("Content-Length","0") or 0)
+        try:
+            length=int(self.headers.get("Content-Length","0") or 0)
+        except ValueError:
+            return self.send(400,{"error":"Invalid request length"})
+        if not self.trusted_request():
+            if 0 < length <= 65536: self.rfile.read(length)
+            return self.send(403,{"error":"Local origin required"})
         if origin and origin not in ("http://127.0.0.1:"+str(self.server.server_port),"http://localhost:"+str(self.server.server_port)):
-            if 0 < length <= MAX_BYTES: self.rfile.read(length)
+            if 0 < length <= 65536: self.rfile.read(length)
             return self.send(403,{"error":"Origin rejected"})
         if length<=0 or length>MAX_BYTES: return self.send(413,{"error":"Request too large or empty"})
         content_type=self.headers.get("Content-Type","")
@@ -304,6 +402,7 @@ class Handler(BaseHTTPRequestHandler):
                 fields=parse_multipart(content_type,raw)
                 filename, video=fields.get("video",(None,b""))
                 if not filename or not video: return self.send(400,{"error":"Choose a video file"})
+                if len(video) > MAX_VIDEO_BYTES: return self.send(413,{"error":"Video exceeds 200 MB"})
                 suffix=Path(filename).suffix.lower()
                 if suffix not in (".mp4",".mov",".webm",".m4v"): return self.send(400,{"error":"Supported: MP4, MOV, WEBM, M4V"})
                 pid=uuid.uuid4().hex
@@ -314,25 +413,35 @@ class Handler(BaseHTTPRequestHandler):
                 try: metrics=json.loads(metrics)
                 except ValueError: metrics={}
                 name=Path(filename).stem[:120]
-                result=analyse(destination,name,transcript,metrics)
+                if not ANALYSIS_LOCK.acquire(blocking=False):
+                    destination.unlink(missing_ok=True)
+                    return self.send(409,{"error":"Another video is being analysed. Try again after it finishes."})
+                try:
+                    result=analyse(destination,name,transcript,metrics)
+                except Exception:
+                    destination.unlink(missing_ok=True)
+                    raise
+                finally:
+                    ANALYSIS_LOCK.release()
                 return self.send(200,result)
-            except (OSError,ValueError,subprocess.SubprocessError):
+            except ValueError as exc:
+                return self.send(400,{"error":str(exc)})
+            except (OSError,subprocess.SubprocessError):
                 return self.send(500,{"error":"Unable to analyse this file. Try an MP4 and a supplied transcript."})
         if path == "/api/save":
             try:
                 incoming=json.loads(raw.decode("utf-8"))
-                pid=incoming["id"];current=load_project(pid)
-                if not isinstance(incoming["segments"],list) or not isinstance(incoming["shots"],list): raise ValueError()
-                segments=incoming["segments"];shots=incoming["shots"]
-                if len(segments)>5000 or len(shots)>1000: raise ValueError()
-                for seg in segments:
-                    if seg["role"] not in TAGS or not isinstance(seg["text"],str): raise ValueError()
-                    if float(seg["start"])<0 or float(seg["end"])<float(seg["start"]): raise ValueError()
-                    seg["text"]=seg["text"][:4000]
-                current["segments"]=segments; current["shots"]=shots
-                if isinstance(incoming.get("metrics"),dict): current["metrics"]=incoming["metrics"]
-                save_project(current)
-                return self.send(200,{"ok":True})
+                pid=incoming["id"]
+                with LOCK:
+                    current=load_project(pid)
+                    if incoming.get("revision", 0) != current.get("revision", 0):
+                        return self.send(409,{"error":"This project changed in another tab. Reopen it before saving."})
+                    current["segments"]=validate_intervals(incoming["segments"], current.get("duration",0), True)
+                    current["shots"]=validate_intervals(incoming["shots"], current.get("duration",0), False)
+                    current["metrics"]=validate_metrics(incoming.get("metrics", {}))
+                    current["revision"]=current.get("revision",0)+1
+                    save_project(current)
+                return self.send(200,{"ok":True, "revision":current["revision"]})
             except (ValueError,KeyError,TypeError,FileNotFoundError): return self.send(400,{"error":"Invalid save request"})
         return self.send(404,{"error":"Not found"})
 

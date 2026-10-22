@@ -1,10 +1,13 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-where python >nul 2>&1
-if errorlevel 1 (
-  echo Python 3.10+ is required for source mode. Use the packaged Windows release instead.
-  pause
-  exit /b 1
+if exist "dist\ReelAnatomy\ReelAnatomy.exe" (
+  "dist\ReelAnatomy\ReelAnatomy.exe"
+  exit /b
+)
+if exist ".venv\Scripts\python.exe" (
+  ".venv\Scripts\python.exe" app.py
+  exit /b
 )
 python app.py
+if errorlevel 1 pause

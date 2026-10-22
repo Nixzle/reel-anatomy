@@ -1,7 +1,7 @@
 "use strict";
 const $ = id => document.getElementById(id);
 const roles = ["Hook","Problem","Context","Explanation","Demonstration","Proof","Payoff","Objection","CTA","Other"];
-let projects = [], current = null, comparison = [], toastTimer = null;
+let projects = [], current = null, comparison = [], toastTimer = null, dirty = false;
 const HTML = str => String(str ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const number = n => Number.isFinite(Number(n)) ? Number(n) : 0;
 const readable = n => n === "" || n === null || n === undefined ? "—" : Number(n).toLocaleString("en-AU");
@@ -41,13 +41,16 @@ async function loadLibrary() {
   nav.querySelectorAll("button").forEach(b => b.addEventListener("click",() => openProject(b.dataset.id)));
 }
 function showStart() {
+  if (dirty && !window.confirm("Discard unsaved corrections?")) return;
+  dirty = false; $("player").pause();
   current = null; $("analysis-view").hidden = true; $("start-view").hidden = false;
   $("video-file").value = ""; $("captions-file").value = ""; $("chosen-name").textContent = "NO FILE SELECTED";
   $("transcript-input").value = ""; window.scrollTo(0,0);loadLibrary().catch(console.error);
 }
 async function openProject(id) {
+  if (dirty && !window.confirm("Discard unsaved corrections?")) return;
   try {
-    current = await api("/api/project/"+id);
+    current = await api("/api/project/"+id); dirty = false;
     $("start-view").hidden = true; $("analysis-view").hidden = false;
     renderCurrent(); await loadLibrary(); window.scrollTo(0,0);
   } catch(err){ notice(err.message); }
@@ -65,14 +68,14 @@ function renderCurrent() {
   $("report-no").textContent="/ "+p.id.slice(0,4).toUpperCase();
   $("report-duration").textContent=timestamp(p.duration)+" TOTAL";
   $("report-utterances").textContent=p.segments.length+" UTTERANCES";
-  $("report-cuts").textContent=Math.max(0,p.shots.length-1)+" CUTS";
+  $("report-cuts").textContent=p.shots.length ? Math.max(0,p.shots.length-1)+" ESTIMATED CUTS" : "CUTS UNAVAILABLE";
   $("report-source").textContent="SPEECH: "+String(p.transcript_source).toUpperCase();
   $("player").src=p.media; $("player").load();
   $("video-time").textContent="00:00";
   $("notice-list").innerHTML=(p.notices || []).map(n=>'<div class="notice">'+HTML(n)+'</div>').join("");
   $("stat-sentences").textContent=p.segments.length;
   $("stat-shots").textContent=p.shots.length;
-  $("stat-cut-rate").textContent=p.duration ? ((Math.max(0,p.shots.length-1)/p.duration)*60).toFixed(1) : "—";
+  $("stat-cut-rate").textContent=p.duration && p.shots.length ? ((Math.max(0,p.shots.length-1)/p.duration)*60).toFixed(1) : "—";
   renderRoles();
   renderTimeline();
   renderSentences();
@@ -110,7 +113,7 @@ function renderTimeline() {
   }
   $("timeline-key").innerHTML='<span><i class="legend-dot hook"></i>Hook</span><span><i class="legend-dot problem"></i>Problem</span><span><i class="legend-dot cta"></i>CTA</span><span><i class="legend-dot"></i>Other speech</span>';
 }
-function markDirty(){ $("save-indicator").textContent="UNSAVED CHANGES"; }
+function markDirty(){ dirty = true; $("save-indicator").textContent="UNSAVED CHANGES"; }
 function renderSentences() {
   const rows=$("sentence-rows");
   $("sentence-count").textContent=current.segments.length+" ROWS";
@@ -164,10 +167,7 @@ async function renderComparison() {
     parent.innerHTML='<div class="no-comparison">Analyse at least two videos to compare their structure and reported metrics.</div>';return;
   }
   const entries=comparison.map(p=>{
-    const views=number(p.metrics?.views);
-    const likes=number(p.metrics?.likes),saves=number(p.metrics?.saves),shares=number(p.metrics?.shares),comments=number(p.metrics?.comments);
-    const e=views ? ((likes+saves+shares+comments)/views*100) : null;
-    const cuts=p.duration>0 ? ((p.shots.length-1)/p.duration*60) : null;
+    const {engagement:e,cuts}=metricSummary(p);
     const opening=p.segments.filter(s=>s.start<5).map(s=>s.role).join(", ") || "—";
     return {title:p.title,id:p.id,views:p.metrics?.views ?? null,engagement:e,cuts,opening};
   });
@@ -178,6 +178,7 @@ async function renderComparison() {
 async function saveCorrections() {
   if (!current) return;
   const answer=await api("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(current)});
+  current.revision=answer.revision; dirty=false;
   $("save-indicator").textContent="SAVED LOCALLY";
   await renderComparison();notice("Corrections saved to this computer.");
 }
@@ -196,11 +197,12 @@ function exportSentences() {
 function exportComparison() {
   const rows=[["title","views","likes","saves","shares","comments","cuts_per_minute","opening_roles"]];
   comparison.forEach(p=>rows.push([p.title,p.metrics?.views??"",p.metrics?.likes??"",p.metrics?.saves??"",p.metrics?.shares??"",p.metrics?.comments??"",
-    p.duration ? ((p.shots.length-1)/p.duration*60).toFixed(2) : "",
+    metricSummary(p).cuts === null ? "" : metricSummary(p).cuts.toFixed(2),
     p.segments.filter(s=>s.start<5).map(s=>s.role).join("; ")]));
   download("reel-anatomy-comparison.csv",rows.map(r=>r.map(CSV).join(",")).join("\r\n"),"text/csv");
 }
 function parseCsvRows(raw) {
+  raw=raw.replace(/^\uFEFF/, "");
   const rows=[];let row=[],cell="",quoted=false;
   for(let i=0;i<raw.length;i++){
     const ch=raw[i];
@@ -213,13 +215,16 @@ function parseCsvRows(raw) {
     }
     cell+=ch;
   }
+  if(quoted) throw Error("CSV contains an unclosed quoted field.");
   row.push(cell);if(row.some(v=>v.trim()))rows.push(row);
   return rows;
 }
 function normalizedTitle(name) {
-  return String(name||"").trim().replace(/\.(mp4|mov|m4v|webm)$/i,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  return String(name||"").normalize("NFKC").trim().replace(/\.(mp4|mov|m4v|webm)$/i,"").toLowerCase();
 }
 async function importMetricsCsv(file) {
+  if(dirty)throw Error("Save your corrections before importing metrics.");
+  if(file.size>2*1024*1024)throw Error("Metrics CSV exceeds 2 MB.");
   const rows=parseCsvRows(await file.text());
   if(rows.length<2)throw Error("CSV must include a header and at least one data row.");
   const heads=rows.shift().map(s=>s.trim().toLowerCase().replace(/[\s-]+/g,"_"));
@@ -228,10 +233,11 @@ async function importMetricsCsv(file) {
   const keys=["views","likes","saves","shares","comments"];
   if(!keys.some(key=>heads.includes(key)))throw Error("Include at least one metrics column: views, likes, saves, shares, comments.");
   const all=await Promise.all((await api("/api/projects")).map(p=>api("/api/project/"+p.id)));
-  let matched=0;
+  let matched=0, ambiguous=0;
   for(const row of rows){
-    const target=all.find(p=>normalizedTitle(p.title)===normalizedTitle(row[nameCol]));
-    if(!target)continue;
+    const matches=all.filter(p=>normalizedTitle(p.title)===normalizedTitle(row[nameCol]));
+    if(matches.length!==1){if(matches.length>1)ambiguous++;continue;}
+    const target=matches[0];
     target.metrics=target.metrics||{};
     for(const key of keys){
       const i=heads.indexOf(key);if(i<0 || row[i]===undefined || !row[i].trim())continue;
@@ -239,12 +245,43 @@ async function importMetricsCsv(file) {
       if(!Number.isFinite(n) || n<0)continue;
       target.metrics[key]=Math.floor(n);
     }
-    await api("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(target)});
-    if(current && current.id===target.id)current.metrics=target.metrics;
+    const saved=await api("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(target)});
+    target.revision=saved.revision;
+    if(current && current.id===target.id){current.metrics=target.metrics;current.revision=saved.revision;}
     matched++;
   }
   if(current){renderMetrics();await renderComparison();}
-  notice("Metrics imported for "+matched+" of "+rows.length+" CSV rows.");
+  notice("Metrics imported for "+matched+" of "+rows.length+" rows. "+(ambiguous ? ambiguous+" duplicate titles skipped." : ""));
+}
+function metricSummary(p) {
+  const m=p.metrics||{}, keys=["likes","saves","shares","comments"];
+  const complete=keys.every(k=>typeof m[k]==="number" && Number.isFinite(m[k]) && m[k]>=0);
+  const engagement=complete && typeof m.views==="number" && m.views>0 ? keys.reduce((a,k)=>a+m[k],0)/m.views*100 : null;
+  const cuts=p.duration>0 && p.shots.length>0 ? Math.max(0,p.shots.length-1)/p.duration*60 : null;
+  return {engagement,cuts};
+}
+function reportMarkdown(p) {
+  const escape=x=>String(x??"").replace(/\|/g,"\\|").replace(/[\r\n]+/g," ");
+  const mix={};p.segments.forEach(x=>mix[x.role]=(mix[x.role]||0)+1);
+  const metrics=metricSummary(p);
+  const lines=["# "+p.title, "", "Reel Anatomy / local analysis", "",
+    "Duration: "+seconds(p.duration)+". Transcript source: "+p.transcript_source+".",
+    "Role labels are editable rule-based suggestions, not a measured explanation of performance.",
+    "Shot boundaries are visual-change estimates. Shot descriptions are user-reviewed labels.", "",
+    "## Structure", "", Object.entries(mix).map(([k,v])=>k+": "+v).join("; ")||"No transcript.",
+    "Estimated cuts per minute: "+(metrics.cuts===null?"unavailable":metrics.cuts.toFixed(1)), "",
+    "## Speech timeline", "", "| Start | End | Suggested role | Spoken text |", "|---|---|---|---|"];
+  p.segments.forEach(x=>lines.push("| "+[seconds(x.start),seconds(x.end),x.role,x.text].map(escape).join(" | ")+" |"));
+  lines.push("", "## Shot inventory", "");
+  p.shots.forEach((x,i)=>lines.push((i+1)+". "+seconds(x.start)+" to "+seconds(x.end)+": "+x.kind));
+  lines.push("", "## Supplied performance", "");
+  ["views","likes","saves","shares","comments"].forEach(k=>lines.push(k+": "+(p.metrics?.[k]??"not supplied")));
+  lines.push("Engagement / views: "+(metrics.engagement===null?"not available (all four engagement counts and positive views are required)":metrics.engagement.toFixed(2)+"%"),
+    "", "These values are user-supplied. Correlation is not evidence of causation.", "", "## Review and test", "",
+    "Check the opening against the promised payoff. Review the first demonstration and the final call to action.",
+    "To test an edit, change one element and compare against your normal baseline, not only selected successful posts.");
+  if(p.notices?.length) lines.push("", "## Limitations", "", ...p.notices.map(x=>"- "+x));
+  return lines.join("\n");
 }
 async function init() {
   try {
@@ -260,6 +297,8 @@ async function init() {
   $("save-button").addEventListener("click",()=>saveCorrections().catch(e=>notice(e.message)));
   $("export-json").addEventListener("click",()=>{if(current)download(current.title+"-analysis.json",JSON.stringify(current,null,2),"application/json");});
   $("export-csv").addEventListener("click",exportSentences);
+  $("export-report").addEventListener("click",()=>{if(current)download(current.title+"-report.md",reportMarkdown(current),"text/markdown");});
+  window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue="";}});
   $("export-comparison").addEventListener("click",exportComparison);
   $("import-metrics").addEventListener("change",async e=>{
     const file=e.target.files[0];if(!file)return;
@@ -302,4 +341,5 @@ async function init() {
     finally {$("upload-progress").hidden=true;$("analyze-button").disabled=false;}
   });
 }
-init().catch(err=>notice(err.message));
+if(typeof document!=="undefined")init().catch(err=>notice(err.message));
+if(typeof module!=="undefined")module.exports={parseCsvRows,normalizedTitle,CSV,metricSummary,reportMarkdown};

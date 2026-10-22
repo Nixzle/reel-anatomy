@@ -37,7 +37,7 @@
           <div class="intro-meta"><span>CONTENT RESEARCH TOOLKIT</span><span>REEL / SHORT / UGC</span></div>
           <div class="intro">
             <span class="issue">THE BREAKDOWN / NO. 001</span>
-            <h1>Know why<br>the <em>frame</em> works.</h1>
+            <h1>See how<br>the <em>frame</em> works.</h1>
             <p class="intro-deck">Dissect short-form video into what is said, what is shown and where the edit changes. Separate creative observations from actual performance evidence.</p>
           </div>
           <div class="form-stage">
@@ -59,7 +59,7 @@
               </div>
               <textarea id="transcript-input" spellcheck="true" rows="4" placeholder="Paste spoken text here, or attach subtitles above…"></textarea>
               <div class="form-bottom">
-                <p id="upload-hint">Local-only analysis. AI role suggestions are editable, not performance predictions.</p>
+                <p id="upload-hint">Local-only analysis. Rule-based role suggestions are editable, not performance predictions.</p>
                 <button class="primary-button" id="analyze-button" type="submit">Analyse reel <span>↗</span></button>
               </div>
               <div id="upload-progress" class="upload-progress" hidden><span class="spinner"></span><span id="progress-label">Processing the video…</span></div>
@@ -121,11 +121,11 @@
               <label>Shares <input type="number" min="0" name="shares" placeholder="—"></label>
               <label>Comments <input type="number" min="0" name="comments" placeholder="—"></label>
             </div>
-            <div class="actions"><button class="outline-button" id="export-json">Export full analysis (.json)</button><button class="outline-button" id="export-csv">Export sentences (.csv)</button></div>
+            <div class="actions"><button class="outline-button" id="export-json">Export full analysis (.json)</button><button class="outline-button" id="export-csv">Export sentences (.csv)</button><button class="outline-button" id="export-report">Export readable report (.md)</button></div>
           </section>
           <section class="detail-panel comparison">
             <div class="panel-title"><span>07 / ACROSS YOUR LIBRARY</span><span>DESCRIPTIVE COMPARISON</span></div>
-            <p class="panel-desc">Compare reported views and engagement rate with structural observations. Similarity alone does not prove a technique caused success.</p>
+            <p class="panel-desc">Compare reported views and engagement rate with structural observations. Missing metrics stay unknown, not zero. Similarity alone does not prove a technique caused success.</p>
             <div id="comparison-table"></div>
             <div class="actions"><label class="file-mini">Import metrics CSV<input type="file" id="import-metrics" accept=".csv,text/csv"></label><button class="outline-button" id="export-comparison">Export comparison (.csv)</button></div>
           </section>
