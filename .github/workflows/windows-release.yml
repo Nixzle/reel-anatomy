@@ -56,4 +56,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh release create "${{ github.ref_name }}" dist/ReelAnatomy-Windows-x64.zip --title "Reel Anatomy ${{ github.ref_name }}" --notes "Local-first video, transcript, and shot-analysis Windows package with offline English speech model. See README and limitations." --latest
+          gh release view "${{ github.ref_name }}" *> $null
+          if ($LASTEXITCODE -ne 0) { gh release create "${{ github.ref_name }}" --title "Reel Anatomy ${{ github.ref_name }}" --notes "Local-first video, transcript, and shot-analysis Windows package with offline English speech model. See README and limitations." --latest }
+          gh release upload "${{ github.ref_name }}" dist/ReelAnatomy-Windows-x64.zip --clobber

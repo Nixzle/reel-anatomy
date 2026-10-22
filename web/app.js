@@ -186,7 +186,7 @@ function download(filename,text,type) {
   const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-const CSV = v => '"'+String(v??"").replace(/"/g,'""')+'"';
+const CSV = v => {const s=String(v??"");const safe=/^\s*[=+@-]/.test(s)?"\'"+s:s;return '"' + safe.replace(/"/g,'""') + '"';};
 function exportSentences() {
   if (!current) return;
   const rows=[["video","start_seconds","end_seconds","role","spoken_text","basis","manually_edited"]];
@@ -199,6 +199,52 @@ function exportComparison() {
     p.duration ? ((p.shots.length-1)/p.duration*60).toFixed(2) : "",
     p.segments.filter(s=>s.start<5).map(s=>s.role).join("; ")]));
   download("reel-anatomy-comparison.csv",rows.map(r=>r.map(CSV).join(",")).join("\r\n"),"text/csv");
+}
+function parseCsvRows(raw) {
+  const rows=[];let row=[],cell="",quoted=false;
+  for(let i=0;i<raw.length;i++){
+    const ch=raw[i];
+    if(ch==='"' && quoted && raw[i+1]==='"'){cell+='"';i++;continue;}
+    if(ch==='"'){quoted=!quoted;continue;}
+    if(!quoted && ch===','){row.push(cell);cell="";continue;}
+    if(!quoted && (ch==='\n' || ch==='\r')){
+      row.push(cell);if(row.some(v=>v.trim()))rows.push(row);
+      row=[];cell="";if(ch==='\r' && raw[i+1]==='\n')i++;continue;
+    }
+    cell+=ch;
+  }
+  row.push(cell);if(row.some(v=>v.trim()))rows.push(row);
+  return rows;
+}
+function normalizedTitle(name) {
+  return String(name||"").trim().replace(/\.(mp4|mov|m4v|webm)$/i,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+}
+async function importMetricsCsv(file) {
+  const rows=parseCsvRows(await file.text());
+  if(rows.length<2)throw Error("CSV must include a header and at least one data row.");
+  const heads=rows.shift().map(s=>s.trim().toLowerCase().replace(/[\s-]+/g,"_"));
+  const nameCol=["title","video","filename","name"].map(x=>heads.indexOf(x)).find(x=>x>=0);
+  if(nameCol===undefined)throw Error("Include a title, video, filename or name column.");
+  const keys=["views","likes","saves","shares","comments"];
+  if(!keys.some(key=>heads.includes(key)))throw Error("Include at least one metrics column: views, likes, saves, shares, comments.");
+  const all=await Promise.all((await api("/api/projects")).map(p=>api("/api/project/"+p.id)));
+  let matched=0;
+  for(const row of rows){
+    const target=all.find(p=>normalizedTitle(p.title)===normalizedTitle(row[nameCol]));
+    if(!target)continue;
+    target.metrics=target.metrics||{};
+    for(const key of keys){
+      const i=heads.indexOf(key);if(i<0 || row[i]===undefined || !row[i].trim())continue;
+      const n=Number(row[i].replace(/,/g,""));
+      if(!Number.isFinite(n) || n<0)continue;
+      target.metrics[key]=Math.floor(n);
+    }
+    await api("/api/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(target)});
+    if(current && current.id===target.id)current.metrics=target.metrics;
+    matched++;
+  }
+  if(current){renderMetrics();await renderComparison();}
+  notice("Metrics imported for "+matched+" of "+rows.length+" CSV rows.");
 }
 async function init() {
   try {
@@ -215,8 +261,12 @@ async function init() {
   $("export-json").addEventListener("click",()=>{if(current)download(current.title+"-analysis.json",JSON.stringify(current,null,2),"application/json");});
   $("export-csv").addEventListener("click",exportSentences);
   $("export-comparison").addEventListener("click",exportComparison);
+  $("import-metrics").addEventListener("change",async e=>{
+    const file=e.target.files[0];if(!file)return;
+    try{await importMetricsCsv(file);}catch(err){notice(err.message);}finally{e.target.value="";}
+  });
   $("player").addEventListener("timeupdate",()=>{$("video-time").textContent=timestamp($("player").currentTime);});
-  $("video-file").addEventListener("change",e=>{$("chosen-name").textContent=e.target.files[0]?.name || "NO FILE SELECTED";});
+  $("video-file").addEventListener("change",e=>{$("chosen-name").textContent=e.target.files.length>1 ? e.target.files.length+" VIDEOS SELECTED" : (e.target.files[0]?.name || "NO FILE SELECTED");});
   $("captions-file").addEventListener("change",async e=>{
     const f=e.target.files[0];if(f){$("transcript-input").value=await f.text();notice("Imported transcript "+f.name);}
   });
@@ -225,23 +275,30 @@ async function init() {
   drop.addEventListener("dragleave",()=>drop.classList.remove("dragover"));
   drop.addEventListener("drop",e=>{
     e.preventDefault();drop.classList.remove("dragover");
-    const f=[...e.dataTransfer.files].find(x=>/\.(mp4|mov|webm|m4v)$/i.test(x.name));
-    if(!f){notice("Use an MP4, MOV, WEBM or M4V file.");return;}
-    const dt=new DataTransfer();dt.items.add(f);$("video-file").files=dt.files;$("chosen-name").textContent=f.name;
+    const files=[...e.dataTransfer.files].filter(x=>/\.(mp4|mov|webm|m4v)$/i.test(x.name));
+    if(!files.length){notice("Use MP4, MOV, WEBM or M4V files.");return;}
+    const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));$("video-file").files=dt.files;
+    $("chosen-name").textContent=files.length>1 ? files.length+" VIDEOS SELECTED" : files[0].name;
   });
   $("upload-form").addEventListener("submit",async e=>{
     e.preventDefault();
-    const file=$("video-file").files[0];
-    if (!file){notice("Choose a video first.");return;}
-    if(file.size>200*1024*1024){notice("This video exceeds the 200 MB limit.");return;}
-    const form=new FormData();form.append("video",file);form.append("transcript",$("transcript-input").value);
+    const files=[...$("video-file").files];
+    if (!files.length){notice("Choose a video first.");return;}
+    if(files.some(f=>f.size>200*1024*1024)){notice("One or more videos exceed the 200 MB limit.");return;}
+    const transcript=$("transcript-input").value;
+    if(files.length>1 && transcript.trim()){notice("For batch imports, leave the shared transcript blank.");return;}
     $("upload-progress").hidden=false;$("analyze-button").disabled=true;
-    $("progress-label").textContent=$("transcript-input").value.trim()?"Detecting scene changes and aligning captions…":"Detecting shots and attempting local speech recognition…";
+    let completed=0;
     try {
-      current=await api("/api/analyze",{method:"POST",body:form});
+      for(const file of files){
+        $("progress-label").textContent="Analysing "+(completed+1)+" of "+files.length+": "+file.name;
+        const form=new FormData();form.append("video",file);form.append("transcript",transcript);
+        current=await api("/api/analyze",{method:"POST",body:form});completed++;
+      }
       $("start-view").hidden=true;$("analysis-view").hidden=false;
-      renderCurrent();await loadLibrary();window.scrollTo(0,0);notice("Analysis saved locally.");
-    } catch(err) {notice(err.message);}
+      renderCurrent();await loadLibrary();window.scrollTo(0,0);
+      notice(completed+" "+(completed===1?"analysis":"analyses")+" saved locally.");
+    } catch(err) {notice(completed+" completed; "+err.message);if(completed){$("start-view").hidden=true;$("analysis-view").hidden=false;renderCurrent();await loadLibrary();}}
     finally {$("upload-progress").hidden=true;$("analyze-button").disabled=false;}
   });
 }

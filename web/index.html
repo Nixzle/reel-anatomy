@@ -44,7 +44,7 @@
             <div class="form-topline"><span>START AN ANALYSIS</span><span>01 <span class="slash">/</span> 03</span></div>
             <form id="upload-form">
               <label class="drop-zone" id="drop-zone">
-                <input id="video-file" name="video" type="file" accept="video/mp4,video/quicktime,video/webm,.m4v" required>
+                <input id="video-file" name="video" type="file" accept="video/mp4,video/quicktime,video/webm,.m4v" multiple required>
                 <span class="drop-icon">↗</span>
                 <span class="drop-heading">Drop your video here.</span>
                 <span class="drop-sub">Or click to choose an MP4, MOV, WEBM or M4V · Max 200 MB</span>
@@ -127,7 +127,7 @@
             <div class="panel-title"><span>07 / ACROSS YOUR LIBRARY</span><span>DESCRIPTIVE COMPARISON</span></div>
             <p class="panel-desc">Compare reported views and engagement rate with structural observations. Similarity alone does not prove a technique caused success.</p>
             <div id="comparison-table"></div>
-            <div class="actions"><button class="outline-button" id="export-comparison">Export comparison (.csv)</button></div>
+            <div class="actions"><label class="file-mini">Import metrics CSV<input type="file" id="import-metrics" accept=".csv,text/csv"></label><button class="outline-button" id="export-comparison">Export comparison (.csv)</button></div>
           </section>
           <div class="bottom-note"><span>CRAFT BEFORE ALGORITHM.</span><span>LOCAL · AUDITABLE · EDITABLE</span></div>
         </section>
