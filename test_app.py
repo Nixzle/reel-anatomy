@@ -29,6 +29,13 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(app.classify("Why does everyone ignore this?",0,3,30)[0],"Hook")
         self.assertEqual(app.classify("Here is how it works",10,13,30)[0],"Demonstration")
         self.assertNotEqual(app.classify("Every video wins",18,21,30)[0],"Hook")
+    def test_speech_decoder_compatibility(self):
+        try:
+            import av
+        except ImportError:
+            self.skipTest("Optional speech decoder not installed")
+        self.assertLess(int(av.__version__.split(".")[0]),18,
+                        "faster-whisper 1.2.1 passes a keyword removed in newer PyAV")
     def test_id_validation(self):
         with self.assertRaises(ValueError):app.project_path("../secret")
     def test_storage_roundtrip(self):

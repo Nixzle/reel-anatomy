@@ -150,7 +150,10 @@ def transcribe(path):
                 out.append((start or float(seg.start), float(words[-1].end), "".join(group).strip()))
         return out, ""
     except Exception as exc:
-        # Do not expose paths, key material or low-level library exceptions to a recipient.
+        # Diagnostic output is opt-in for local developers only; UI never includes provider details.
+        if os.environ.get("REEL_ANATOMY_DIAGNOSTIC") == "1":
+            import traceback
+            traceback.print_exc(file=sys.stderr)
         return [], "Local speech recognition could not load a cached model. Import a transcript, or install/download a model."
 
 def project_path(project_id):

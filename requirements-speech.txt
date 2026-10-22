@@ -1,2 +1,5 @@
-faster-whisper>=1.2,<2
+# faster-whisper 1.2.1 passes metadata_errors to PyAV; removed in newer PyAV.
+# Keep the known-good ABI until a compatible faster-whisper release is pinned.
+faster-whisper==1.2.1
+av>=17.1,<18
 imageio-ffmpeg>=0.6,<1
