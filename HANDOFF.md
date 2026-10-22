@@ -27,3 +27,11 @@ The first browser acceptance test exposed an async DOM event.currentTarget lifet
 - Platform account connections and automatic retrieval: remain outside the shipped upload/CSV path. Milestone: separately authorised platform integration. Acceptance: permissions, platform policy, provenance and data-scope checks; no private-insight guessing.
 - Native text/carousel ingestion, a shared hosted workspace and a native phone app remain deferred. Mobile filming briefs are supported as offline exports; the localhost server is not exposed publicly.
 - A second physical computer and human usability review remain untested. Fresh extraction, empty cache and clean browser profile on the build host are separate evidence classes, not a second device.
+
+## 0.3.0 mobile candidate, 23 October 2026 Sydney
+
+Implemented public installable shell, icons/manifest, safe-area controls, explicit IndexedDB filming copies, single-use device pairing protocol, expiring/revocable cookie sessions, an independent allowlisted HTTPS relay, desktop mutation receipts and chunked uploads. The Windows local listener remains loopback-only; remote access defaults off. Production credentials are absent.
+
+Tool safety blocked the combined authenticated-browser test-script write and the Wrangler deployment-list command. Do not replay these calls or route through backups to bypass them. No live worker or phone URL was created. Existing stable v0.2.0 release remains untouched. The permitted public-shell browser test is not authenticated end-to-end acceptance. Read MOBILE.md before resuming hosting. Current evidence is retained under .local/mobile-v030 and .local/pwa-public-*; no private libraries were used.
+
+Owner: Ultron Prime. Next acceptance: allowed deployment, owner secret provisioning, real relay/phone tests and physical iOS installation. Preserve all earlier semantic-model/campaign limitations.

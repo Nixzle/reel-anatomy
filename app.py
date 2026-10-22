@@ -21,7 +21,7 @@ from urllib.parse import urlparse
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 DATA = Path(os.environ.get("REEL_ANATOMY_HOME", Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "ReelAnatomy"))
 DATA.mkdir(parents=True, exist_ok=True)
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 MAX_BYTES = 220 * 1024 * 1024
 MAX_VIDEO_BYTES = 200 * 1024 * 1024
 ANALYSIS_LOCK = threading.Lock()
@@ -313,12 +313,22 @@ class Handler(BaseHTTPRequestHandler):
         if not self.trusted_request():
             return self.send(403, {"error": "Local origin required"})
         path = urlparse(self.path).path
+        if path.startswith("/api/mobile/"):
+            import mobile_bridge
+            return mobile_bridge.route(sys.modules[__name__], self)
         if path.startswith("/api/studio/"):
             import studio_api
             return studio_api.get(sys.modules[__name__], self)
+        if path in ("/manifest.webmanifest", "/sw.js") or path.startswith("/icons/"):
+            relative = path.lstrip("/")
+            if not re.fullmatch(r"(?:manifest\.webmanifest|sw\.js|icons/icon-(?:180|192|512)\.png)", relative):
+                return self.send(404, {"error":"Not found"})
+            file = ROOT / "web" / relative
+            mime = "application/manifest+json" if path.endswith("webmanifest") else "application/javascript" if path.endswith(".js") else "image/png"
+            return self.send(200, file.read_bytes(), mime)
         if path == "/":
             return self.send(200, (ROOT/"web"/"index.html").read_bytes(), "text/html")
-        if path in ("/web/style.css", "/web/app.js", "/web/studio.css", "/web/studio.js"):
+        if path in ("/web/style.css", "/web/app.js", "/web/studio.css", "/web/studio.js", "/web/mobile.js", "/web/mobile.css"):
             name = path.rsplit("/", 1)[-1]
             mime = "text/css" if name.endswith(".css") else "application/javascript"
             return self.send(200, (ROOT/"web"/name).read_bytes(), mime)
@@ -402,6 +412,9 @@ class Handler(BaseHTTPRequestHandler):
         if length<=0 or length>MAX_BYTES: return self.send(413,{"error":"Request too large or empty"})
         content_type=self.headers.get("Content-Type","")
         raw=self.rfile.read(length)
+        if path.startswith("/api/mobile/"):
+            import mobile_bridge
+            return mobile_bridge.route(sys.modules[__name__], self, raw)
         if path.startswith("/api/studio/"):
             import studio_api
             return studio_api.post(sys.modules[__name__], self, path, content_type, raw)
@@ -459,6 +472,9 @@ def main():
     srv=ThreadingHTTPServer(("127.0.0.1",port),Handler)
     import studio_api
     studio_api.start(sys.modules[__name__])
+    import mobile_bridge
+    phone_bridge = mobile_bridge.instance(sys.modules[__name__], port)
+    phone_bridge.start()
     url="http://127.0.0.1:"+str(port)
     print("Reel Anatomy running at "+url,flush=True)
     if os.environ.get("REEL_ANATOMY_NO_BROWSER")!="1":
@@ -467,5 +483,6 @@ def main():
     except KeyboardInterrupt: pass
     finally:
         srv.server_close()
+        phone_bridge.close()
         studio_api.stop(sys.modules[__name__])
 if __name__ == "__main__": main()

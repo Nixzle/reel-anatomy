@@ -1,0 +1,33 @@
+{
+  "version": "0.3.0-candidate",
+  "checked_at": "2026-10-22T17:34:57.598384+00:00",
+  "published": false,
+  "stable_release_unchanged": "v0.2.0",
+  "tests": {
+    "python": 97,
+    "relay_contract": 12,
+    "frontend": 11,
+    "public_pwa_browser": 9,
+    "legacy_browser": 13,
+    "studio_browser_with_safe_areas": 19
+  },
+  "scope": [
+    "Local source tests",
+    "Local worker public shell and generated offline fixture",
+    "Mock storage relay authentication contract",
+    "Desktop browser and media workflows"
+  ],
+  "not_verified": [
+    "Hosted production deployment",
+    "Authenticated mobile browser end-to-end workflow",
+    "Physical iPhone installation and Safari behavior"
+  ],
+  "blocker": "Tool safety checks blocked the combined authenticated browser test and the Cloudflare deployment-list check. Neither operation was replayed or routed around.",
+  "source_hashes": {
+    "app.py": "0477a5be5902d4616aa200989acbbfc0b2c67249bb89fd92d57f3eeaaa987ecc",
+    "mobile_bridge.py": "5500f8128f0d742125dc40ea37e7c47147fc3155ac61ff0d798d0bb06823288a",
+    "cloud\\worker.mjs": "6110dc3365f4644936973343e571c3d4c5cce45fd84a62a3a638bdadfa794afe",
+    "web\\mobile.js": "55cf05aeb9df4c0891848841e6c02accfcd8ad87e56fa1452f0a7d97e0a8aab9",
+    "web\\mobile.css": "5b620c5a0ac1972efd11c21eeeff865a100db85849f6d6a5819bd2c6de715a9d"
+  }
+}

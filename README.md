@@ -2,7 +2,11 @@
 
 A local-first Windows research and production app for short-form video.
 
-**Current version: 0.2.0 beta.** It joins a research library, resumable video processing, descriptive pattern comparisons, filming briefs, rough-cut checks and outcome tracking. It does not promise virality.
+**This branch: 0.3.0 phone/PWA candidate, not deployed. Stable public release: 0.2.0 beta.** It joins a research library, resumable video processing, descriptive pattern comparisons, filming briefs, rough-cut checks and outcome tracking. It does not promise virality.
+
+## Phone candidate status
+
+The iPhone-installable web-app shell, explicit offline filming copies and outbound authenticated desktop relay are implemented in this candidate. Hosting and authenticated phone-browser verification were blocked by current tool safety checks. There is no live iPhone installation URL yet. Do not treat the Windows ZIP as an iOS app. See [MOBILE.md](MOBILE.md) for the exact privacy model, completed checks and remaining acceptance.
 
 ## Download and run
 

@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {StudioRelay,allowed} from './cloud/worker.mjs';
+const secret='a'.repeat(64), origin='https://reel.example';
+class Storage{constructor(){this.map=new Map();this.chain=Promise.resolve();}async get(k){return structuredClone(this.map.get(k));}async put(k,v){this.map.set(k,structuredClone(v));}async delete(k){return this.map.delete(k);}async list(o){return new Map([...this.map].filter(([k])=>k.startsWith(o.prefix)));}transaction(fn){const p=this.chain.then(()=>fn(this));this.chain=p.catch(()=>{});return p;}}
+const storage=new Storage(),relay=new StudioRelay({storage},{BRIDGE_SECRET:secret});
+const checks=[];const pass=name=>{checks.push(name);console.log('PASS '+name);};
+const req=(path,body,headers={})=>new Request(origin+path,{method:body===undefined?'GET':'POST',headers:{Origin:origin,'Content-Type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});
+const host=(path,body)=>relay.fetch(req('/bridge/host/'+path,body,{Authorization:'Bearer '+secret}));
+const h=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+assert.equal((await relay.fetch(req('/api/projects'))).status,401);pass('private API requires pairing');
+assert.equal((await relay.fetch(req('/bridge/host/poll'))).status,401);pass('host actions require independent desktop credential');
+for(const path of ['/api/mobile/pair','/api/mobile/disable','/api/studio/configure','http://evil.test/api/health','/../secret','/api/%2e%2e/secret'])assert.equal(allowed('POST',path),false,path);pass('route allowlist excludes credentials configuration and arbitrary paths');
+const code='b'.repeat(64);assert.equal((await host('pair',{hash:await h(code)})).status,200);
+const paired=await relay.fetch(req('/bridge/pair',{token:code,label:'Synthetic test'}));assert.equal(paired.status,200);const set=paired.headers.get('set-cookie');assert.match(set,/HttpOnly/);assert.match(set,/Secure/);assert.match(set,/SameSite=Strict/);const cookie=set.split(';')[0];pass('single-use pairing issues secure HttpOnly cookie');
+assert.equal((await relay.fetch(req('/bridge/pair',{token:code}))).status,401);pass('pairing cannot be replayed');
+assert.equal((await relay.fetch(req('/api/projects',undefined,{Cookie:cookie}))).status,503);pass('offline desktop is explicit not false success');
+assert.equal((await relay.fetch(req('/api/save',{}, {Cookie:cookie,Origin:'https://evil.test','x-reel-client':'pwa-v1'}))).status,403);pass('cross-origin mutation blocked');
+const poll=host('poll');await new Promise(r=>setTimeout(r,10));
+const pending=relay.fetch(req('/api/projects',undefined,{Cookie:cookie}));const tasks=(await(await poll).json()).requests;assert.equal(tasks.length,1);
+const answer={id:tasks[0].id,status:200,headers:{'content-type':'application/json'},body:btoa('[{"title":"Synthetic only"}]')};
+assert.equal((await host('reply',answer)).status,200);const result=await pending;assert.equal(result.status,200);assert.equal((await result.json())[0].title,'Synthetic only');pass('authenticated request returns only matching desktop response');
+assert.equal((await relay.fetch(req('/api/save',{}, {Cookie:cookie}))).status,403);pass('mutations require app CSRF header');
+const devices=await(await host('devices')).json();assert.equal(devices.devices.length,1);await host('revoke',{id:devices.devices[0].id});assert.equal((await relay.fetch(req('/api/projects',undefined,{Cookie:cookie}))).status,401);pass('device revocation invalidates the session');
+const fresh='c'.repeat(64);await host('pair',{hash:await h(fresh)});const outcomes=await Promise.all([relay.fetch(req('/bridge/pair',{token:fresh})),relay.fetch(req('/bridge/pair',{token:fresh}))]);assert.deepEqual(outcomes.map(r=>r.status).sort(),[200,401]);pass('simultaneous pair attempts consume token once');
+assert.deepEqual([...storage.map.keys()].every(k=>k==='pair'||k.startsWith('session:')),true);pass('cloud storage contains auth records only, not media or scripts');
+relay.clearPending('Test ended');if(relay.poll)relay.poll();
+console.log('RELAY_CHECKS='+checks.length);
