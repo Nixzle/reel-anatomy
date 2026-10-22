@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eceae4">
+  <title>Reel Anatomy · Creative analysis workbench</title>
+  <link rel="stylesheet" href="/web/style.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Reel Anatomy">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div class="brand-name">REEL <strong>ANATOMY</strong></div>
+      </div>
+      <div class="top-center">CREATIVE INTELLIGENCE / LOCAL WORKBENCH <span class="version">01</span></div>
+      <div class="header-right"><span class="live-dot"></span><span id="system-status">Checking local engine</span></div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="side-top">
+          <div class="eyebrow">LIBRARY <span id="project-count">00</span></div>
+          <button class="side-new" id="new-project">+ New analysis</button>
+        </div>
+        <nav id="project-list" class="project-list" aria-label="Saved projects"></nav>
+        <div class="side-bottom">
+          <span class="eyebrow">WORKFLOW</span>
+          <p>01 / Import a video</p>
+          <p>02 / Inspect speech &amp; edits</p>
+          <p>03 / Compare what performed</p>
+          <div class="privacy">PRIVATE BY DESIGN <span>↗</span><small>Video stays on this computer. No automatic Instagram scraping or paid AI calls.</small></div>
+        </div>
+      </aside>
+      <main class="main">
+        <section id="start-view" class="start-view">
+          <div class="intro-meta"><span>CONTENT RESEARCH TOOLKIT</span><span>REEL / SHORT / UGC</span></div>
+          <div class="intro">
+            <span class="issue">THE BREAKDOWN / NO. 001</span>
+            <h1>Know why<br>the <em>frame</em> works.</h1>
+            <p class="intro-deck">Dissect short-form video into what is said, what is shown and where the edit changes. Separate creative observations from actual performance evidence.</p>
+          </div>
+          <div class="form-stage">
+            <div class="form-topline"><span>START AN ANALYSIS</span><span>01 <span class="slash">/</span> 03</span></div>
+            <form id="upload-form">
+              <label class="drop-zone" id="drop-zone">
+                <input id="video-file" name="video" type="file" accept="video/mp4,video/quicktime,video/webm,.m4v" required>
+                <span class="drop-icon">↗</span>
+                <span class="drop-heading">Drop your video here.</span>
+                <span class="drop-sub">Or click to choose an MP4, MOV, WEBM or M4V · Max 200 MB</span>
+                <span id="chosen-name" class="chosen-name">NO FILE SELECTED</span>
+              </label>
+              <div class="import-options">
+                <div>
+                  <div class="field-label">TRANSCRIPT / OPTIONAL</div>
+                  <p>Paste words, or import timestamped SRT / VTT. If local speech recognition is installed, this can be blank.</p>
+                </div>
+                <label class="file-mini">Import subtitles<input id="captions-file" type="file" accept=".srt,.vtt,.txt"></label>
+              </div>
+              <textarea id="transcript-input" spellcheck="true" rows="4" placeholder="Paste spoken text here, or attach subtitles above…"></textarea>
+              <div class="form-bottom">
+                <p id="upload-hint">Local-only analysis. AI role suggestions are editable, not performance predictions.</p>
+                <button class="primary-button" id="analyze-button" type="submit">Analyse reel <span>↗</span></button>
+              </div>
+              <div id="upload-progress" class="upload-progress" hidden><span class="spinner"></span><span id="progress-label">Processing the video…</span></div>
+            </form>
+          </div>
+          <div class="bottom-note"><span>CRAFT BEFORE ALGORITHM.</span><span>ANALYSE · COMPARE · ITERATE</span></div>
+        </section>
+        <section id="analysis-view" hidden>
+          <div class="analysis-head">
+            <button class="back-link" id="back-to-library">← New analysis</button>
+            <div class="analysis-topline"><span>FIELD REPORT <span id="report-no">/ 01</span></span><span id="save-indicator">LOCAL COPY</span></div>
+            <div class="analysis-title-row"><div><div class="kicker">VIDEO DECONSTRUCTION</div><h2 id="report-title"></h2></div><button class="outline-button" id="save-button">Save corrections</button></div>
+            <div class="report-meta"><span id="report-duration"></span><span id="report-utterances"></span><span id="report-cuts"></span><span id="report-source"></span></div>
+            <div id="notice-list" class="notice-list"></div>
+          </div>
+          <div class="overview">
+            <div class="video-column">
+              <div class="panel-title"><span>01 / ORIGINAL FOOTAGE</span><span id="video-time">00:00</span></div>
+              <div class="video-frame"><video id="player" controls playsinline preload="metadata"></video></div>
+              <p class="panel-foot">Select a sentence or shot below to inspect its moment.</p>
+            </div>
+            <div class="breakdown-column">
+              <div class="panel-title"><span>02 / STRUCTURE AT A GLANCE</span><span>PROVISIONAL TAGS</span></div>
+              <div class="stat-grid">
+                <div class="stat"><strong id="stat-sentences">0</strong><span>UTTERANCES</span></div>
+                <div class="stat"><strong id="stat-shots">0</strong><span>SHOT INTERVALS</span></div>
+                <div class="stat"><strong id="stat-cut-rate">0</strong><span>CUTS / MIN</span></div>
+              </div>
+              <div class="structure-title">NARRATIVE MIX <span>BY NUMBER OF UTTERANCES</span></div>
+              <div id="role-breakdown" class="role-breakdown"></div>
+              <div class="insight-note"><span>EDITOR'S NOTE</span><p id="structure-note"></p></div>
+            </div>
+          </div>
+          <div class="timeline-panel">
+            <div class="panel-title"><span>03 / CHRONOLOGICAL MAP</span><span>CLICK A BLOCK TO SEEK</span></div>
+            <div class="timeline-label"><span>WHAT IS SAID</span><span>START → FINISH</span></div>
+            <div class="timeline-track transcript-track" id="speech-track"></div>
+            <div class="timeline-label second"><span>WHERE THE CUTS ARE</span><span>AUTOMATIC ESTIMATE</span></div>
+            <div class="timeline-track shot-track" id="shot-track"></div>
+            <div class="timeline-key" id="timeline-key"></div>
+          </div>
+          <section class="detail-panel">
+            <div class="panel-title"><span>04 / SENTENCE-BY-SENTENCE</span><span id="sentence-count">0 ROWS</span></div>
+            <div class="table-hdr"><span>IN / OUT</span><span>FUNCTION</span><span>SPOKEN CONTENT &amp; BASIS</span></div>
+            <div id="sentence-rows"></div>
+          </section>
+          <section class="detail-panel">
+            <div class="panel-title"><span>05 / SHOT INVENTORY</span><span>LABELS ARE EDITABLE</span></div>
+            <p class="panel-desc">Shot boundaries are estimated from visual changes. Camera angles and scene descriptions require your review; these are not claimed as computer-vision classifications.</p>
+            <div id="shot-grid" class="shot-grid"></div>
+          </section>
+          <section class="detail-panel performance">
+            <div class="panel-title"><span>06 / REAL PERFORMANCE</span><span>USER-SUPPLIED METRICS ONLY</span></div>
+            <p class="panel-desc">Enter actual numbers for this video. No estimated views, fabricated retention or automatic Instagram access.</p>
+            <div class="metric-fields" id="metric-fields">
+              <label>Views <input type="number" min="0" name="views" placeholder="—"></label>
+              <label>Likes <input type="number" min="0" name="likes" placeholder="—"></label>
+              <label>Saves <input type="number" min="0" name="saves" placeholder="—"></label>
+              <label>Shares <input type="number" min="0" name="shares" placeholder="—"></label>
+              <label>Comments <input type="number" min="0" name="comments" placeholder="—"></label>
+            </div>
+            <div class="actions"><button class="outline-button" id="export-json">Export full analysis (.json)</button><button class="outline-button" id="export-csv">Export sentences (.csv)</button></div>
+          </section>
+          <section class="detail-panel comparison">
+            <div class="panel-title"><span>07 / ACROSS YOUR LIBRARY</span><span>DESCRIPTIVE COMPARISON</span></div>
+            <p class="panel-desc">Compare reported views and engagement rate with structural observations. Similarity alone does not prove a technique caused success.</p>
+            <div id="comparison-table"></div>
+            <div class="actions"><button class="outline-button" id="export-comparison">Export comparison (.csv)</button></div>
+          </section>
+          <div class="bottom-note"><span>CRAFT BEFORE ALGORITHM.</span><span>LOCAL · AUDITABLE · EDITABLE</span></div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <script src="/web/app.js"></script>
+</body>
+</html>
