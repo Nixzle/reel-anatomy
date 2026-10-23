@@ -3,7 +3,7 @@ let python;
 const ready = (async () => {
   python = await loadPyodide({indexURL:new URL('./runtime/',import.meta.url).href});
   await python.loadPackage('sqlite3');
-  for (const name of ['studio_store.py','embedded_core.py','embedded_csv.py','backend.py']) {
+  for (const name of ['studio_store.py','embedded_core.py','embedded_csv.py','research_engine.py','backend.py']) {
     const r = await fetch(new URL('./python/'+name,import.meta.url));
     if (!r.ok) throw Error('Application code could not be loaded: '+name);
     python.FS.writeFile('/home/pyodide/'+name,await r.text());

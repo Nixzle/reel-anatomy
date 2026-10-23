@@ -5,9 +5,10 @@ from urllib.parse import urlparse, parse_qs
 from studio_store import Store, Conflict, text, uid, now, digest, counts, moment, WINDOWS, DEFINITIONS, PLATFORMS
 from embedded_core import parse_captions, classify, validate_metrics, validate_intervals
 from embedded_csv import csv_import
+import research_engine
 ROOT=Path('/reel-local')
 ROOT.mkdir(exist_ok=True)
-VERSION='0.4.0-phone'
+VERSION='0.5.0-sanctum'
 
 def restore(snapshot):
     for f in ROOT.iterdir():
@@ -20,6 +21,7 @@ def restore(snapshot):
             if not re.fullmatch(r'[a-f0-9]{32}',identity):raise ValueError('Invalid stored asset.')
             (ROOT/(identity+'.json')).write_text(json.dumps(value),encoding='utf-8')
     s=Store(ROOT)
+    research_engine.setup(s)
     with s.db() as c:c.execute('PRAGMA journal_mode=DELETE')
     return s
 
@@ -51,7 +53,7 @@ def exchange(s):
     for name in ('research','posts','snapshots','documents','experiments'):
         with s.db() as c:tables[name]=[json.loads(r[0]) for r in c.execute('SELECT body FROM '+name)]
     return {'format':'reel-anatomy-phone-backup','schema':1,'version':VERSION,'exported_at':now(),
-            'tables':tables,'assets':snapshot(s)['assets'],'note':'Video files are not embedded. Reattach original media after restoring.'}
+            'tables':tables,'assets':snapshot(s)['assets'],'research_bundle':research_engine.bundle(s),'note':'Video files are not embedded. Reattach original media after restoring.'}
 
 def validate_backup_document(r):
     if not isinstance(r,dict):raise ValueError('Invalid backup record.')
@@ -110,6 +112,7 @@ def import_exchange(s,d):
                 if not any(w['id']==r.get('workspace') for w in tables['research']):raise ValueError('Broken workspace link.')
                 if name=='documents' and (not isinstance(r.get('beats'),list) or not isinstance(r.get('brief'),dict) or not isinstance(r.get('history'),list)):raise ValueError('Invalid filming brief.')
                 c.execute('INSERT INTO '+name+' VALUES (?,?,?)',(r['id'],r['workspace'],json.dumps(r)))
+    research_engine.import_bundle(s,d.get('research_bundle'))
     save_jobs(s,[])
     return {'restored':True,'posts':len(tables['posts'])}
 
@@ -156,6 +159,8 @@ def import_research(s,d):
 def dispatch(s,path,method,d):
     u=urlparse(path);path=u.path;q=parse_qs(u.query);arg=lambda k,default='':q.get(k,[default])[0]
     workspace=arg('workspace','default')
+    if path.startswith('/api/research/'):
+        return research_engine.route(s,path,method,d,q)
     if method=='GET':
         if path=='/api/health':return {'ok':True,'version':VERSION,'ffmpeg':False,'speech':False,'local_only':True,'phone':True}
         if path=='/api/projects':
