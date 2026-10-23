@@ -1,0 +1,278 @@
+{
+  "format": "reel-factory-package",
+  "schema": 1,
+  "version": "0.6.0-factory",
+  "created_at": "2026-10-23T08:24:13.151431+00:00",
+  "campaign_id": "4068d2487d6b4a75976a6f4915d94e1c",
+  "workspace": "default",
+  "campaign_revision": 2,
+  "title": "Test an opening, not a viral promise",
+  "duration": 24.0,
+  "variant": {
+    "key": "A",
+    "name": "Original opening",
+    "revision": 2,
+    "scenes": [
+      {
+        "index": 0,
+        "start": 0.0,
+        "end": 3.0,
+        "role": "Hook",
+        "spoken": "A winning Reel is not a reliable recipe.",
+        "on_screen": "Stop copying the winner.",
+        "visual": "Original editorial text card.",
+        "nature": "opinion",
+        "claim_ids": [],
+        "limitation": "",
+        "media": null,
+        "clip_in": 0.0,
+        "fit": "cover",
+        "card": true
+      },
+      {
+        "index": 1,
+        "start": 3.0,
+        "end": 8.0,
+        "role": "Demonstration",
+        "spoken": "Keep the topic and offer steady. Change the first few seconds.",
+        "on_screen": "Test one opening.",
+        "visual": "Original editorial text card.",
+        "nature": "instruction",
+        "claim_ids": [],
+        "limitation": "",
+        "media": null,
+        "clip_in": 0.0,
+        "fit": "cover",
+        "card": true
+      },
+      {
+        "index": 2,
+        "start": 8.0,
+        "end": 14.0,
+        "role": "Proof",
+        "spoken": "Meta says Trial Reels initially reach non-followers.",
+        "on_screen": "Try a different audience.",
+        "visual": "Original editorial text card.",
+        "nature": "assertion",
+        "claim_ids": [
+          "8300df94062e4e5c8bfdd2688a7f0536"
+        ],
+        "limitation": "",
+        "media": null,
+        "clip_in": 0.0,
+        "fit": "cover",
+        "card": true
+      },
+      {
+        "index": 3,
+        "start": 14.0,
+        "end": 20.0,
+        "role": "Proof",
+        "spoken": "Initial engagement metrics appear after about a day. That is feedback, not a guarantee.",
+        "on_screen": "Read the result.",
+        "visual": "Original editorial text card.",
+        "nature": "assertion",
+        "claim_ids": [
+          "8300df94062e4e5c8bfdd2688a7f0536"
+        ],
+        "limitation": "",
+        "media": null,
+        "clip_in": 0.0,
+        "fit": "cover",
+        "card": true
+      },
+      {
+        "index": 4,
+        "start": 20.0,
+        "end": 24.0,
+        "role": "CTA",
+        "spoken": "Write the hypothesis. Record what happened.",
+        "on_screen": "Then test again.",
+        "visual": "Original editorial text card.",
+        "nature": "instruction",
+        "claim_ids": [],
+        "limitation": "",
+        "media": null,
+        "clip_in": 0.0,
+        "fit": "cover",
+        "card": true
+      }
+    ],
+    "caption": "Try an original opening, inspect the evidence and keep the uncertainty visible. Platform feature source: https://about.fb.com/news/2024/12/trial-reels-try-content-non-followers-first-see-what-perfoms-best/",
+    "hypothesis": "Compare one revised opening with our earlier comparable posts. The edit is a proposal; no outcome has been measured.",
+    "primary_metric": "shares per view",
+    "window": "72h",
+    "narration": null,
+    "silent_intentional": true,
+    "approval": null,
+    "history": [
+      {
+        "revision": 1,
+        "scenes": [
+          {
+            "index": 0,
+            "start": 0.0,
+            "end": 2.9,
+            "role": "Hook",
+            "spoken": "Choose a testable opening. Here is the demonstration.",
+            "on_screen": "Choose a testable opening",
+            "visual": "Show the actual outcome using your footage before introducing yourself.",
+            "nature": "unreviewed",
+            "claim_ids": [],
+            "limitation": "",
+            "media": null,
+            "clip_in": 0.0,
+            "fit": "cover",
+            "card": false
+          },
+          {
+            "index": 1,
+            "start": 2.9,
+            "end": 6.7,
+            "role": "Context",
+            "spoken": "This is for Creators testing original short videos.",
+            "on_screen": "Context",
+            "visual": "Show the starting point and the relevant problem.",
+            "nature": "unreviewed",
+            "claim_ids": [],
+            "limitation": "",
+            "media": null,
+            "clip_in": 0.0,
+            "fit": "cover",
+            "card": false
+          },
+          {
+            "index": 2,
+            "start": 6.7,
+            "end": 16.3,
+            "role": "Demonstration",
+            "spoken": "Change one opening while holding topic and offer steady.",
+            "on_screen": "Demonstration",
+            "visual": "Demonstrate using: Original typography cards. No third-party images or audio.",
+            "nature": "unreviewed",
+            "claim_ids": [],
+            "limitation": "",
+            "media": null,
+            "clip_in": 0.0,
+            "fit": "cover",
+            "card": false
+          },
+          {
+            "index": 3,
+            "start": 16.3,
+            "end": 21.1,
+            "role": "Proof",
+            "spoken": "Meta describes Trial Reels as initially reaching non-followers, with initial metrics after about a day.",
+            "on_screen": "Proof",
+            "visual": "Show only evidence supporting the supplied claim. Mark anything not verified.",
+            "nature": "unreviewed",
+            "claim_ids": [
+              "8300df94062e4e5c8bfdd2688a7f0536"
+            ],
+            "limitation": "",
+            "media": null,
+            "clip_in": 0.0,
+            "fit": "cover",
+            "card": false
+          },
+          {
+            "index": 4,
+            "start": 21.1,
+            "end": 24.0,
+            "role": "CTA",
+            "spoken": "Write the hypothesis. Record what happened.",
+            "on_screen": "CTA",
+            "visual": "Return to the result with one readable next action.",
+            "nature": "unreviewed",
+            "claim_ids": [],
+            "limitation": "",
+            "media": null,
+            "clip_in": 0.0,
+            "fit": "cover",
+            "card": false
+          }
+        ],
+        "caption": "Choose a testable opening\n\nWrite the hypothesis. Record what happened.",
+        "at": "2026-10-23T08:24:13.138911+00:00"
+      }
+    ]
+  },
+  "evidence": {
+    "claims": [
+      {
+        "id": "8300df94062e4e5c8bfdd2688a7f0536",
+        "workspace": "default",
+        "statement": "Trial Reels initially reach non-followers; initial engagement figures become available after about a day.",
+        "links": [
+          {
+            "source_id": "4221e7c8338d381b3a31d52eede07465",
+            "citation": "S-4221E7C833",
+            "content_hash": "1ece0fd69174143ffb0bd3e4f1b2e2ab2a552536e22c4795018c6e4097e3ffeb",
+            "stance": "supports",
+            "quote": "Meta describes Trial Reels as initially distributed to people who do not follow the creator. Its announcement says initial engagement figures, such as views and shares, can be inspected approximately 24 hours after publication. These are platform features, not a promise about an individual post.",
+            "coverage": "excerpt"
+          }
+        ],
+        "note": "Feature description supported by the linked primary source. Does not imply random assignment, causal uplift or guaranteed reach.",
+        "created_at": "2026-10-23T08:24:13.110236+00:00",
+        "revision": 1,
+        "updated_at": "2026-10-23T08:24:13.110244+00:00"
+      }
+    ],
+    "sources": {
+      "4221e7c8338d381b3a31d52eede07465": {
+        "title": "Meta Trial Reels: primary-source feature description",
+        "url": "https://about.fb.com/news/2024/12/trial-reels-try-content-non-followers-first-see-what-perfoms-best/",
+        "content": "Meta describes Trial Reels as initially distributed to people who do not follow the creator. Its announcement says initial engagement figures, such as views and shares, can be inspected approximately 24 hours after publication. These are platform features, not a promise about an individual post.",
+        "kind": "web",
+        "level": "excerpt",
+        "author": "Meta Newsroom",
+        "published": "2024-12-10; updated 2025-06-26",
+        "provenance": "Assistant-authored paraphrase of the official announcement, read 2026-10-23. This is not a verbatim quotation or independent performance study. Human editorial approval remains open.",
+        "tags": [],
+        "reviewed": false,
+        "note": "",
+        "observed_at": "2026-10-23T08:24:13.094668+00:00",
+        "content_hash": "1ece0fd69174143ffb0bd3e4f1b2e2ab2a552536e22c4795018c6e4097e3ffeb",
+        "id": "4221e7c8338d381b3a31d52eede07465",
+        "workspace": "default",
+        "revision": 1,
+        "created_at": "2026-10-23T08:24:13.096607+00:00",
+        "updated_at": "2026-10-23T08:24:13.096614+00:00",
+        "citation": "S-4221E7C833",
+        "history": []
+      }
+    },
+    "captured_at": "2026-10-23T08:24:13.128521+00:00"
+  },
+  "approval": null,
+  "mode": "draft",
+  "audit": {
+    "blockers": [
+      "Shot 3: support is unreviewed or metadata only.",
+      "Shot 3: no current reviewed support for the factual assertion.",
+      "Shot 4: support is unreviewed or metadata only.",
+      "Shot 4: no current reviewed support for the factual assertion."
+    ],
+    "warnings": [
+      "Fewer than two linked source URLs. This is not an independent-source count or a reason to invent more citations.",
+      "This edit intentionally has no narration. Captions must carry the message."
+    ],
+    "ready_for_review": false,
+    "reviewed": false,
+    "word_count": 46,
+    "words_per_minute": 115,
+    "evidence_hash": "a71bff9ceecae79cd16d6f61d824b6a7f3414d437f7134ed3e245de79f6101b9",
+    "content_hash": "e94619b34e622077e7aa9748275552e2e913ee61f4db9f93bc70164f31d22c4e",
+    "interpretation": "Production checks only, never a virality score."
+  },
+  "aspect": "9:16",
+  "publication": "Not posted. Export is not permission for automatic publishing.",
+  "limits": [
+    "Human review is an attestation, not independent fact verification.",
+    "No predicted views, guaranteed virality or causal uplift.",
+    "Captions follow the supplied shot timing, not automatic speech alignment.",
+    "Organic variants are not a randomised A/B experiment."
+  ],
+  "package_hash": "c5d649b7879c862ca5cf4e9c0529676f3610181651f9d1be7ee9ef3a1a8675e2"
+}

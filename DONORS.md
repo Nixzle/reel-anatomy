@@ -34,3 +34,12 @@ Key trade-offs: browser storage can be evicted; exports exclude original media; 
 The public SANCTUM_PROFILE.json is a newly authored, task-scoped identity and capability profile. It contains no private canonical files, personal user history, account access or remote tool authority. Names identify the interface/procedures; they do not establish independent workers or shared live ChatGPT memory.
 
 The optional model publisher may change weights under a named model repository. The application runtime is pinned, but this release does not claim immutable weight provenance or a measured reasoning benchmark. User-visible model identity and the bounded cited input are retained with each generated proposal.
+
+
+## Reel Factory 0.6.0 reuse
+
+Kept the existing Studio planner, research claim/source ledger, Pyodide/SQLite, IndexedDB and versioned backup path. Browser output uses standard Canvas captureStream, MediaRecorder and Web Audio rather than adding a new renderer dependency. The native local tool uses already installed Pillow and FFmpeg for typography, clip assembly, ASS/SRT captions and H.264/AAC MP4 output. Nothing installs or republishes those dependencies. System fonts are used locally but no font files are shared.
+
+Official implementation references inspected: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static ; https://www.w3.org/TR/mediacapture-fromelement/ ; https://www.ffmpeg.org/ffmpeg-filters.html . Codec support is probed, not assumed from the browser's name. An available codec can still fail due to resource limits.
+
+The factory examples are original text-card designs and authored wording. Their limited platform-feature description is a paraphrase linked to Meta's primary Trial Reels announcement. No creator footage, copyrighted music, unauthorised voice likeness or synthetic performance result was used. Test media and audio use generated patterns/tones and are not represented as real creative assets.
