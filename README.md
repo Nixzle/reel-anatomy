@@ -1,3 +1,24 @@
+# Reel Anatomy 1.0 release candidate
+
+Live application: https://nixzle.github.io/reel-anatomy/
+
+This candidate continues the original researched-Reel product. It does not relabel the remaining original requirements as complete. Stable 1.0 qualification remains false in `standalone/RELEASE_TARGET.json` until its required evidence is recorded.
+
+## New in the candidate
+
+- A readable Start workflow and phone workspace selector.
+- Local PDF page extraction and original-page inspection, plus saved-HTML article reading. Scanned/empty pages and extraction limitations stay visible.
+- Explicit full-text reading through Wikipedia and Europe PMC open-access article APIs. A returned text is unreviewed, not a fact-check certificate.
+- Portable project packs containing library metadata and optionally original media/documents and historical rendered videos. Verification precedes a single IndexedDB commit; prior editorial approval is not resurrected by a restore.
+- Actual completed renders can be registered idempotently as our drafts for prospective Results tracking. No upload, publication or fabricated analytics occurs.
+- Private-content-free diagnostics, update instructions and explicit stable-release qualification gates.
+
+No model weights, installer, paid service or account connection is activated by this build. This is the browser application, not a new Windows installer. Existing Windows v0.2.0 and the qualified Sanctum native rendering tool remain available and unchanged.
+
+See `standalone/READINESS.md`, `standalone/RELEASE_TARGET.json` and the retained verification record for current limits. Source should be built from a reviewed clean commit, with public asset hashes checked after deployment.
+
+## Earlier release history
+
 # Reel Anatomy: researched Reel production
 
 **Live app:** https://nixzle.github.io/reel-anatomy/ . Open **Reel Factory** for original three-opening campaigns, evidence/rights checks and actual portrait video exports. The 0.6.0 release is verified; details and limits are in standalone/FACTORY_RELEASE.md and standalone/FACTORY_VERIFICATION.json. Virality is not guaranteed. The private Sanctum has a separately qualified local production binding; the stable Windows v0.2.0 release is unchanged.

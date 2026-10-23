@@ -7,9 +7,10 @@ from embedded_core import parse_captions, classify, validate_metrics, validate_i
 from embedded_csv import csv_import
 import research_engine
 import factory_engine
+import release_services
 ROOT=Path('/reel-local')
 ROOT.mkdir(exist_ok=True)
-VERSION='0.6.0-factory'
+VERSION='1.0.0-rc.1'
 
 def restore(snapshot):
     for f in ROOT.iterdir():
@@ -162,6 +163,10 @@ def import_research(s,d):
 def dispatch(s,path,method,d):
     u=urlparse(path);path=u.path;q=parse_qs(u.query);arg=lambda k,default='':q.get(k,[default])[0]
     workspace=arg('workspace','default')
+    if path=='/api/release/register-render' and method=='POST':
+        return release_services.register_render(s,d,asset_save)
+    if path=='/api/documents/import' and method=='POST':
+        return release_services.import_document(s,d)
     if path.startswith('/api/factory/'):
         return factory_engine.route(s,path,method,d,q)
     if path.startswith('/api/research/'):

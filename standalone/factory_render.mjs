@@ -103,6 +103,7 @@ export async function renderReel(p,getBlob,{width=720,signal,onProgress,canvas:p
   const stop=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();};
   try{
     media=await loadAssets(p,getBlob);
+    if(signal?.aborted||document.hidden)throw Error('Export cancelled or backgrounded before recording. No completed file was saved.');
     drawFrame(canvas,p,0,media);
     stream=canvas.captureStream(30);
     if(p.variant.narration){
@@ -113,6 +114,7 @@ export async function renderReel(p,getBlob,{width=720,signal,onProgress,canvas:p
       const decoded=await audioCtx.decodeAudioData(bytes);source=audioCtx.createBufferSource();source.buffer=decoded;
       const destination=audioCtx.createMediaStreamDestination();source.connect(destination);destination.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
     }
+    if(signal?.aborted||document.hidden)throw Error('Export cancelled or backgrounded before recording. No completed file was saved.');
     recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:width===1080?8000000:width===720?5000000:1600000,audioBitsPerSecond:192000});
     recorder.ondataavailable=event=>{if(event.data.size)chunks.push(event.data);};
     recorder.onerror=event=>{recordingError=event.error||Error('The encoder failed.');stop();finish();};recorder.onstop=()=>finish();

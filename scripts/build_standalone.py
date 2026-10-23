@@ -2,20 +2,29 @@
 import ast,hashlib,json,re,shutil,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1];out=root/'phone-dist';out.mkdir(exist_ok=True)
+release=json.loads((root/'standalone/RELEASE_TARGET.json').read_text())
+from check_release_gate import assess
+assert assess(release)['passed'],'Release identity contradicts acceptance status'
 for name in ('web','python','runtime','vendor','icons'):(out/name).mkdir(exist_ok=True)
 for name in ('style.css','studio.css','app.js','studio.js'):
     shutil.copy2(root/'web'/name,out/'web'/name)
 for f in (root/'web/icons').glob('*.png'):shutil.copy2(f,out/'icons'/f.name)
 model_pin=json.loads((root/'standalone/MODEL_RUNTIME_PIN.json').read_text())
 assert hashlib.sha256((root/'standalone'/model_pin['file']).read_bytes()).hexdigest()==model_pin['sha256'],'Model runtime source changed'
-for f in (root/'standalone/vendor').iterdir():shutil.copy2(f,out/'vendor'/f.name)
+for donor in json.loads((root/'standalone/DOCUMENT_RUNTIME_PINS.json').read_text()):
+    for item in donor['files']:
+        assert hashlib.sha256((root/'standalone'/item['path']).read_bytes()).hexdigest()==item['sha256'],'Document donor hash changed: '+item['path']
+for f in (root/'standalone/vendor').rglob('*'):
+    if f.is_file():
+        dest=out/'vendor'/f.relative_to(root/'standalone/vendor');dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(f,dest)
 pins=json.loads((root/'standalone/RUNTIME_PINS.json').read_text(encoding='utf-8'))
 for item in pins:
     f=root/'.local/standalone-v040/runtime'/item['name']
     assert f.stat().st_size==item['bytes'] and hashlib.sha256(f.read_bytes()).hexdigest()==item['sha256'],'Runtime changed: '+f.name
     shutil.copy2(f,out/'runtime'/f.name)
-for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css'):shutil.copy2(root/'standalone'/name,out/name)
+for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css','document_tools.mjs','article_reader.mjs','pack_worker.mjs','project_pack.mjs','release_desk.mjs','release_desk.css','RELEASE_TARGET.json'):shutil.copy2(root/'standalone'/name,out/name)
 shutil.copy2(root/'standalone/backend.py',out/'python/backend.py')
+shutil.copy2(root/'standalone/release_services.py',out/'python/release_services.py')
 shutil.copy2(root/'standalone/research_engine.py',out/'python/research_engine.py')
 shutil.copy2(root/'standalone/factory_engine.py',out/'python/factory_engine.py')
 store_source=(root/'studio_store.py').read_text(encoding='utf-8')
@@ -31,7 +40,7 @@ source=(root/'studio_api.py').read_text(encoding='utf-8');node=next(n for n in a
 html=(root/'web/index.html').read_text(encoding='utf-8')
 html=re.sub(r'  <script src="/web/[^"\n]+"></script>\n','',html)
 html=html.replace('href="/','href="./').replace('href="./web/mobile.css"','href="./phone.css"')
-html=html.replace('CREATIVE INTELLIGENCE / PRODUCTION STUDIO','ON-DEVICE RESEARCH / FILMING STUDIO').replace('<span class="version">02</span>','<span class="version">06</span>')
+html=html.replace('CREATIVE INTELLIGENCE / PRODUCTION STUDIO','ON-DEVICE RESEARCH / FILMING STUDIO').replace('<span class="version">02</span>','<span class="version">1.0 RC</span>')
 html=html.replace('Video stays on this computer.','Video stays on this device.').replace('Max 200 MB','Max 100 MB on this device')
 html=html.replace('Processing is local. The durable queue continues while the app runs.','Processing stays on this device. Keep the app visible while inspecting videos.')
 html=html.replace('If local speech recognition is installed, this can be blank.','Automatic speech recognition is not included in this phone edition. Import SRT/VTT or desktop analysis JSON.')
@@ -52,6 +61,10 @@ html=html.replace('</head>','<link rel="stylesheet" href="./sanctum.css"><link r
 html=html.replace('<button data-studio-tab="create">Studio</button>', '<button data-studio-tab="create">Studio</button><button data-studio-tab="factory">Reel Factory</button>')
 html=html.replace('        <section id="studio-library"',(root/'standalone/factory.html').read_text(encoding='utf-8')+'\n        <section id="studio-library"',1)
 html=html.replace("connect-src \'self\';", "connect-src \'self\' https://api.crossref.org https://en.wikipedia.org https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com;")
+html=html.replace('<button data-studio-tab="sanctum">','<button data-studio-tab="home">Start</button><button data-studio-tab="sanctum">')
+html=html.replace('        <section id="studio-library"',(root/'standalone/release_desk.html').read_text(encoding='utf-8')+'\n        <section id="studio-library"',1)
+html=html.replace('</head>','<link rel="stylesheet" href="./release_desk.css"></head>')
+html=html.replace('https://api.crossref.org ', 'https://api.crossref.org https://www.ebi.ac.uk ')
 (out/'index.html').write_text(html,encoding='utf-8')
 js=(out/'web/app.js').read_text(encoding='utf-8')
 a=js.index('async function api(path, options) {');b=js.index('async function loadLibrary()',a)
@@ -68,7 +81,8 @@ js=js.replace('No local transcription package detected. Upload SRT/VTT or paste 
 js+='\nwindow.PhoneLocal.current=()=>current;\n'
 (out/'web/app.js').write_text(js,encoding='utf-8')
 js=(out/'web/studio.js').read_text(encoding='utf-8').replace('200*1024*1024','100*1024*1024').replace('200 MB','100 MB')
-js=js.replace('["library","patterns","create","results","settings"]','["library","patterns","create","results","settings","sanctum","factory"]')
+js=js.replace('["library","patterns","create","results","settings"]','["library","patterns","create","results","settings","sanctum","factory","home"]')
+js=js.replace('function show(tab){','function show(tab){document.body.dataset.view=tab;')
 js=js.replace('initStudio().catch(', 'window.StudioUI.ready=initStudio().catch(')
 # Desktop semantic controls remain unavailable on the phone; Ultron has a separate opt-in local text model.
 js=js.replace('data-deep=', 'disabled title="Automatic semantic analysis requires the desktop edition" data-deep=')
@@ -80,11 +94,39 @@ shutil.copy2(root/'LICENSE',out/'LICENSE')
 (out/'examples').mkdir(exist_ok=True)
 for name in ('reel-factory-A-draft.mp4','reel-factory-B-draft.mp4','reel-factory-C-draft.mp4','demo-captions.srt','demo-package.json','demo-render-receipt.json','README.md'):
     shutil.copy2(root/'standalone/examples'/name,out/'examples'/name)
-for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json','MODEL_RUNTIME_PIN.json','FACTORY.md'):
+for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json','MODEL_RUNTIME_PIN.json','DOCUMENT_RUNTIME_PINS.json','FACTORY.md'):
     if (root/'standalone'/name).exists():shutil.copy2(root/'standalone'/name,out/name)
 files=sorted(str(f.relative_to(out)).replace('\\','/') for f in out.rglob('*') if f.is_file() and f.name not in ('sw.js','BUILD.json'))
 version=hashlib.sha256(''.join(hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files).encode()).hexdigest()[:16]
-sw="const CACHE='reel-phone-"+version+"';\nconst ASSETS="+json.dumps(['./']+['./'+f for f in files if f not in ('vendor/webllm.mjs','model-worker.mjs')])+";\n"+"self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const name of await caches.keys())if(name.startsWith('reel-phone-')&&name!==CACHE)await caches.delete(name);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin||u.pathname.includes('/api/'))return;event.respondWith((async()=>{const c=await caches.open(CACHE);const hit=await c.match(event.request,{ignoreSearch:true});if(hit)return hit;return fetch(event.request);})());});\n"
+source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+expected={f:hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files}
+cache_assets=['./','./BUILD.json']+['./'+f for f in files if f not in ('vendor/webllm.mjs','model-worker.mjs')]
+sw="const CACHE="+json.dumps('reel-phone-'+version+'-'+source_commit[:12])+";\nconst BUILD="+json.dumps(version)+";\nconst SOURCE="+json.dumps(source_commit)+";\nconst EXPECTED="+json.dumps(expected)+";\nconst ASSETS="+json.dumps(cache_assets)+";\n"+r"""
+const hex=b=>Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');
+self.addEventListener('install',event=>event.waitUntil((async()=>{
+ const cache=await caches.open(CACHE);
+ try{
+  for(const path of ASSETS){
+   const request=new Request(new URL(path,self.registration.scope),{cache:'no-store',credentials:'same-origin'});
+   const response=await fetch(request);if(!response.ok)throw Error('Application asset unavailable: '+path);
+   const data=await response.clone().arrayBuffer();const relative=path==='./'?'index.html':path.slice(2);
+   if(relative==='BUILD.json'){
+    const manifest=JSON.parse(new TextDecoder().decode(data));if(manifest.build!==BUILD||manifest.source_commit!==SOURCE)throw Error('Application build manifest changed during installation.');
+   }else if(!EXPECTED[relative]||hex(await crypto.subtle.digest('SHA-256',data))!==EXPECTED[relative])throw Error('Application asset failed its build checksum: '+relative);
+   await cache.put(request,response);
+  }
+ }catch(error){await caches.delete(CACHE);throw error;}
+})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+ for(const name of await caches.keys())if(name.startsWith('reel-phone-')&&name!==CACHE)await caches.delete(name);
+ await self.clients.claim();
+})()));
+self.addEventListener('fetch',event=>{
+ const u=new URL(event.request.url);
+ if(event.request.method!=='GET'||u.origin!==self.location.origin||u.pathname.includes('/api/'))return;
+ event.respondWith((async()=>{const cache=await caches.open(CACHE);const saved=await cache.match(event.request,{ignoreSearch:true});return saved||fetch(event.request);})());
+});
+"""
 (out/'sw.js').write_text(sw,encoding='utf-8')
-(out/'BUILD.json').write_text(json.dumps({'version':'0.6.0-factory','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True).strip()),'build':version,'files':{f:hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files}},indent=2),encoding='utf-8')
+(out/'BUILD.json').write_text(json.dumps({'version':release['candidate'],'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True).strip()),'build':version,'files':{f:hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files}},indent=2),encoding='utf-8')
 print('STANDALONE_BUILD',len(files),'files',sum(f.stat().st_size for f in out.rglob('*') if f.is_file()),'bytes',version)
