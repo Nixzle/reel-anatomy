@@ -1,6 +1,15 @@
 {
   "edition": "0.4.0-phone",
-  "status": "local acceptance passed; publication not yet performed",
+  "published": true,
+  "url": "https://nixzle.github.io/reel-anatomy/",
+  "build": "fe74032a5f637b18",
+  "source_commit": "00017cbd5ea15a3e26db6703e0b7fbad07ebaa70",
+  "static_publication_commit": "b892394a7887e1e026deec7bd15907a55977485a",
+  "verified_at": "2026-10-23T00:19:13.703051+00:00",
+  "public_file_hashes_verified": 33,
+  "live_browser_checks": 32,
+  "desktop_studio_regression_checks": 19,
+  "frontend_checks": 11,
   "checks": [
     {
       "name": "Python/SQLite studio boots in a phone-width browser with no server API",
@@ -138,12 +147,18 @@
       "detail": true
     }
   ],
-  "evidence_scope": "Synthetic media and metrics; real Pyodide/SQLite runtime in isolated Chrome at 390px, tested under a URL subpath. Not physical Safari or iPhone testing.",
-  "network_contract": "Static same-origin GET requests only, no data-server API, relay, pairing or video upload.",
-  "limits": [
-    "Automatic transcription and learned semantic models are not in this phone edition.",
-    "Cross-device exchange uses explicit JSON files, not automatic sync.",
-    "Browser storage can be cleared or evicted; export important work.",
-    "Actual iPhone installation and representative large-corpus throughput remain unverified."
-  ]
+  "privacy": "Only static same-origin GET network requests observed. Research, videos and metrics stayed in browser IndexedDB. No relay, cookie-session service or desktop connection.",
+  "donors": [
+    "Pyodide pinned runtime and SQLite",
+    "idb-keyval 6.2.2",
+    "existing Reel Anatomy Python Store and production interface"
+  ],
+  "limitations": [
+    "Real iPhone/Safari installation and codec behaviour have not been physically tested.",
+    "Phone transcription and learned semantic models are not included. Import SRT/VTT or Windows analysis JSON.",
+    "File exchange is explicit; automatic cross-device synchronisation is not included.",
+    "Backups exclude original media. Browser storage can be evicted.",
+    "Generated fixtures validate workflow, not real campaign uplift or massive-corpus performance."
+  ],
+  "prior_denials": "The denied Cloudflare relay operations were not repeated or redirected. The relay candidate remains undeployed."
 }
