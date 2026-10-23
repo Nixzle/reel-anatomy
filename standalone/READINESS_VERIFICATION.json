@@ -468,5 +468,21 @@
     "zip_crc_passed": true,
     "manifest_entries_matched": 70,
     "stable_qualified": false
+  },
+  "github_prerelease": {
+    "tag": "v1.0.0-rc.1",
+    "url": "https://github.com/Nixzle/reel-anatomy/releases/tag/v1.0.0-rc.1",
+    "state": "published-prerelease-verified",
+    "is_prerelease": true,
+    "source_commit": "f66e5d4d8c1aea07a690916050a42e8279a2f464",
+    "archive": "ReelAnatomy-Web-1.0.0-rc.1.zip",
+    "sha256": "b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7",
+    "bytes": 9634797,
+    "manifest_files": 70,
+    "stable_qualified": false,
+    "archive_url": "https://github.com/Nixzle/reel-anatomy/releases/download/v1.0.0-rc.1/ReelAnatomy-Web-1.0.0-rc.1.zip",
+    "public_download_verified": true,
+    "previous_latest_stable_preserved": "v0.2.0",
+    "checked_at": "2026-10-23T10:58:42.775074+00:00"
   }
 }

@@ -44,3 +44,10 @@ Save edits before updating. Close all old Reel Anatomy tabs and reopen when an u
 The web bundle `ReelAnatomy-Web-1.0.0-rc.1.zip` contains only public application files, licensed runtime notices and original examples. Its SHA-256 is `b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7` (9634797 bytes). It contains no private library, model weights or font files. Serve it from HTTPS or local loopback; direct file:// launch is not supported. The candidate release is marked prerelease and does not replace the stable Windows download.
 
 Exact checks and limits are recorded in READINESS_VERIFICATION.json, READINESS.md and RELEASE_TARGET.json. The continuing owner remains Ultron Prime; no unattended iteration or background completion is implied by this record.
+
+
+## Published prerelease download verified
+
+https://github.com/Nixzle/reel-anatomy/releases/tag/v1.0.0-rc.1
+
+The prerelease was published, then the public ZIP was downloaded without authentication and checked against SHA-256 `b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7`. Its 70 manifest files and ZIP integrity had also been verified from the uploaded draft asset. The prior latest stable release remains `v0.2.0`. This publication does not close the open 1.0 acceptance gates.

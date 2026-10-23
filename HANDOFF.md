@@ -99,3 +99,8 @@ At this checkpoint the focused browser suite passed real PDF/HTML ingestion, ren
 Published build ddaded4d5868ed1d from clean implementation f66e5d4d8c1aea07a690916050a42e8279a2f464 at Pages commit bbb815ffe64acf0b713e87c40b1b60e760662bae. All 70 assets plus the service worker hash-match. Public acceptance: 31 readiness/Factory workflow checks, 51 Sanctum regressions and actual Wikipedia/Europe PMC article retrieval. Local contracts: 160 Python, 51 JS and 19 desktop Studio browser checks. The qualified native factory pins remain unchanged. Exact receipts are retained in .local/v1-readiness-20261023 and public READINESS_VERIFICATION.json.
 
 This remains a candidate: stable promotion is explicitly refused while model, physical iPhone, authorised platforms, sync and empirical outcome gates remain open. Full ownership/acceptance is preserved in RELEASE_TARGET.json. Do not claim all of deep research or the originally requested complete product is finished. No new installer, model weight download, paid fallback or social publication occurred. Developer bundle SHA-256: b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7.
+
+
+### Candidate downloadable release verified
+
+GitHub prerelease v1.0.0-rc.1 is public at https://github.com/Nixzle/reel-anatomy/releases/tag/v1.0.0-rc.1. The public ZIP was downloaded and SHA-256 checked: b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7. Tag points to implementation f66e5d4d8c1aea07a690916050a42e8279a2f464; site and downloadable bytes are separately verified. Stable Windows v0.2.0 remains latest. No released asset was replaced. Source worktree is clean after this receipt commit.
