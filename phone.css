@@ -1,0 +1,8 @@
+/* Standalone touch and safe-area layer, no pairing screen or relay controls. */
+:root{--phone-safe-top:env(safe-area-inset-top,0px);--phone-safe-bottom:env(safe-area-inset-bottom,0px)}
+body{padding-top:var(--phone-safe-top);padding-bottom:calc(var(--phone-safe-bottom) + 18px)}
+.topbar{top:var(--phone-safe-top)}.sidebar{top:calc(72px + var(--phone-safe-top));height:calc(100dvh - 72px - var(--phone-safe-top))}
+button,input,select,.file-mini{min-height:44px}.studio-pane input,.studio-pane select,.studio-pane textarea{font-size:16px}
+#boot{position:fixed;inset:0;z-index:200;background:var(--paper);display:grid;place-items:center;padding:26px}#boot>div{max-width:520px}#boot h1{font:500 50px/1.1 var(--serif);letter-spacing:-.04em}#boot p{line-height:1.7}
+#install-dialog p{font:16px/1.6 var(--sans)}.toast{bottom:calc(22px + var(--phone-safe-bottom))}dialog{scroll-padding-bottom:40px}.phone-summary{padding:14px;background:var(--cream)}
+@media(max-width:680px){.topbar{gap:8px}.topbar #system-status{display:none}.topbar .header-right{min-width:0;width:10px}.topbar #install-phone{margin-left:auto}.sidebar{position:static;height:auto}.workspace-tabs{position:sticky;top:calc(58px + var(--phone-safe-top));z-index:12}.studio-pane{padding-bottom:calc(50px + var(--phone-safe-bottom))}.form-grid input,.form-grid select{min-height:46px}.actions{gap:12px}.primary-button{min-height:46px}.post-dialog{max-height:calc(95dvh - var(--phone-safe-top) - var(--phone-safe-bottom));padding-bottom:30px}.topbar .brand{gap:7px}.brand-name{font-size:12px}.pattern-numbers{font-size:30px}}
