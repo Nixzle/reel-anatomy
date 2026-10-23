@@ -9,9 +9,9 @@
   const dataOf=form=>Object.fromEntries(new FormData(form).entries());
   const links=post=>post.source_url?'<a href="'+esc(post.source_url)+'" target="_blank" rel="noopener noreferrer">Source ↗</a>':"No source link";
   function on(id,event,fn){el(id).addEventListener(event,async ev=>{try{await fn(ev);}catch(error){notice(error.message);const form=ev.target.closest?.("form");if(form){let box=form.querySelector(".form-error");if(!box){box=document.createElement("p");box.className="small-note inline-error form-error";box.setAttribute("role","alert");form.append(box);}box.textContent=error.message;}}});}
-  function show(tab){
+  function show(tab){document.body.dataset.view=tab;
     S.activeTab=tab;
-    for(const name of ["library","patterns","create","results","settings","sanctum","factory"])el("studio-"+name).hidden=tab!==name;
+    for(const name of ["library","patterns","create","results","settings","sanctum","factory","home"])el("studio-"+name).hidden=tab!==name;
     el("start-view").hidden=tab!=="breakdown"||Boolean(current);
     el("analysis-view").hidden=tab!=="breakdown"||!current;
     document.querySelectorAll("[data-studio-tab]").forEach(b=>{b.classList.toggle("selected",b.dataset.studioTab===tab);b.setAttribute("aria-current",b.dataset.studioTab===tab?"page":"false");});

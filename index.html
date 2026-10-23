@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://api.crossref.org https://en.wikipedia.org https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; object-src 'none'; base-uri 'self'; form-action 'none'"><meta name="theme-color" content="#eceae4">
+  <meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://api.crossref.org https://www.ebi.ac.uk https://en.wikipedia.org https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; object-src 'none'; base-uri 'self'; form-action 'none'"><meta name="theme-color" content="#eceae4">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icons/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="./web/style.css">
   <link rel="stylesheet" href="./web/studio.css">
   <link rel="stylesheet" href="./phone.css">
-<link rel="icon" href="./icons/icon-192.png"><link rel="stylesheet" href="./sanctum.css"><link rel="stylesheet" href="./factory.css"></head>
+<link rel="icon" href="./icons/icon-192.png"><link rel="stylesheet" href="./sanctum.css"><link rel="stylesheet" href="./factory.css"><link rel="stylesheet" href="./release_desk.css"></head>
 <body>
   <div class="shell">
     <header class="topbar">
@@ -21,7 +21,7 @@
         <div class="brand-mark"><span></span><span></span><span></span></div>
         <div class="brand-name">REEL <strong>ANATOMY</strong></div>
       </div>
-      <div class="top-center">ON-DEVICE RESEARCH / FILMING STUDIO <span class="version">06</span></div>
+      <div class="top-center">ON-DEVICE RESEARCH / FILMING STUDIO <span class="version">1.0 RC</span></div>
       <button id="install-phone" class="outline-button">Install</button><div class="header-right"><span class="live-dot"></span><span id="system-status">Checking local engine</span></div>
     </header>
     <div class="workspace">
@@ -41,7 +41,7 @@
       </aside>
       <main class="main">
         <nav class="workspace-tabs" aria-label="Research workflow">
-          <button data-studio-tab="sanctum">Sanctum</button><button data-studio-tab="library">Library</button><button data-studio-tab="breakdown" class="selected">Breakdown</button><button data-studio-tab="patterns">Patterns</button><button data-studio-tab="create">Studio</button><button data-studio-tab="factory">Reel Factory</button><button data-studio-tab="results">Results</button><button data-studio-tab="settings" class="settings-tab">Settings</button>
+          <button data-studio-tab="home">Start</button><button data-studio-tab="sanctum">Sanctum</button><button data-studio-tab="library">Library</button><button data-studio-tab="breakdown" class="selected">Breakdown</button><button data-studio-tab="patterns">Patterns</button><button data-studio-tab="create">Studio</button><button data-studio-tab="factory">Reel Factory</button><button data-studio-tab="results">Results</button><button data-studio-tab="settings" class="settings-tab">Settings</button>
         </nav>
         <div class="research-bar"><label>RESEARCH PROJECT <select id="research-select" aria-label="Research project"></select></label><button id="new-research" class="outline-button">New project</button><span id="research-context"></span></div>
 <section id="studio-sanctum" class="studio-pane sanctum-pane" hidden>
@@ -100,6 +100,14 @@
   <div id="factory-outputs"></div>
  </section>
 </section>
+
+<section id="studio-home" class="studio-pane" hidden>
+ <div class="studio-heading"><span class="kicker">REEL ANATOMY / SANCTUM</span><h1>Research.<br><em>Make. Measure.</em></h1><p>From source evidence to an original edit, with the decisions and results kept together.</p></div>
+ <div class="workflow-grid"><button class="workflow-card" data-go="sanctum"><span>01 / UNDERSTAND</span><strong>Build the evidence.</strong><p>Read sources, compare claims and ask Ultron what the evidence supports.</p></button><button class="workflow-card" data-go="create"><span>02 / PLAN</span><strong>Write our next post.</strong><p>Save the promise, proof, script and the one thing we intend to test.</p></button><button class="workflow-card" data-go="factory"><span>03 / MAKE</span><strong>Produce the variants.</strong><p>Assemble our footage and narration into original, source-linked edits.</p></button><button class="workflow-card" data-go="results"><span>04 / LEARN</span><strong>Record what happened.</strong><p>Track the actual post against our hypothesis. Missing results remain unknown.</p></button></div>
+ <div class="studio-card"><div class="section-top"><h3>Keep your work recoverable.</h3><button class="outline-button" data-go="settings">Project packs & diagnostics</button></div><p>Research stays on this device. A project pack carries the library and selected original media together; there is no automatic cloud sync.</p><p class="small-note">This is a <strong>1.0 release candidate</strong>. Physical iPhone export, actual model reasoning quality, platform connections and real campaign outcomes remain separate qualification gates.</p></div>
+ <div class="studio-card"><h3>Production is not a promise of distribution.</h3><p>Evidence, current sources and deliberate tests are useful. Guaranteed virality is not a capability this app claims.</p><span id="home-build" class="kicker">Loading build identity…</span></div>
+</section>
+<dialog id="document-viewer" class="post-dialog"><div class="section-top"><h2 id="document-title">Original PDF page</h2><button id="document-close" class="outline-button">Close</button></div><div class="actions"><button id="document-prev" class="outline-button">Previous page</button><label>Page <input id="document-page" type="number" min="1" value="1" style="width:80px"></label><button id="document-next" class="outline-button">Next page</button></div><p id="document-page-status" role="status"></p><canvas id="document-canvas" aria-label="Rendered original PDF page" style="width:100%;height:auto"></canvas><p class="small-note">Inspect the original layout. Extracted text can miss tables, equations and image-only content. Rendering a page does not mean a model has understood it.</p></dialog>
 
         <section id="studio-library" class="studio-pane" hidden>
           <div class="studio-heading"><span class="kicker">01 / RESEARCH LIBRARY</span><h1>Find the pattern.<br><em>Keep the evidence.</em></h1><p>Collect relevant videos, not just winners. Keep source footage, observed results and your own experiments separate.</p></div>

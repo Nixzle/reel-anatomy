@@ -43,3 +43,10 @@ Kept the existing Studio planner, research claim/source ledger, Pyodide/SQLite, 
 Official implementation references inspected: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static ; https://www.w3.org/TR/mediacapture-fromelement/ ; https://www.ffmpeg.org/ffmpeg-filters.html . Codec support is probed, not assumed from the browser's name. An available codec can still fail due to resource limits.
 
 The factory examples are original text-card designs and authored wording. Their limited platform-feature description is a paraphrase linked to Meta's primary Trial Reels announcement. No creator footage, copyrighted music, unauthorised voice likeness or synthetic performance result was used. Test media and audio use generated patterns/tones and are not represented as real creative assets.
+
+
+## 1.0 candidate document and transfer donors
+
+Unmodified npm packages are pinned by distribution integrity and individual-file hashes in DOCUMENT_RUNTIME_PINS.json: Mozilla pdfjs-dist 6.4.299 (Apache-2.0), @mozilla/readability 0.6.0 (Apache-2.0), and fflate 0.8.3 (MIT). PDF.js uses its display/worker layer. Readability is not a sanitizer; original HTML is stripped in an inert template and only extracted text enters source records. Archive decoding uses a restrictive stored-entry format validated before the library runs. Version 0.8.3 is retained rather than the older ZIP64-affected 0.8.2 line. No package installer or model download was run.
+
+Primary references: https://mozilla.github.io/pdf.js/getting_started/ ; https://github.com/mozilla/readability ; https://github.com/101arrowz/fflate/releases/tag/v0.8.3 ; https://europepmc.org/RestfulWebService . The public app includes the required donor notices but no font files. Reuse was reviewed in this implementation session; no independent worker review is implied.
