@@ -2,9 +2,9 @@
 
 **Phone/browser app:** https://nixzle.github.io/reel-anatomy/
 
-The 0.5.0 phone candidate adds project-scoped sources, indexed search, explicit Crossref/Wikipedia discovery, claim/counterevidence links, revision-aware citations, an embedded Ultron evidence interface and an optional local WebLLM text model. Default evidence mode is labelled retrieval, not generative AI. The on-device model requires a separate explicit download and compatible hardware; real model quality has not been qualified. See standalone/ACCEPTANCE.md and standalone/DONORS.md for exact capabilities and boundaries.
+The published 0.5.0 phone edition adds project-scoped sources, indexed search, explicit Crossref/Wikipedia discovery, claim/counterevidence links, revision-aware citations, an embedded Ultron evidence interface and an optional local WebLLM text model. Default evidence mode is labelled retrieval, not generative AI. The on-device model requires a separate explicit download and compatible hardware; real model quality has not been qualified. See standalone/ACCEPTANCE.md and standalone/DONORS.md for exact capabilities and boundaries.
 
-The original Windows release and video production workflow remain below. Public deployment verification for this candidate is retained separately, not inferred from these descriptions.
+The original Windows release and video production workflow remain below. Exact public deployment and verification are retained in standalone/SANCTUM_RELEASE.md and standalone/SANCTUM_VERIFICATION.json.
 
 # Reel Anatomy Studio
 

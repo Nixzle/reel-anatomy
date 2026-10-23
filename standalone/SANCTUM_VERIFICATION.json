@@ -1,6 +1,6 @@
 {
   "version": "0.5.0-sanctum",
-  "published": false,
+  "published": true,
   "checked_at": "2026-10-23T00:59:03.172346+00:00",
   "tests": {
     "python": 120,
@@ -52,7 +52,7 @@
       "provider": "crossref",
       "ok": true,
       "count": 8,
-      "elapsed_ms": 1281,
+      "elapsed_ms": 1024,
       "sample": [
         {
           "title": "Information Diffusion in Social Media",
@@ -70,16 +70,16 @@
       "provider": "wikipedia",
       "ok": true,
       "count": 8,
-      "elapsed_ms": 1133,
+      "elapsed_ms": 1120,
       "sample": [
-        {
-          "title": "Misinformation",
-          "url": "https://en.wikipedia.org/wiki/Misinformation",
-          "coverage": "excerpt"
-        },
         {
           "title": "Stable Diffusion",
           "url": "https://en.wikipedia.org/wiki/Stable_Diffusion",
+          "coverage": "excerpt"
+        },
+        {
+          "title": "Diffusion equation",
+          "url": "https://en.wikipedia.org/wiki/Diffusion_equation",
           "coverage": "excerpt"
         }
       ]
@@ -88,7 +88,7 @@
   "scale_measurement": {
     "sources": 400,
     "matched": 1,
-    "write_ms": 2546,
+    "write_ms": 2603,
     "search_ms": 349,
     "scope": "Synthetic text sources, this browser profile and build host, not a phone performance claim."
   },
@@ -124,5 +124,232 @@
     "standalone/research_services.mjs": "2068f3ba95275f598d9b14ac68c337d4a7e70057da9be2293d501c5ae5afda5a",
     "standalone/sanctum.mjs": "c4b17595773e743fc97f877a452df519c60d378e3460ecaa31a85ad23f10bcd5",
     "standalone/phone.mjs": "2a4c99299a7be6b03e677444e65e80dfc060af70bb6ce3ff44b0bae476fe0df5"
-  }
+  },
+  "publication": {
+    "publication_commit": "1e083d72466a83979f46af072ac65fac6884598a",
+    "rollback_commit": "b892394a7887e1e026deec7bd15907a55977485a",
+    "source_commit": "2bd7414a11d737487f7c8d3a101d2066e04cdb13",
+    "build": "e38edc810e3c3a9a",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "push_confirmed": true,
+    "public_verified": true,
+    "line_endings": "Publication retains exact Windows build bytes. CR at EOL is accepted; other source whitespace checks remain enabled.",
+    "public_files": 42,
+    "service_worker_matched": true,
+    "checked_at": "2026-10-23T01:05:27.680638+00:00"
+  },
+  "public_browser_checks": 51,
+  "public_browser_checks_detail": [
+    {
+      "name": "Python/SQLite studio boots in a phone-width browser with no server API",
+      "detail": true
+    },
+    {
+      "name": "390px layout has no horizontal overflow",
+      "detail": true
+    },
+    {
+      "name": "capabilities do not claim an absent speech model",
+      "detail": {
+        "ok": true,
+        "version": "0.5.0-sanctum",
+        "ffmpeg": false,
+        "speech": false,
+        "local_only": true,
+        "phone": true
+      }
+    },
+    {
+      "name": "research project stores audience topic platform and goal",
+      "detail": true
+    },
+    {
+      "name": "Sanctum starts in project-scoped evidence mode without loading a model",
+      "detail": true
+    },
+    {
+      "name": "source editor retains excerpts provenance and stable citation IDs",
+      "detail": true
+    },
+    {
+      "name": "tracking URL duplicates do not inflate evidence counts",
+      "detail": true
+    },
+    {
+      "name": "supporting and opposing evidence remain on the same claim",
+      "detail": true
+    },
+    {
+      "name": "fabricated quotation cannot become a saved evidence link",
+      "detail": true
+    },
+    {
+      "name": "Ask Ultron returns traceable excerpts without pretending retrieval is generative AI",
+      "detail": true
+    },
+    {
+      "name": "assistant context and model input are inspectable before generation",
+      "detail": true
+    },
+    {
+      "name": "no model download occurs without explicit consent",
+      "detail": true
+    },
+    {
+      "name": "source revisions mark old claims and assistant citations stale",
+      "detail": true
+    },
+    {
+      "name": "CSV source text and titles cannot execute in the interface",
+      "detail": true
+    },
+    {
+      "name": "Cerebro produces an editable bounded search plan",
+      "detail": true
+    },
+    {
+      "name": "public search requires query-disclosure consent",
+      "detail": true
+    },
+    {
+      "name": "failed search records survive explicit resume without invented results",
+      "detail": true
+    },
+    {
+      "name": "discovered abstracts are saved as unreviewed excerpts not full papers",
+      "detail": true
+    },
+    {
+      "name": "assistant retrieval cannot read another research project",
+      "detail": true
+    },
+    {
+      "name": "research claims enter Studio as hypotheses rather than fabricated proof",
+      "detail": true
+    },
+    {
+      "name": "research dossier export is connected to saved evidence",
+      "detail": true
+    },
+    {
+      "name": "batch upload enters a paused durable queue",
+      "detail": true
+    },
+    {
+      "name": "identical media and matched subtitles reuse analysis without merging post records",
+      "detail": true
+    },
+    {
+      "name": "underscore subtitle filenames match and original timing is retained",
+      "detail": true
+    },
+    {
+      "name": "timed metrics retain provenance retention and unknown counts",
+      "detail": true
+    },
+    {
+      "name": "sparse evidence is not promoted to a winning formula",
+      "detail": true
+    },
+    {
+      "name": "pattern becomes an original five-beat brief with retained evidence limits",
+      "detail": true
+    },
+    {
+      "name": "script edits preserve prior revisions",
+      "detail": true
+    },
+    {
+      "name": "phone filming brief and Markdown export include evidence without executable scripts",
+      "detail": true
+    },
+    {
+      "name": "rough-cut review compares actual footage with the saved brief",
+      "detail": true
+    },
+    {
+      "name": "prospective test freezes the chosen script and hypothesis",
+      "detail": true
+    },
+    {
+      "name": "published observations and outcome review retain the original hypothesis",
+      "detail": true
+    },
+    {
+      "name": "no hidden language-model service or download",
+      "detail": true
+    },
+    {
+      "name": "all five studio screens fit a 390px viewport",
+      "detail": true
+    },
+    {
+      "name": "simulated Dynamic Island and home indicator do not cover controls",
+      "detail": true
+    },
+    {
+      "name": "library brief and outcome survive a browser restart",
+      "detail": true
+    },
+    {
+      "name": "portable backup includes analysis and scripts, not source video",
+      "detail": true
+    },
+    {
+      "name": "malformed backup is rejected without changing the committed library",
+      "detail": true
+    },
+    {
+      "name": "metadata backup restores the complete workspace",
+      "detail": true
+    },
+    {
+      "name": "library backups preserve sources claims runs and assistant history",
+      "detail": true
+    },
+    {
+      "name": "research JSON import creates a separate project without overwriting the original",
+      "detail": true
+    },
+    {
+      "name": "older desktop exports preserve unknown analysis instead of fabricating it",
+      "detail": true
+    },
+    {
+      "name": "duplicate analysis import never overwrites an existing editable asset",
+      "detail": true
+    },
+    {
+      "name": "backup rejects hostile DOM reference identities",
+      "detail": true
+    },
+    {
+      "name": "a separate browser user has no access to the first user library",
+      "detail": true
+    },
+    {
+      "name": "iPhone installation instructions are present",
+      "detail": true
+    },
+    {
+      "name": "entire Python studio and saved work reopen offline, not just a landing page",
+      "detail": true
+    },
+    {
+      "name": "Sanctum sources and evidence assistant remain usable offline",
+      "detail": true
+    },
+    {
+      "name": "saved script is editable offline",
+      "detail": true
+    },
+    {
+      "name": "no uncaught browser errors",
+      "detail": true
+    },
+    {
+      "name": "only static same-origin GET requests, no research upload or desktop relay",
+      "detail": true
+    }
+  ]
 }
