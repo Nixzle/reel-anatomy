@@ -1,6 +1,6 @@
 {
   "version": "0.6.0-factory",
-  "published": false,
+  "published": true,
   "checked_at": "2026-10-23T09:54:22.567762+00:00",
   "tests": {
     "python": 146,
@@ -77,10 +77,10 @@
     {
       "name": "actual downloaded portrait video decodes with audio and planned duration",
       "detail": {
-        "file": "reel-cb3d0d2b-A-reviewed.mp4",
+        "file": "reel-de30d13d-A-reviewed.mp4",
         "width": 720,
         "height": 1280,
-        "duration": "10.004300",
+        "duration": "10.016733",
         "mime": "video/mp4;codecs=avc1.420020,mp4a.40.2"
       }
     },
@@ -185,5 +185,62 @@
     "standalone/factory_engine.py": "240429018a01112aebab1955c84682bfabe9322697eac9472343defe310526e0",
     "standalone/factory_render.mjs": "3db79bd392b0cc6107e7545ebf6f558529578cec13f1a955ec6b8b59015dd448",
     "standalone/factory.mjs": "c419dd827130d1ab9e3d0a4a87ccef3991cf1040b472460dea0a2dcd104a5d30"
-  }
+  },
+  "publication": {
+    "rollback_commit": "1e083d72466a83979f46af072ac65fac6884598a",
+    "source_commit": "bc3b15ba504799f58068b7e1a0d2b40ae30e2859",
+    "build": "b3c0db4b47ec4896",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "published_files": 54,
+    "state": "verified-public",
+    "publication_commit": "524bc24086503920ec2ff7ccb658c457c28ca9b5",
+    "checked_at": "2026-10-23T10:00:35.773513+00:00",
+    "factory_browser_checks": 14,
+    "sanctum_browser_checks": 51
+  },
+  "canonical_binding": "Qualified local command with exact source pins, separately merged into private canonical Sanctum. No private contents published.",
+  "native_qualified_batch": [
+    {
+      "version": "0.6.0-factory",
+      "file": "reel-A-draft.mp4",
+      "sha256": "49042884f2dc853b8e0466eb56d6543d4298c9f466f23a86c923374c7f8e32b7",
+      "bytes": 124336,
+      "mode": "draft",
+      "package_hash": "c5d649b7879c862ca5cf4e9c0529676f3610181651f9d1be7ee9ef3a1a8675e2",
+      "width": 720,
+      "height": 1280,
+      "duration": 24.0,
+      "audio": false,
+      "status": "Rendered and probed locally; not published.",
+      "source_validity": "Evidence is checked against this frozen package. The app must recheck live source revisions before future exports."
+    },
+    {
+      "version": "0.6.0-factory",
+      "file": "reel-B-draft.mp4",
+      "sha256": "30ee483952f4c0093f75569802a5e44808ee1d7b9d0ae19d4ce27da1c6a4b938",
+      "bytes": 124960,
+      "mode": "draft",
+      "package_hash": "8d5c742475b4492d6d77b3fd5c9f2fc3103edb9a6b63330dd7f4a0e6c1ce2d6f",
+      "width": 720,
+      "height": 1280,
+      "duration": 24.0,
+      "audio": false,
+      "status": "Rendered and probed locally; not published.",
+      "source_validity": "Evidence is checked against this frozen package. The app must recheck live source revisions before future exports."
+    },
+    {
+      "version": "0.6.0-factory",
+      "file": "reel-C-draft.mp4",
+      "sha256": "94a11c3f26f2234b62f9bca14a9c613d72bb056eb13137f7eb30840b6c8703ae",
+      "bytes": 124851,
+      "mode": "draft",
+      "package_hash": "9fc38f6fb9ac1ad8c54f232d08b558e5958141ef91b462b1d3c759da43dbde61",
+      "width": 720,
+      "height": 1280,
+      "duration": 24.0,
+      "audio": false,
+      "status": "Rendered and probed locally; not published.",
+      "source_validity": "Evidence is checked against this frozen package. The app must recheck live source revisions before future exports."
+    }
+  ]
 }

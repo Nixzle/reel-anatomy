@@ -1,3 +1,7 @@
+# Reel Anatomy: researched Reel production
+
+**Live app:** https://nixzle.github.io/reel-anatomy/ . Open **Reel Factory** for original three-opening campaigns, evidence/rights checks and actual portrait video exports. The 0.6.0 release is verified; details and limits are in standalone/FACTORY_RELEASE.md and standalone/FACTORY_VERIFICATION.json. Virality is not guaranteed. The private Sanctum has a separately qualified local production binding; the stable Windows v0.2.0 release is unchanged.
+
 # Reel Factory in the Sanctum
 
 The 0.6.0 candidate adds actual portrait video production to the existing on-device research studio: three editable hook variants, evidence/rights review, local visuals and narration, caption overlays, native browser recording and a callable local Sanctum renderer. It exports videos, not merely filming plans. No virality guarantee or automatic publishing is claimed. See standalone/FACTORY.md for usage and limitations. This section is not proof of deployment; exact public verification is recorded separately.
