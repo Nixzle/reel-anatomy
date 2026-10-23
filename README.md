@@ -1,3 +1,7 @@
+# Reel Factory in the Sanctum
+
+The 0.6.0 candidate adds actual portrait video production to the existing on-device research studio: three editable hook variants, evidence/rights review, local visuals and narration, caption overlays, native browser recording and a callable local Sanctum renderer. It exports videos, not merely filming plans. No virality guarantee or automatic publishing is claimed. See standalone/FACTORY.md for usage and limitations. This section is not proof of deployment; exact public verification is recorded separately.
+
 # Reel Anatomy: Sanctum research edition
 
 **Phone/browser app:** https://nixzle.github.io/reel-anatomy/

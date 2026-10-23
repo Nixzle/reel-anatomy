@@ -26,3 +26,7 @@ mobile-dist/
 cloud/.wrangler/
 
 phone-dist/
+
+# Public, original caption-led factory examples only.
+!standalone/examples/reel-factory-*-draft.mp4
+!standalone/examples/demo-captions.srt

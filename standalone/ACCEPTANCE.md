@@ -40,3 +40,10 @@ Owner: Ultron Prime. Continue toward the original heavy social-media research ob
 - Cross-device work: file exchange remains explicit; no live synchronisation is claimed.
 - Independent review: the Council checklist is a procedure, not a multi-agent panel; no autonomous reviewers are invented.
 - Physical iPhone installation, Safari codec coverage and real campaign performance need direct evidence. Browser emulation and synthetic data do not close those gates.
+
+
+## Reel Factory 0.6.0 acceptance extension
+
+The same application gains evidence-bound three-opening campaigns, editable shot/media/audio assembly, actual local browser video exports, native package rendering, captions and source/test sidecars. Source/script/asset edits invalidate review; imported backups require fresh approval. Draft exports are visible as drafts; there is no guaranteed-virality label or automatic social post. See FACTORY.md for the exact distinction between production checks, human attestation, model quality and empirical outcomes.
+
+Tests must exercise an actual downloaded browser video with ffprobe, real audio presence, batch exports, cancellation without false completion, unchanged old workflows, byte-preserving browser-to-native package transfer, native MP4 output and the actual local Sanctum binding. The gate is not satisfied by a generated filename, a package-only test or unverified UI screenshots. Physical iPhone and content/performance acceptance remain distinct.

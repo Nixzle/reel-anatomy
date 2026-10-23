@@ -67,3 +67,14 @@ Owner: Ultron Prime. At this checkpoint the publication gate is still open: clea
 ### Sanctum 0.5.0 publication gate closed
 
 Live build e38edc810e3c3a9a is deployed from implementation 2bd7414a11d737487f7c8d3a101d2066e04cdb13 and public commit 1e083d72466a83979f46af072ac65fac6884598a. All 42 files plus the service worker hash-match. The HTTPS site passed 51 browser checks; both real public discovery connectors returned results; the synthetic 400-source storage/search probe passed. Source/contract gates: 120 Python tests, 17 research JS checks, 11 previous frontend checks and 19 desktop Studio browser checks. Detailed release boundaries and ongoing owner acceptance are in standalone/SANCTUM_RELEASE.md. No model weights, actual model inference, private memory/tools or physical-iPhone acceptance are implied. Source receipt logs remain in .local/sanctum-v050.
+
+
+## Reel Factory 0.6.0 iteration, 23 October 2026
+
+Owner request: make the project a Sanctum tool that produces researched Reels. Preserve honest uncertainty: guaranteed virality is not an acceptance claim. Implemented three-opening campaigns from existing briefs, source-bound assertion mapping, rights/timing/claim checks, exact-version human review, native browser visual/audio recording and batch variants, captions/source/test sidecars, and a local Python/Pillow/FFmpeg CLI. Private Sanctum binding has been prepared with direct argv and source-hash checks; qualification/promotion and publication remain separately tracked.
+
+An actual browser output exposed numeric JSON fingerprint drift at the native handoff (Python whole-number floats versus JavaScript numbers). Fixed by canonicalising whole-number floats inside factory fingerprints. Added exact roundtrip regressions and retained the failed original package. No validation was removed. Native and browser generation are separate exercised renderers, not assumed identical pixels.
+
+The output examples are original, silent 24-second caption-led drafts citing a primary Meta feature description; no human approval, synthetic voice or real campaign outcome is claimed. Public examples contain no private data or font files. Test output uses generated colour/motion/audio fixtures, explicitly not human review evidence. Exact receipts remain in .local/factory-v060 and .local/factory-browser-*.
+
+Release still requires clean source commit, full existing/research/factory checks, public byte/hash readback and live-browser exports. Keep Windows v0.2.0 and the denied relay unchanged. Physical iPhone/Safari export, large real media workloads, actual local-model reasoning, social connectors, cross-device sync and campaign uplift remain open with the original acceptance owners; factory implementation does not erase them.

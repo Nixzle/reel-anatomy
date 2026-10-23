@@ -102,6 +102,7 @@ async function start(){
   await loadScript('./web/app.js');await loadScript('./web/studio.js');
   await window.StudioUI.ready;
   const sanctum=await import('./sanctum.mjs');await sanctum.ready;
+  const factory=await import('./factory.mjs');await factory.ready;
   document.getElementById('boot').hidden=true;
   window.StudioUI.show('sanctum');
   bind('install-phone','click',()=>document.getElementById('install-dialog').showModal());
