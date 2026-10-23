@@ -1,0 +1,149 @@
+{
+  "edition": "0.4.0-phone",
+  "status": "local acceptance passed; publication not yet performed",
+  "checks": [
+    {
+      "name": "Python/SQLite studio boots in a phone-width browser with no server API",
+      "detail": true
+    },
+    {
+      "name": "390px layout has no horizontal overflow",
+      "detail": true
+    },
+    {
+      "name": "capabilities do not claim an absent speech model",
+      "detail": {
+        "ok": true,
+        "version": "0.4.0-phone",
+        "ffmpeg": false,
+        "speech": false,
+        "local_only": true,
+        "phone": true
+      }
+    },
+    {
+      "name": "research project stores audience topic platform and goal",
+      "detail": true
+    },
+    {
+      "name": "batch upload enters a paused durable queue",
+      "detail": true
+    },
+    {
+      "name": "identical media and matched subtitles reuse analysis without merging post records",
+      "detail": true
+    },
+    {
+      "name": "underscore subtitle filenames match and original timing is retained",
+      "detail": true
+    },
+    {
+      "name": "timed metrics retain provenance retention and unknown counts",
+      "detail": true
+    },
+    {
+      "name": "sparse evidence is not promoted to a winning formula",
+      "detail": true
+    },
+    {
+      "name": "pattern becomes an original five-beat brief with retained evidence limits",
+      "detail": true
+    },
+    {
+      "name": "script edits preserve prior revisions",
+      "detail": true
+    },
+    {
+      "name": "phone filming brief and Markdown export include evidence without executable scripts",
+      "detail": true
+    },
+    {
+      "name": "rough-cut review compares actual footage with the saved brief",
+      "detail": true
+    },
+    {
+      "name": "prospective test freezes the chosen script and hypothesis",
+      "detail": true
+    },
+    {
+      "name": "published observations and outcome review retain the original hypothesis",
+      "detail": true
+    },
+    {
+      "name": "no hidden language-model service or download",
+      "detail": true
+    },
+    {
+      "name": "all five studio screens fit a 390px viewport",
+      "detail": true
+    },
+    {
+      "name": "simulated Dynamic Island and home indicator do not cover controls",
+      "detail": true
+    },
+    {
+      "name": "library brief and outcome survive a browser restart",
+      "detail": true
+    },
+    {
+      "name": "portable backup includes analysis and scripts, not source video",
+      "detail": true
+    },
+    {
+      "name": "malformed backup is rejected without changing the committed library",
+      "detail": true
+    },
+    {
+      "name": "metadata backup restores the complete workspace",
+      "detail": true
+    },
+    {
+      "name": "research JSON import creates a separate project without overwriting the original",
+      "detail": true
+    },
+    {
+      "name": "older desktop exports preserve unknown analysis instead of fabricating it",
+      "detail": true
+    },
+    {
+      "name": "duplicate analysis import never overwrites an existing editable asset",
+      "detail": true
+    },
+    {
+      "name": "backup rejects hostile DOM reference identities",
+      "detail": true
+    },
+    {
+      "name": "a separate browser user has no access to the first user library",
+      "detail": true
+    },
+    {
+      "name": "iPhone installation instructions are present",
+      "detail": true
+    },
+    {
+      "name": "entire Python studio and saved work reopen offline, not just a landing page",
+      "detail": true
+    },
+    {
+      "name": "saved script is editable offline",
+      "detail": true
+    },
+    {
+      "name": "no uncaught browser errors",
+      "detail": true
+    },
+    {
+      "name": "only static same-origin GET requests, no research upload or desktop relay",
+      "detail": true
+    }
+  ],
+  "evidence_scope": "Synthetic media and metrics; real Pyodide/SQLite runtime in isolated Chrome at 390px, tested under a URL subpath. Not physical Safari or iPhone testing.",
+  "network_contract": "Static same-origin GET requests only, no data-server API, relay, pairing or video upload.",
+  "limits": [
+    "Automatic transcription and learned semantic models are not in this phone edition.",
+    "Cross-device exchange uses explicit JSON files, not automatic sync.",
+    "Browser storage can be cleared or evicted; export important work.",
+    "Actual iPhone installation and representative large-corpus throughput remain unverified."
+  ]
+}

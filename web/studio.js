@@ -64,22 +64,23 @@
     let count=0;el("queue-submit").disabled=true;
     try{for(const file of files){if(file.size>200*1024*1024)throw Error(file.name+" exceeds 200 MB.");const body=new FormData();body.append("video",file);body.append("metadata",JSON.stringify(metadata));body.append("transcript",captions.get(normalizedTitle(file.name))||"");await api("/api/studio/import",{method:"POST",body});count++;el("queue-upload-note").textContent=count+" of "+files.length+" accepted.";}notice(count+" videos entered the durable queue.");el("queue-files").value="";await pollJobs();}catch(e){el("queue-upload-note").textContent=count+" accepted; remaining files were not submitted. "+e.message;throw e;}finally{el("queue-submit").disabled=false;}
   }
-  async function openPost(id){
+  async function openPost(id,reveal=true){
+    const changed=S.post?.post?.id!==id;
     const data=await req("post?id="+encodeURIComponent(id));S.post=data;
     const p=data.post;el("post-dialog-title").textContent=p.title;
     const form=el("post-meta-form");for(const key of ["title","creator","cohort","collection","distribution","platform","format","source_url"])form.elements[key].value=p[key]||"";
     form.elements.published_at.value=p.published_at?localDate(p.published_at):"";form.elements.rights_confirmed.checked=p.rights_confirmed;
-    const snap=el("snapshot-form");snap.reset();snap.elements.observed_at.value=localDate();snap.elements.definition.value=p.platform==="other"?"manual_views":p.platform+"_views";
+    const snap=el("snapshot-form");if(changed||!snap.elements.observed_at.value){snap.reset();snap.elements.observed_at.value=localDate();snap.elements.definition.value=p.platform==="other"?"manual_views":p.platform+"_views";}
     el("post-snapshots").innerHTML=data.snapshots.length?'<h3>Observation history</h3>'+data.snapshots.map(x=>'<div class="snapshot-entry"><span class="pill">'+esc(x.window)+'</span>'+esc(x.definition)+' · '+esc(new Date(x.observed_at).toLocaleString())+'<br>'+esc(Object.entries(x.metrics).map(([k,v])=>k+": "+v).join(" · "))+'<br><span class="small-note">Source: '+esc(x.source)+' · supplied, not independently verified</span></div>').join(""):'<p class="small-note">No recorded observations.</p>';
     renderSemantic(data.semantic);
-    if(!el("post-dialog").open)el("post-dialog").showModal();
+    if(reveal&&!el("post-dialog").open)el("post-dialog").showModal();
   }
   function renderSemantic(a){
     if(!a){el("semantic-output").innerHTML='<p class="small-note">No learned analysis exists for this post. Rule-based labels in Breakdown are not a substitute for it.</p>';return;}
     el("semantic-output").innerHTML='<p class="small-note">'+esc(a.model)+' · '+a.coverage.speech_segments+' segments · '+a.coverage.sampled_frames+' sampled frames. Generated '+esc(new Date(a.generated_at).toLocaleString())+'</p><div class="limits-box">'+a.limits.map(x=>'<p>'+esc(x)+'</p>').join("")+'</div>'+a.summaries.map(x=>'<p>'+esc(x)+'</p>').join("")+
       a.segments.map(x=>'<div class="semantic-entry"><label><input class="semantic-check" type="checkbox" value="'+x.index+'"><span>'+timestamp(x.start)+' · '+esc(x.labels.join(" + "))+'<br>'+esc(x.reason)+'<br><small>Model-reported confidence: '+esc(x.confidence)+', not calibrated</small></span></label></div>').join("")+(a.segments.length?'<button id="apply-semantics" class="outline-button">Apply selected role suggestions</button>':'')+
       a.frames.map(x=>'<div class="semantic-entry"><strong>Sample at '+seconds(x.at)+'</strong> · '+esc(x.framing)+'<p>'+esc(x.description)+'</p></div>').join("")+a.unknowns.map(x=>'<p class="small-note">Unknown: '+esc(x)+'</p>').join("");
-    if(el("apply-semantics"))el("apply-semantics").onclick=async()=>{try{const indices=Array.from(document.querySelectorAll(".semantic-check:checked")).map(x=>Number(x.value));await req("apply-semantic",{post_id:S.post.post.id,indices});notice("Applied as model suggestions, not verified labels.");await openPost(S.post.post.id);}catch(e){notice(e.message);}};
+    if(el("apply-semantics"))el("apply-semantics").onclick=async()=>{try{const indices=Array.from(document.querySelectorAll(".semantic-check:checked")).map(x=>Number(x.value));await req("apply-semantic",{post_id:S.post.post.id,indices});notice("Applied as model suggestions, not verified labels.");await openPost(S.post.post.id,false);}catch(e){notice(e.message);}};
   }
   async function importCsv(file,kind){
     if(!file)return;if(file.size>2*1024*1024)throw Error("CSV exceeds 2 MB.");
@@ -173,8 +174,8 @@
     on("queue-toggle","click",async()=>{await req("queue",{action:S.paused?"resume_all":"pause_all"});await pollJobs();});
     let searchTimer;on("research-search","input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>refreshPosts().catch(e=>notice(e.message)),180);});on("collection-filter","change",refreshPosts);
     on("close-post-dialog","click",()=>el("post-dialog").close());
-    on("post-meta-form","submit",async ev=>{ev.preventDefault();const values=dataOf(ev.currentTarget);const p=await req("metadata",{...S.post.post,...values,published_at:iso(values.published_at),rights_confirmed:ev.currentTarget.elements.rights_confirmed.checked});await openPost(p.id);await refreshAll();notice("Metadata saved.");});
-    on("snapshot-form","submit",async ev=>{ev.preventDefault();const values=dataOf(ev.currentTarget),metrics={};for(const key of ["views","engaged_views","likes","saves","shares","comments","conversions","average_watch_seconds","retention_3s_pct","completion_pct"])if(values[key]!=="")metrics[key]=Number(values[key]);await req("snapshot",{post_id:S.post.post.id,window:values.window,definition:values.definition,observed_at:iso(values.observed_at),source:values.source,metrics});await openPost(S.post.post.id);await refreshResults();notice("Observation appended. Previous observations remain intact.");});
+    on("post-meta-form","submit",async ev=>{ev.preventDefault();const values=dataOf(ev.currentTarget);const p=await req("metadata",{...S.post.post,...values,published_at:iso(values.published_at),rights_confirmed:ev.currentTarget.elements.rights_confirmed.checked});await openPost(p.id,false);await refreshAll();notice("Metadata saved.");});
+    on("snapshot-form","submit",async ev=>{ev.preventDefault();const form=ev.currentTarget,values=dataOf(form),metrics={};for(const key of ["views","engaged_views","likes","saves","shares","comments","conversions","average_watch_seconds","retention_3s_pct","completion_pct"])if(values[key]!=="")metrics[key]=Number(values[key]);await req("snapshot",{post_id:S.post.post.id,window:values.window,definition:values.definition,observed_at:iso(values.observed_at),source:values.source,metrics});form.reset();await openPost(S.post.post.id,false);await refreshResults();notice("Observation appended. Previous observations remain intact.");});
     on("deep-analyse-post","click",async()=>{await req("semantic",{post_id:S.post.post.id});notice("Semantic job queued. Refresh this post after it completes.");await pollJobs();});
     on("research-metadata-csv","change",async ev=>{await importCsv(ev.target.files[0],"metadata");ev.target.value="";});on("research-snapshot-csv","change",async ev=>{await importCsv(ev.target.files[0],"snapshots");ev.target.value="";});
     on("export-library-template","click",()=>download("post-metadata.csv",metadataTemplate(),"text/csv"));on("export-snapshot-template","click",()=>download("performance-snapshots.csv",snapshotTemplate(),"text/csv"));

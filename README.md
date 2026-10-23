@@ -84,3 +84,10 @@ Browser tests use an existing Chrome installation and Node, with isolated profil
 No native Instagram/TikTok/YouTube account connectors, private analytics, automatic web scraping, automatic publishing or generated imagery are included. Native text posts and carousels are not ingestion formats in this video-first release. A native iPhone application, shared hosted workspace, a second physical test computer and human usability review remain separate acceptance gates. See HANDOFF.md for ownership and next acceptance criteria.
 
 Original source is MIT licensed. Bundled libraries, the speech model and FFmpeg retain their own notices and licences; see THIRD_PARTY_NOTICES.md and the packaged licenses directory.
+
+
+## Standalone phone edition (0.4.0)
+
+The feature/standalone-ios-20261023 branch contains a static, on-device phone edition. Unlike the older undeployed relay candidate, it does not connect to a desktop or require pairing. It reuses the existing research engine through Pyodide and stores data privately in IndexedDB. See standalone/ACCEPTANCE.md and standalone/DONORS.md. Build with scripts/fetch_standalone_runtime.py and scripts/build_standalone.py. The generated phone-dist directory is the only static publication source.
+
+This is a companion with explicit JSON exchange, not automatic cloud sync. Automatic speech transcription stays in the Windows edition; the phone can import SRT/VTT and desktop analysis JSON and sample local visual changes. Preserve the stable Windows release; no already-published ZIP is replaced by this work.

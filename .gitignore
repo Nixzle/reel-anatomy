@@ -24,3 +24,5 @@ mobile-dist/
 .wrangler/
 .dev.vars*
 cloud/.wrangler/
+
+phone-dist/

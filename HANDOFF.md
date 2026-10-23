@@ -35,3 +35,12 @@ Implemented public installable shell, icons/manifest, safe-area controls, explic
 Tool safety blocked the combined authenticated-browser test-script write and the Wrangler deployment-list command. Do not replay these calls or route through backups to bypass them. No live worker or phone URL was created. Existing stable v0.2.0 release remains untouched. The permitted public-shell browser test is not authenticated end-to-end acceptance. Read MOBILE.md before resuming hosting. Current evidence is retained under .local/mobile-v030 and .local/pwa-public-*; no private libraries were used.
 
 Owner: Ultron Prime. Next acceptance: allowed deployment, owner secret provisioning, real relay/phone tests and physical iOS installation. Preserve all earlier semantic-model/campaign limitations.
+
+
+## 0.4.0 standalone phone edition, 23 October 2026
+
+The relay candidate remains undeployed and its denied operations were not replayed. A different public-static application runs the existing Python Store/planner and SQLite inside a Pyodide module worker, using idb-keyval for device-local persistence. No desktop access, pairing, secret provisioning, cloud data API or automatic synchronisation is present. The publishing allowlist excludes relay code and owner data. Source branch: feature/standalone-ios-20261023. See standalone/DONORS.md for exact reuse/licensing and standalone/ACCEPTANCE.md for boundaries.
+
+Actual browser acceptance now covers the research/production workflow, sampled local video inspection with supplied captions, pause/resume/reuse, metrics and sparse-evidence warnings, script revisions, outcome tracking, safe areas, desktop JSON exchange, backup recovery, hostile-ID rejection, separate-user isolation and full offline engine/library reopening. Original video is excluded from metadata backups. Phone media sampling remains approximate and is not pooled with imported cut methods. No phone speech model or actual semantic inference is claimed.
+
+The shared Studio metadata editor now preserves partly entered metrics during a same-post asynchronous refresh and does not reopen a dismissed modal. The browser harness waits for a new document time origin before asserting offline reload success. Pending delivery at this checkpoint: public static deployment, exact BUILD readback and repeat browser suite against HTTPS. Physical iPhone, learned-model, live-sync and empirical campaign gates remain open with Ultron Prime as owner; do not silently remove them.
