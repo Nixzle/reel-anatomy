@@ -6,14 +6,17 @@ for name in ('web','python','runtime','vendor','icons'):(out/name).mkdir(exist_o
 for name in ('style.css','studio.css','app.js','studio.js'):
     shutil.copy2(root/'web'/name,out/'web'/name)
 for f in (root/'web/icons').glob('*.png'):shutil.copy2(f,out/'icons'/f.name)
+model_pin=json.loads((root/'standalone/MODEL_RUNTIME_PIN.json').read_text())
+assert hashlib.sha256((root/'standalone'/model_pin['file']).read_bytes()).hexdigest()==model_pin['sha256'],'Model runtime source changed'
 for f in (root/'standalone/vendor').iterdir():shutil.copy2(f,out/'vendor'/f.name)
 pins=json.loads((root/'standalone/RUNTIME_PINS.json').read_text(encoding='utf-8'))
 for item in pins:
     f=root/'.local/standalone-v040/runtime'/item['name']
     assert f.stat().st_size==item['bytes'] and hashlib.sha256(f.read_bytes()).hexdigest()==item['sha256'],'Runtime changed: '+f.name
     shutil.copy2(f,out/'runtime'/f.name)
-for name in ('worker.mjs','media.mjs','phone.mjs','phone.css'):shutil.copy2(root/'standalone'/name,out/name)
+for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json'):shutil.copy2(root/'standalone'/name,out/name)
 shutil.copy2(root/'standalone/backend.py',out/'python/backend.py')
+shutil.copy2(root/'standalone/research_engine.py',out/'python/research_engine.py')
 store_source=(root/'studio_store.py').read_text(encoding='utf-8')
 store_source=store_source.replace('duration_band),snapshot_id=', 'duration_band,a.get("timing_method","imported")),snapshot_id=')
 (out/'python/studio_store.py').write_text(store_source,encoding='utf-8')
@@ -27,7 +30,7 @@ source=(root/'studio_api.py').read_text(encoding='utf-8');node=next(n for n in a
 html=(root/'web/index.html').read_text(encoding='utf-8')
 html=re.sub(r'  <script src="/web/[^"\n]+"></script>\n','',html)
 html=html.replace('href="/','href="./').replace('href="./web/mobile.css"','href="./phone.css"')
-html=html.replace('CREATIVE INTELLIGENCE / PRODUCTION STUDIO','ON-DEVICE RESEARCH / FILMING STUDIO').replace('<span class="version">02</span>','<span class="version">04</span>')
+html=html.replace('CREATIVE INTELLIGENCE / PRODUCTION STUDIO','ON-DEVICE RESEARCH / FILMING STUDIO').replace('<span class="version">02</span>','<span class="version">05</span>')
 html=html.replace('Video stays on this computer.','Video stays on this device.').replace('Max 200 MB','Max 100 MB on this device')
 html=html.replace('Processing is local. The durable queue continues while the app runs.','Processing stays on this device. Keep the app visible while inspecting videos.')
 html=html.replace('If local speech recognition is installed, this can be blank.','Automatic speech recognition is not included in this phone edition. Import SRT/VTT or desktop analysis JSON.')
@@ -42,6 +45,10 @@ html=html.replace('Optional local-model refinement is available in Settings; it 
 html=html.replace('</head>','<link rel="icon" href="./icons/icon-192.png"></head>')
 html=html.replace('</body>','<div id="boot" role="status"><div><span class="kicker">REEL ANATOMY / ON DEVICE</span><h1>Opening your studio.</h1><p id="boot-status">Preparing the local engine. The first load downloads about 13 MB of application files, not your research.</p></div></div>\n<dialog id="install-dialog" class="post-dialog"><h2>Install on iPhone</h2><p>Open this page in Safari. Tap the More (…) or Share button, then <strong>Add to Home Screen</strong>. Turn on <strong>Open as Web App</strong>, then tap Add.</p><p>If Add to Home Screen is missing, scroll to Edit Actions and add it. In an embedded browser, open the page in Safari first.</p><p>Install before adding important work. Safari and the Home Screen app may use separate storage. Use Export library backup and Import JSON to transfer data when needed.</p><button id="close-install" class="primary-button">Done</button></dialog>\n<script type="module" src="./phone.mjs"></script></body>')
 html=html.replace('<meta name="theme-color"','<meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src \'self\'; script-src \'self\' \'unsafe-eval\' \'wasm-unsafe-eval\'; worker-src \'self\' blob:; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data: blob:; media-src \'self\' blob:; connect-src \'self\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'"><meta name="theme-color"')
+html=html.replace('<button data-studio-tab="library">','<button data-studio-tab="sanctum">Sanctum</button><button data-studio-tab="library">')
+html=html.replace('        <section id="studio-library"', (root/'standalone/sanctum.html').read_text(encoding='utf-8')+'\n        <section id="studio-library"',1)
+html=html.replace('</head>','<link rel="stylesheet" href="./sanctum.css"></head>')
+html=html.replace("connect-src \'self\';", "connect-src \'self\' https://api.crossref.org https://en.wikipedia.org https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com;")
 (out/'index.html').write_text(html,encoding='utf-8')
 js=(out/'web/app.js').read_text(encoding='utf-8')
 a=js.index('async function api(path, options) {');b=js.index('async function loadLibrary()',a)
@@ -58,18 +65,20 @@ js=js.replace('No local transcription package detected. Upload SRT/VTT or paste 
 js+='\nwindow.PhoneLocal.current=()=>current;\n'
 (out/'web/app.js').write_text(js,encoding='utf-8')
 js=(out/'web/studio.js').read_text(encoding='utf-8').replace('200*1024*1024','100*1024*1024').replace('200 MB','100 MB')
-# A referenced local-model control stays visible but fails explicitly; no hidden provider call.
+js=js.replace('["library","patterns","create","results","settings"]','["library","patterns","create","results","settings","sanctum"]')
+js=js.replace('initStudio().catch(', 'window.StudioUI.ready=initStudio().catch(')
+# Desktop semantic controls remain unavailable on the phone; Ultron has a separate opt-in local text model.
 js=js.replace('data-deep=', 'disabled title="Automatic semantic analysis requires the desktop edition" data-deep=')
 js=js.replace('id="refine-plan"','id="refine-plan" disabled title="Use the desktop edition for learned refinement"').replace('Refine with configured local model','Desktop refinement')
 (out/'web/studio.js').write_text(js,encoding='utf-8')
 manifest={'id':'./','name':'Reel Anatomy Studio','short_name':'Reel Anatomy','start_url':'./','scope':'./','display':'standalone','background_color':'#eceae4','theme_color':'#eceae4','icons':[{'src':'./icons/icon-192.png','sizes':'192x192','type':'image/png'},{'src':'./icons/icon-512.png','sizes':'512x512','type':'image/png'}]}
 (out/'manifest.webmanifest').write_text(json.dumps(manifest,indent=2),encoding='utf-8');(out/'.nojekyll').write_text('')
 shutil.copy2(root/'LICENSE',out/'LICENSE')
-for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json'):
+for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json','MODEL_RUNTIME_PIN.json'):
     if (root/'standalone'/name).exists():shutil.copy2(root/'standalone'/name,out/name)
 files=sorted(str(f.relative_to(out)).replace('\\','/') for f in out.rglob('*') if f.is_file() and f.name not in ('sw.js','BUILD.json'))
 version=hashlib.sha256(''.join(hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files).encode()).hexdigest()[:16]
-sw="const CACHE='reel-phone-"+version+"';\nconst ASSETS="+json.dumps(['./']+['./'+f for f in files])+";\n"+"self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const name of await caches.keys())if(name.startsWith('reel-phone-')&&name!==CACHE)await caches.delete(name);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin||u.pathname.includes('/api/'))return;event.respondWith((async()=>{const c=await caches.open(CACHE);const hit=await c.match(event.request,{ignoreSearch:true});if(hit)return hit;return fetch(event.request);})());});\n"
+sw="const CACHE='reel-phone-"+version+"';\nconst ASSETS="+json.dumps(['./']+['./'+f for f in files if f not in ('vendor/webllm.mjs','model-worker.mjs')])+";\n"+"self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));\nself.addEventListener('activate',event=>event.waitUntil((async()=>{for(const name of await caches.keys())if(name.startsWith('reel-phone-')&&name!==CACHE)await caches.delete(name);await self.clients.claim();})()));\nself.addEventListener('fetch',event=>{const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin||u.pathname.includes('/api/'))return;event.respondWith((async()=>{const c=await caches.open(CACHE);const hit=await c.match(event.request,{ignoreSearch:true});if(hit)return hit;return fetch(event.request);})());});\n"
 (out/'sw.js').write_text(sw,encoding='utf-8')
-(out/'BUILD.json').write_text(json.dumps({'version':'0.4.0-phone','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True).strip()),'build':version,'files':{f:hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files}},indent=2),encoding='utf-8')
+(out/'BUILD.json').write_text(json.dumps({'version':'0.5.0-sanctum','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True).strip()),'build':version,'files':{f:hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files}},indent=2),encoding='utf-8')
 print('STANDALONE_BUILD',len(files),'files',sum(f.stat().st_size for f in out.rglob('*') if f.is_file()),'bytes',version)

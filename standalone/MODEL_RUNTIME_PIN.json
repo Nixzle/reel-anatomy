@@ -1,0 +1,10 @@
+{
+  "package": "@mlc-ai/web-llm",
+  "version": "0.2.86",
+  "source": "https://registry.npmjs.org/@mlc-ai/web-llm/-/web-llm-0.2.86.tgz",
+  "license": "Apache-2.0",
+  "file": "vendor/webllm.mjs",
+  "sha256": "ae2642e73a4a9896c21efb3a067c4666446f8b49cbe2012f4b576f5d83d5f206",
+  "bytes": 6817339,
+  "model_weights_included": false
+}

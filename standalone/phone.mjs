@@ -100,8 +100,10 @@ function bind(id,event,fn){document.getElementById(id).addEventListener(event,as
 async function start(){
   await api('/api/health');
   await loadScript('./web/app.js');await loadScript('./web/studio.js');
+  await window.StudioUI.ready;
+  const sanctum=await import('./sanctum.mjs');await sanctum.ready;
   document.getElementById('boot').hidden=true;
-  window.StudioUI.show('library');
+  window.StudioUI.show('sanctum');
   bind('install-phone','click',()=>document.getElementById('install-dialog').showModal());
   bind('close-install','click',()=>document.getElementById('install-dialog').close());
   bind('export-backup','click',async()=>exportFile('reel-anatomy-backup.json',await invoke('/phone/export')));

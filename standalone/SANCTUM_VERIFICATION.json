@@ -1,0 +1,128 @@
+{
+  "version": "0.5.0-sanctum",
+  "published": false,
+  "checked_at": "2026-10-23T00:59:03.172346+00:00",
+  "tests": {
+    "python": 120,
+    "research_js": 17,
+    "existing_js": 11,
+    "phone_browser": 51,
+    "desktop_studio_browser": 19
+  },
+  "source_gates": [
+    {
+      "gate": "all-python",
+      "exit": 0
+    },
+    {
+      "gate": "research-frontend",
+      "exit": 0
+    },
+    {
+      "gate": "existing-frontend",
+      "exit": 0
+    },
+    {
+      "gate": "services-syntax",
+      "exit": 0
+    },
+    {
+      "gate": "ui-syntax",
+      "exit": 0
+    },
+    {
+      "gate": "build-final",
+      "exit": 0
+    },
+    {
+      "gate": "browser-final",
+      "exit": 0
+    },
+    {
+      "gate": "desktop-regression",
+      "exit": 0
+    },
+    {
+      "gate": "diff-check",
+      "exit": 0
+    }
+  ],
+  "live_discovery": [
+    {
+      "provider": "crossref",
+      "ok": true,
+      "count": 8,
+      "elapsed_ms": 1281,
+      "sample": [
+        {
+          "title": "Information Diffusion in Social Media",
+          "url": "https://doi.org/10.1017/cbo9781139088510.008",
+          "coverage": "metadata"
+        },
+        {
+          "title": "Information Diffusion",
+          "url": "https://doi.org/10.1002/9781119370680.ch2",
+          "coverage": "metadata"
+        }
+      ]
+    },
+    {
+      "provider": "wikipedia",
+      "ok": true,
+      "count": 8,
+      "elapsed_ms": 1133,
+      "sample": [
+        {
+          "title": "Misinformation",
+          "url": "https://en.wikipedia.org/wiki/Misinformation",
+          "coverage": "excerpt"
+        },
+        {
+          "title": "Stable Diffusion",
+          "url": "https://en.wikipedia.org/wiki/Stable_Diffusion",
+          "coverage": "excerpt"
+        }
+      ]
+    }
+  ],
+  "scale_measurement": {
+    "sources": 400,
+    "matched": 1,
+    "write_ms": 2546,
+    "search_ms": 349,
+    "scope": "Synthetic text sources, this browser profile and build host, not a phone performance claim."
+  },
+  "local_model_runtime": {
+    "factory": "function",
+    "handler": "function",
+    "models": [
+      {
+        "id": "SmolLM2-360M-Instruct-q4f32_1-MLC",
+        "memory_mb": 579.61,
+        "model": "https://huggingface.co/mlc-ai/SmolLM2-360M-Instruct-q4f32_1-MLC",
+        "library": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_86/base/SmolLM2-360M-Instruct-q4f32_1_cs1k-webgpu.wasm"
+      },
+      {
+        "id": "Qwen3-1.7B-q4f16_1-MLC",
+        "memory_mb": 2036.66,
+        "model": "https://huggingface.co/mlc-ai/Qwen3-1.7B-q4f16_1-MLC",
+        "library": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_86/base/Qwen3-1.7B-q4f16_1_cs1k-webgpu.wasm"
+      }
+    ]
+  },
+  "model_weights_downloaded": false,
+  "real_model_inference_tested": false,
+  "environment": "Windows build host; isolated Chrome at 390px; synthetic evidence and media. Public provider queries were real and generic.",
+  "limits": [
+    "No physical iPhone or Safari model/codec acceptance.",
+    "No actual model inference, citation entailment benchmark or campaign uplift.",
+    "Crossref and Wikipedia discovery are bounded public search connectors, not unrestricted web or social-platform research.",
+    "No private Sanctum content, shared ChatGPT tools/memory, paid fallback, cloud data service or desktop relay."
+  ],
+  "source_hashes": {
+    "standalone/research_engine.py": "9ba0b24b064b87aa57712167269fa7fbc6644796757f8a8d31933aaa758687eb",
+    "standalone/research_services.mjs": "2068f3ba95275f598d9b14ac68c337d4a7e70057da9be2293d501c5ae5afda5a",
+    "standalone/sanctum.mjs": "c4b17595773e743fc97f877a452df519c60d378e3460ecaa31a85ad23f10bcd5",
+    "standalone/phone.mjs": "2a4c99299a7be6b03e677444e65e80dfc060af70bb6ce3ff44b0bae476fe0df5"
+  }
+}

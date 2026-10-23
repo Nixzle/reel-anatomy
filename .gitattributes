@@ -1,0 +1,3 @@
+# Keep the hash-pinned upstream WebLLM bundle byte-for-byte, including vendor whitespace.
+standalone/vendor/webllm.mjs -text -whitespace
+standalone/vendor/webllm.LICENSE -text
