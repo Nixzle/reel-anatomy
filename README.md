@@ -4,7 +4,11 @@ Live application: https://nixzle.github.io/reel-anatomy/
 
 This candidate continues the original researched-Reel product. It does not relabel the remaining original requirements as complete. Stable 1.0 qualification remains false in `standalone/RELEASE_TARGET.json` until its required evidence is recorded.
 
-## New in the candidate
+## Latest live web update: 1.0.0-rc.2
+
+Open **Sanctum > Creative Lab**, or **Audience, voice & retention** on Start. The new project playbook, authorised audience inbox, metric-blind saved-script review and measured retention timeline are integrated with the existing Studio, player, local assistant context and portable backups. No new model, paid service or account scraping was activated. Exact delivery and limits: `standalone/CREATIVE_LAB_RELEASE.md`; competitor evidence: `standalone/CREATIVE_LAB.md`; verification: `standalone/CREATIVE_LAB_VERIFICATION.json`.
+
+## Earlier rc.1 foundations
 
 - A readable Start workflow and phone workspace selector.
 - Local PDF page extraction and original-page inspection, plus saved-HTML article reading. Scanned/empty pages and extraction limitations stay visible.

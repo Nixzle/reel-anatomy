@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-rc.2",
-  "stage": "local-qualified-awaiting-public-readback",
+  "stage": "verified-public",
   "checked_at": "2026-10-24T06:15:55.082854+00:00",
   "tests": {
     "python": 190,
@@ -159,5 +159,477 @@
     "Retention is user-imported; no platform account connection is established.",
     "Audience filtering is partial, not complete anonymisation.",
     "No claim that these features are unique across all competing products."
-  ]
+  ],
+  "publication": {
+    "rollback_commit": "bbb815ffe64acf0b713e87c40b1b60e760662bae",
+    "source_commit": "e7fcb5f3260e019fab34bbc4547ce336860e3a05",
+    "build": "3155c7028f009c07",
+    "version": "1.0.0-rc.2",
+    "manifest_files": 74,
+    "checked_at": "2026-10-24T06:18:54.426697+00:00",
+    "publication_commit": "9d2fb9a624b79a876740baeedc417848a92378b9",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "state": "verified-public",
+    "public_files": 74,
+    "service_worker_matched": true,
+    "creative_browser_checks": 20,
+    "readiness_browser_checks": 31,
+    "sanctum_browser_checks": 51,
+    "verified_at": "2026-10-24T06:22:26.893292+00:00"
+  },
+  "public_browser": {
+    "creative": {
+      "checks": 20,
+      "detail": [
+        {
+          "name": "Creative Lab tab and panels fit the existing Sanctum at phone width",
+          "detail": true
+        },
+        {
+          "name": "user-authored voice profile saves with revision and example permission",
+          "detail": true
+        },
+        {
+          "name": "audience text is filtered and author identities are not stored",
+          "detail": true
+        },
+        {
+          "name": "repeat observations do not inflate demand counts",
+          "detail": true
+        },
+        {
+          "name": "audience CSV handles untrusted text and drops author columns",
+          "detail": true
+        },
+        {
+          "name": "audience observations and channel guidance are frozen with the filming brief",
+          "detail": true
+        },
+        {
+          "name": "metric-blind review flags voice conflicts payoff timing and reference wording",
+          "detail": true
+        },
+        {
+          "name": "review flags lead to the saved script rather than dead report text",
+          "detail": true
+        },
+        {
+          "name": "local assistant context carries bounded project voice guidance without claiming training",
+          "detail": true
+        },
+        {
+          "name": "changed guidance invalidates an old creative review",
+          "detail": true
+        },
+        {
+          "name": "actual supplied retention points link to transcript intervals and preserve unknown sample size",
+          "detail": true
+        },
+        {
+          "name": "retention review seeks into the imported local video",
+          "detail": true
+        },
+        {
+          "name": "missing retention points cannot quietly become zero",
+          "detail": true
+        },
+        {
+          "name": "metadata backup restores voice audience reviews and retention together",
+          "detail": true
+        },
+        {
+          "name": "portable project packs carry the new creative records and original media together",
+          "detail": {
+            "bytes": 48442,
+            "records": 5
+          }
+        },
+        {
+          "name": "hostile restored review references are rejected without committing a changed library",
+          "detail": true
+        },
+        {
+          "name": "creative records remain project-scoped",
+          "detail": true
+        },
+        {
+          "name": "all four lab panels fit a 390px viewport",
+          "detail": true
+        },
+        {
+          "name": "playbook audience review and retention survive full offline restart",
+          "detail": true
+        },
+        {
+          "name": "no uncaught errors model calls or audience uploads",
+          "detail": true
+        }
+      ],
+      "errors": 0
+    },
+    "readiness": {
+      "checks": 31,
+      "detail": [
+        {
+          "name": "factory loads without changing private data or requiring a model",
+          "detail": true
+        },
+        {
+          "name": "release candidate opens a usable research-to-results start screen",
+          "detail": true
+        },
+        {
+          "name": "phone navigation exposes each workspace with a readable touch control",
+          "detail": true
+        },
+        {
+          "name": "actual PDF text becomes page-specific unreviewed evidence and blank pages stay unknown",
+          "detail": true
+        },
+        {
+          "name": "original PDF page can be inspected instead of trusting extraction alone",
+          "detail": true
+        },
+        {
+          "name": "saved HTML becomes readable text without scripts or remote resource requests",
+          "detail": true
+        },
+        {
+          "name": "reimporting a document reuses its page citations",
+          "detail": true
+        },
+        {
+          "name": "three editable openings start as drafts without mutating the source plan",
+          "detail": true
+        },
+        {
+          "name": "unreviewed campaign cannot obtain a reviewed render package",
+          "detail": true
+        },
+        {
+          "name": "local visual audio and evidence bindings pass production checks",
+          "detail": true
+        },
+        {
+          "name": "approval binds the exact script source and asset hashes",
+          "detail": true
+        },
+        {
+          "name": "production package captions and source-linked test card export",
+          "detail": true
+        },
+        {
+          "name": "actual downloaded portrait video decodes with audio and planned duration",
+          "detail": {
+            "file": "C:\\Users\\leyla\\AppData\\Local\\Sanctum\\Workspace\\reel-anatomy\\.local\\release-browser-1792822830930\\downloads\\reel-eedb5f56-A-reviewed.mp4",
+            "width": 720,
+            "height": 1280,
+            "duration": "10.011067",
+            "mime": "video/mp4;codecs=avc1.420020,mp4a.40.2"
+          }
+        },
+        {
+          "name": "the actual exported video enters our draft library idempotently without invented analytics",
+          "detail": true
+        },
+        {
+          "name": "cancelled render creates no completion receipt",
+          "detail": true
+        },
+        {
+          "name": "three opening variants render sequentially as visibly marked drafts",
+          "detail": true
+        },
+        {
+          "name": "changed source invalidates previous review before another final export",
+          "detail": true
+        },
+        {
+          "name": "backup restores campaigns but never restores approval as fresh authority",
+          "detail": true
+        },
+        {
+          "name": "factory editor fits a phone-width viewport",
+          "detail": true
+        },
+        {
+          "name": "diagnostics report capabilities without leaking source titles or prompts",
+          "detail": true
+        },
+        {
+          "name": "portable project pack includes original media documents and historical exports",
+          "detail": {
+            "assets": 5,
+            "outputs": 4,
+            "documents": 2,
+            "bytes": 7913960
+          }
+        },
+        {
+          "name": "incomplete upload leftovers are disclosed and do not break project packs",
+          "detail": true
+        },
+        {
+          "name": "changed archive bytes are rejected before any library write",
+          "detail": true
+        },
+        {
+          "name": "failed IndexedDB media write aborts the entire restore transaction",
+          "detail": true
+        },
+        {
+          "name": "cancelled restore creates no new library revision",
+          "detail": true
+        },
+        {
+          "name": "project pack restore commits metadata and media together while clearing old approval",
+          "detail": true
+        },
+        {
+          "name": "restored document originals remain inspectable",
+          "detail": true
+        },
+        {
+          "name": "offline installation retains a hash-matched app cache and excludes private API data",
+          "detail": {
+            "active": "reel-phone-3155c7028f009c07-e7fcb5f3260e",
+            "count": 74,
+            "hasPrivate": false,
+            "indexMatch": true,
+            "version": "1.0.0-rc.2"
+          }
+        },
+        {
+          "name": "project library and original PDF reading survive a full offline restart",
+          "detail": true
+        },
+        {
+          "name": "no uncaught browser exceptions",
+          "detail": true
+        },
+        {
+          "name": "rendering does not upload footage or call external services",
+          "detail": true
+        }
+      ],
+      "errors": 0
+    },
+    "sanctum": {
+      "checks": 51,
+      "detail": [
+        {
+          "name": "Python/SQLite studio boots in a phone-width browser with no server API",
+          "detail": true
+        },
+        {
+          "name": "390px layout has no horizontal overflow",
+          "detail": true
+        },
+        {
+          "name": "capabilities do not claim an absent speech model",
+          "detail": {
+            "ok": true,
+            "version": "1.0.0-rc.2",
+            "ffmpeg": false,
+            "speech": false,
+            "local_only": true,
+            "phone": true
+          }
+        },
+        {
+          "name": "research project stores audience topic platform and goal",
+          "detail": true
+        },
+        {
+          "name": "Sanctum starts in project-scoped evidence mode without loading a model",
+          "detail": true
+        },
+        {
+          "name": "source editor retains excerpts provenance and stable citation IDs",
+          "detail": true
+        },
+        {
+          "name": "tracking URL duplicates do not inflate evidence counts",
+          "detail": true
+        },
+        {
+          "name": "supporting and opposing evidence remain on the same claim",
+          "detail": true
+        },
+        {
+          "name": "fabricated quotation cannot become a saved evidence link",
+          "detail": true
+        },
+        {
+          "name": "Ask Ultron returns traceable excerpts without pretending retrieval is generative AI",
+          "detail": true
+        },
+        {
+          "name": "assistant context and model input are inspectable before generation",
+          "detail": true
+        },
+        {
+          "name": "no model download occurs without explicit consent",
+          "detail": true
+        },
+        {
+          "name": "source revisions mark old claims and assistant citations stale",
+          "detail": true
+        },
+        {
+          "name": "CSV source text and titles cannot execute in the interface",
+          "detail": true
+        },
+        {
+          "name": "Cerebro produces an editable bounded search plan",
+          "detail": true
+        },
+        {
+          "name": "public search requires query-disclosure consent",
+          "detail": true
+        },
+        {
+          "name": "failed search records survive explicit resume without invented results",
+          "detail": true
+        },
+        {
+          "name": "discovered abstracts are saved as unreviewed excerpts not full papers",
+          "detail": true
+        },
+        {
+          "name": "assistant retrieval cannot read another research project",
+          "detail": true
+        },
+        {
+          "name": "research claims enter Studio as hypotheses rather than fabricated proof",
+          "detail": true
+        },
+        {
+          "name": "research dossier export is connected to saved evidence",
+          "detail": true
+        },
+        {
+          "name": "batch upload enters a paused durable queue",
+          "detail": true
+        },
+        {
+          "name": "identical media and matched subtitles reuse analysis without merging post records",
+          "detail": true
+        },
+        {
+          "name": "underscore subtitle filenames match and original timing is retained",
+          "detail": true
+        },
+        {
+          "name": "timed metrics retain provenance retention and unknown counts",
+          "detail": true
+        },
+        {
+          "name": "sparse evidence is not promoted to a winning formula",
+          "detail": true
+        },
+        {
+          "name": "pattern becomes an original five-beat brief with retained evidence limits",
+          "detail": true
+        },
+        {
+          "name": "script edits preserve prior revisions",
+          "detail": true
+        },
+        {
+          "name": "phone filming brief and Markdown export include evidence without executable scripts",
+          "detail": true
+        },
+        {
+          "name": "rough-cut review compares actual footage with the saved brief",
+          "detail": true
+        },
+        {
+          "name": "prospective test freezes the chosen script and hypothesis",
+          "detail": true
+        },
+        {
+          "name": "published observations and outcome review retain the original hypothesis",
+          "detail": true
+        },
+        {
+          "name": "no hidden language-model service or download",
+          "detail": true
+        },
+        {
+          "name": "all five studio screens fit a 390px viewport",
+          "detail": true
+        },
+        {
+          "name": "simulated Dynamic Island and home indicator do not cover controls",
+          "detail": true
+        },
+        {
+          "name": "library brief and outcome survive a browser restart",
+          "detail": true
+        },
+        {
+          "name": "portable backup includes analysis and scripts, not source video",
+          "detail": true
+        },
+        {
+          "name": "malformed backup is rejected without changing the committed library",
+          "detail": true
+        },
+        {
+          "name": "metadata backup restores the complete workspace",
+          "detail": true
+        },
+        {
+          "name": "library backups preserve sources claims runs and assistant history",
+          "detail": true
+        },
+        {
+          "name": "research JSON import creates a separate project without overwriting the original",
+          "detail": true
+        },
+        {
+          "name": "older desktop exports preserve unknown analysis instead of fabricating it",
+          "detail": true
+        },
+        {
+          "name": "duplicate analysis import never overwrites an existing editable asset",
+          "detail": true
+        },
+        {
+          "name": "backup rejects hostile DOM reference identities",
+          "detail": true
+        },
+        {
+          "name": "a separate browser user has no access to the first user library",
+          "detail": true
+        },
+        {
+          "name": "iPhone installation instructions are present",
+          "detail": true
+        },
+        {
+          "name": "entire Python studio and saved work reopen offline, not just a landing page",
+          "detail": true
+        },
+        {
+          "name": "Sanctum sources and evidence assistant remain usable offline",
+          "detail": true
+        },
+        {
+          "name": "saved script is editable offline",
+          "detail": true
+        },
+        {
+          "name": "no uncaught browser errors",
+          "detail": true
+        },
+        {
+          "name": "only static same-origin GET requests, no research upload or desktop relay",
+          "detail": true
+        }
+      ],
+      "errors": 0
+    }
+  }
 }
