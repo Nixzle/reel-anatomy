@@ -1,3 +1,7 @@
+# Current production candidate: 1.0.0-rc.3
+
+This source adds a unified portable Windows host for the current research/production workspace, existing-model local English speech, and editable narration-timed caption tracks for both renderers. See `standalone/DESKTOP_COMPLETION.md`. Publication and downloaded-binary verification are recorded separately; source presence is not a finished release claim. All original stable 1.0 gates remain in `standalone/RELEASE_TARGET.json`.
+
 # Reel Anatomy 1.0 release candidate
 
 Live application: https://nixzle.github.io/reel-anatomy/

@@ -11,7 +11,7 @@ export function captionCues(scenes){
   return out;
 }
 const stamp=n=>{const ms=Math.round(n*1000);return [Math.floor(ms/3600000),Math.floor(ms/60000)%60,Math.floor(ms/1000)%60].map(x=>String(x).padStart(2,'0')).join(':')+','+String(ms%1000).padStart(3,'0');};
-export function srtText(scenes){return captionCues(scenes).map((x,i)=>(i+1)+'\n'+stamp(x.start)+' --> '+stamp(x.end)+'\n'+x.text+'\n').join('\n');}
+export function srtText(scenes,track=null){return (track?.cues||captionCues(scenes)).map((x,i)=>(i+1)+'\n'+stamp(x.start)+' --> '+stamp(x.end)+'\n'+x.text+'\n').join('\n');}
 export function chooseMime(Recorder=globalThis.MediaRecorder){
   if(!Recorder)return null;
   return ['video/mp4;codecs=avc1.42001E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t=>Recorder.isTypeSupported(t))||null;
@@ -56,7 +56,7 @@ export function drawFrame(canvas,p,time,media=new Map(),{safeGuides=false}={}){
   }
   const dark=!!visual;
   ctx.fillStyle=dark?'#ffffff':'#4c4a42';ctx.font='26px Arial';ctx.textAlign='left';ctx.fillText('REEL ANATOMY  /  '+p.variant.key,84,105);
-  const cue=captionCues([scene]).find(c=>time>=c.start&&time<c.end);
+  const cue=(p.variant.timed_captions?.cues||captionCues([scene])).find(c=>time>=c.start&&time<c.end);
   if(cue){ctx.fillStyle='rgba(22,24,22,.9)';ctx.fillRect(72,1370,936,260);textBlock(ctx,cue.text,105,1414,870,180,52,{family:'Arial',weight:'600',align:'center'});}
   const refs=scene.claim_ids.flatMap(id=>p.evidence.claims.find(c=>c.id===id)?.links?.map(l=>l.citation)||[]);
   ctx.fillStyle=dark?'#ffffff':'#696355';ctx.font='23px Arial';ctx.textAlign='left';ctx.fillText([...new Set(refs)].slice(0,3).join(' · '),84,1690);
@@ -119,6 +119,7 @@ export async function renderReel(p,getBlob,{width=720,signal,onProgress,canvas:p
     recorder.ondataavailable=event=>{if(event.data.size)chunks.push(event.data);};
     recorder.onerror=event=>{recordingError=event.error||Error('The encoder failed.');stop();finish();};recorder.onstop=()=>finish();
     signal?.addEventListener('abort',stop,{once:true});document.addEventListener('visibilitychange',visibility);
+    if(signal?.aborted)throw Error('Export cancelled before recording.');
     recorder.start(500);const start=performance.now();source?.start();
     let lastScene=-1,lastTick=start;
     function tick(){

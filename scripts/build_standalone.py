@@ -22,12 +22,13 @@ for item in pins:
     f=root/'.local/standalone-v040/runtime'/item['name']
     assert f.stat().st_size==item['bytes'] and hashlib.sha256(f.read_bytes()).hexdigest()==item['sha256'],'Runtime changed: '+f.name
     shutil.copy2(f,out/'runtime'/f.name)
-for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css','creative_lab.mjs','creative_lab.css','document_tools.mjs','article_reader.mjs','pack_worker.mjs','project_pack.mjs','release_desk.mjs','release_desk.css','RELEASE_TARGET.json'):shutil.copy2(root/'standalone'/name,out/name)
+for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css','caption_editor.mjs','desktop_speech.mjs','creative_lab.mjs','creative_lab.css','document_tools.mjs','article_reader.mjs','pack_worker.mjs','project_pack.mjs','release_desk.mjs','release_desk.css','RELEASE_TARGET.json'):shutil.copy2(root/'standalone'/name,out/name)
 shutil.copy2(root/'standalone/backend.py',out/'python/backend.py')
 shutil.copy2(root/'standalone/release_services.py',out/'python/release_services.py')
 shutil.copy2(root/'standalone/creative_lab.py',out/'python/creative_lab.py')
 shutil.copy2(root/'standalone/research_engine.py',out/'python/research_engine.py')
 shutil.copy2(root/'standalone/factory_engine.py',out/'python/factory_engine.py')
+shutil.copy2(root/'standalone/timed_captions.py',out/'python/timed_captions.py')
 store_source=(root/'studio_store.py').read_text(encoding='utf-8')
 store_source=store_source.replace('duration_band),snapshot_id=', 'duration_band,a.get("timing_method","imported")),snapshot_id=')
 (out/'python/studio_store.py').write_text(store_source,encoding='utf-8')

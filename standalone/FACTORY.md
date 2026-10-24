@@ -1,4 +1,4 @@
-# Reel Factory 0.6.0
+# Reel Factory 0.7.0 / production candidate rc.3
 
 ## Purpose
 
@@ -22,7 +22,7 @@ Current reviewed non-metadata support is required for an assertion. Changed/dele
 
 The guarantee detector flags explicit performance promises as a review blocker, but it is a narrow language check, not a comprehensive semantic fact checker. Questions, opinions and demonstrations also need human scrutiny. A claim must remain within the evidence's population, setting and limitations. The renderer checks data consistency, not whether the world agrees with the script.
 
-Captions are grouped from the written script and distributed within the planned shot timings. They are not automatically aligned to the attached narration. Rehearse and review the exported video. The current style is an editorial portrait compositor, not a full generative animation or editing suite.
+Captions default to proportional written-script timing. The narration-timing editor can instead import SRT/VTT, or use the desktop bundle's existing local English speech model to estimate word times. Inspect recognised wording, then explicitly apply the timed track. Its audio SHA and script/timeline binding are retained; changed narration or script requires rechecking and rebinding. Reviewed export also requires the caption words to match the source-linked spoken script. Silence remains a gap rather than filled caption time. Both browser and native renderers use the same track. Recognition is not perfect forced alignment, and a matching script does not prove audio accuracy or factual truth. The current style remains an editorial portrait compositor, not a generative animation suite.
 
 ## Sanctum local binding
 
@@ -38,7 +38,7 @@ examples/reel-factory-A-draft.mp4 and its B/C variants are original 24-second, 1
 
 ## Data and recovery
 
-Factory source assets and rendered videos stay in the device's IndexedDB. The normal library backup includes campaign scripts and evidence but excludes the original media/audio and rendered files. Reattach exact source media after transfer. Imported campaigns lose prior approval and export receipts, so a restored backup does not resurrect review authority. Export important videos and backups; browser storage can be cleared or evicted.
+Factory source assets and rendered videos stay in the device's IndexedDB. The normal library backup includes campaign scripts and evidence but excludes the original media/audio and rendered files. Portable project packs can additionally carry original media and documents. Reattach exact source media when using metadata-only backups. Imported campaigns lose prior approval and export receipts, so a restored backup does not resurrect review authority. Export important videos and backups; browser storage can be cleared or evicted.
 
 A source package hash is an integrity check, not a signature or identity credential. The native renderer verifies the frozen source snapshot; it cannot independently learn that a source changed later. Refresh current evidence in the application before a new reviewed release.
 

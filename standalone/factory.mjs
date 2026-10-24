@@ -35,7 +35,7 @@ function renderEditor(){
  $('factory-shots').querySelectorAll('input:not([type=file]),textarea,select').forEach(x=>x.addEventListener('input',()=>{collect();dirty();}));
  $('factory-shots').querySelectorAll('[data-scene-media]').forEach(el=>el.onchange=async ev=>{try{const i=Number(el.dataset.sceneMedia),file=ev.target.files[0];if(!file)return;collect();const meta=await attach(file,'visual');v.scenes[i].media=meta;v.scenes[i].card=false;dirty();refreshMediaFields(i);}catch(e){notice(e.message);}finally{ev.target.value='';}});
  $('factory-shots').querySelectorAll('[data-remove-media]').forEach(el=>el.onclick=()=>{const i=Number(el.dataset.removeMedia);collect();v.scenes[i].media=null;refreshMediaFields(i);dirty();});
- showAudit();void preview().catch(e=>notice(e.message));void outputList();
+ showAudit();void preview().catch(e=>notice(e.message));void outputList();window.dispatchEvent(new Event('reel-factory:rendered'));
 }
 function refreshMediaFields(i){const b=variant().scenes[i],el=$('factory-shots').querySelector('[data-scene="'+i+'"]');el.querySelector('[data-media-info]').textContent=b.media?b.media.name+' · '+b.media.duration.toFixed(2)+'s':'No visual attached';el.querySelector('[data-field=rights]').value=b.media?.rights||'unconfirmed';el.querySelector('[data-field=rights_note]').value=b.media?.rights_note||'';el.querySelector('[data-field=card]').checked=b.card;}
 function collect(){
@@ -68,7 +68,7 @@ function productionNotes(p){
  const lines=['# '+p.title+' / variant '+p.variant.key,'','Status: '+p.mode+'. Not published.','',...p.limits,'','## Post caption','',p.variant.caption,'','## Test card','',p.variant.hypothesis,'Primary metric: '+p.variant.primary_metric,'Observation window: '+p.variant.window,'Change tested: opening variant '+p.variant.key+'. Organic distribution is not randomised.','','## Script and shots',''];
  for(const s of p.variant.scenes)lines.push('### '+s.start+'–'+s.end+'s / '+s.role,'',s.spoken,'On screen: '+s.on_screen,'Visual: '+s.visual,'Claim IDs: '+s.claim_ids.join(', '),'');
  lines.push('## Evidence register','');for(const source of Object.values(p.evidence.sources))lines.push('['+source.citation+'] '+source.title,source.url||'User-supplied content','Coverage: '+source.level+'; '+(source.reviewed?'user reviewed':'not reviewed'),source.provenance,'');
- lines.push('## Export caveats','','Caption timing is proportional within each planned shot. Review against the actual narration. No automatic post was created.');return lines.join('\n');
+ lines.push('## Export caveats','',(p.variant.timed_captions?'Timed caption track: '+p.variant.timed_captions.method+'. Review recognised/imported words against the actual narration.':'Caption timing is proportional within each planned shot.')+' No automatic post was created.');return lines.join('\n');
 }
 function busy(value){S.busy=value;for(const x of $('factory-editor').querySelectorAll('input,textarea,select,button'))if(x.id!=='factory-stop')x.disabled=value;$('factory-stop').disabled=!value;$('research-select').disabled=value;}
 async function performRender(keys){
@@ -112,9 +112,9 @@ async function init(){
  bind('factory-render','click',()=>performRender([S.key]));bind('factory-batch','click',()=>performRender(S.campaign.variants.map(x=>x.key)));bind('factory-stop','click',()=>S.abort?.abort());
  bind('factory-package','click',async()=>window.PhoneLocal.exportFile('reel-'+S.key+'-package.json',await getPackage()));
  bind('factory-batch-package','click',async()=>{ensureSaved();const packages=[];for(const v of S.campaign.variants)packages.push(await getPackage(v.key));window.PhoneLocal.exportFile('reel-campaign-batch.json',{format:'reel-factory-batch',packages});});
- bind('factory-srt','click',async()=>{const p=await getPackage();window.PhoneLocal.exportFile('reel-'+S.key+'-captions.srt',srtText(p.variant.scenes),'text/plain');});
+ bind('factory-srt','click',async()=>{const p=await getPackage();window.PhoneLocal.exportFile('reel-'+S.key+'-captions.srt',srtText(p.variant.scenes,p.variant.timed_captions),'text/plain');});
  bind('factory-notes','click',async()=>window.PhoneLocal.exportFile('reel-'+S.key+'-production.md',productionNotes(await getPackage()),'text/markdown'));
  window.addEventListener('beforeunload',ev=>{if(S.dirty||S.busy){ev.preventDefault();ev.returnValue='';}});
- await refreshLists();window.ReelFactory={state:S,refresh:refreshLists,open:async id=>{S.campaign=await api('campaign?id='+id);S.key='A';renderEditor();},api,renderReel,render:performRender,preview,attach,productionNotes};
+ await refreshLists();window.ReelFactory={state:S,update:c=>{S.campaign=c;renderEditor();},refresh:refreshLists,open:async id=>{S.campaign=await api('campaign?id='+id);S.key='A';renderEditor();},api,renderReel,render:performRender,preview,attach,productionNotes};
 }
 export const ready=init();

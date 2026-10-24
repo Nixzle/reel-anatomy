@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'standalone')]
-from factory_engine import verify_package
+from factory_engine import verify_package, VERSION as FACTORY_VERSION
 
 def caption_cues(scenes):
     cues=[]
@@ -33,7 +33,7 @@ def timestamp(seconds,ass=False):
     return f'{hours}:{minutes:02}:{sec:02}.{ms%1000//10:02}' if ass else f'{hours:02}:{minutes:02}:{sec:02},{ms%1000:03}'
 
 def captions(package,output):
-    cues=caption_cues(package['variant']['scenes'])
+    cues=package['variant'].get('timed_captions',{}).get('cues') if package['variant'].get('timed_captions') else caption_cues(package['variant']['scenes'])
     (output/'captions.srt').write_text('\n'.join(f"{i+1}\n{timestamp(c['start'])} --> {timestamp(c['end'])}\n{c['text']}\n" for i,c in enumerate(cues)),encoding='utf-8')
     header="""[Script Info]
 ScriptType: v4.00+
@@ -162,7 +162,7 @@ def render(package,assets_dir,output,width=720):
     media=json.loads(p.stdout);video=next(s for s in media['streams'] if s['codec_type']=='video')
     if video['width']!=width or video['height']!=height or abs(float(media['format']['duration'])-package['duration'])>.3:raise RuntimeError('Rendered dimensions or duration did not match the manifest.')
     if narration and not any(s['codec_type']=='audio' for s in media['streams']):raise RuntimeError('Expected narration track is missing.')
-    receipt={'version':'0.6.0-factory','file':final.name,'sha256':sha(final),'bytes':final.stat().st_size,'mode':package['mode'],'package_hash':package['package_hash'],
+    receipt={'version':FACTORY_VERSION,'file':final.name,'sha256':sha(final),'bytes':final.stat().st_size,'mode':package['mode'],'package_hash':package['package_hash'],
              'width':width,'height':height,'duration':float(media['format']['duration']),'audio':bool(narration),'status':'Rendered and probed locally; not published.',
              'source_validity':'Evidence is checked against this frozen package. The app must recheck live source revisions before future exports.'}
     (output/'RENDER_RECEIPT.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8');(output/'post-caption.txt').write_text(package['variant']['caption'],encoding='utf-8')
@@ -177,7 +177,7 @@ def main():
     args=parser.parse_args()
     if args.action=='doctor':
         import importlib.util
-        print(json.dumps({'tool':'reel-factory','version':'0.6.0','ffmpeg':bool(shutil.which('ffmpeg')),'ffprobe':bool(shutil.which('ffprobe')),'pillow':bool(importlib.util.find_spec('PIL')),'network':False,'publishes':False,'guaranteed_virality':False},indent=2));return
+        print(json.dumps({'tool':'reel-factory','version':FACTORY_VERSION,'ffmpeg':bool(shutil.which('ffmpeg')),'ffprobe':bool(shutil.which('ffprobe')),'pillow':bool(importlib.util.find_spec('PIL')),'network':False,'publishes':False,'guaranteed_virality':False},indent=2));return
     if not args.package or args.package.stat().st_size>25*1024*1024:raise ValueError('Provide a production package of at most 25 MB.')
     value=json.loads(args.package.read_text(encoding='utf-8'))
     if args.action=='inspect':print(json.dumps(verify_package(value),indent=2));return

@@ -9,4 +9,6 @@ check('SRT includes real planned timestamps',()=>{const s=srtText(scenes);assert
 check('MP4 chosen only when supported',()=>assert.ok(chooseMime({isTypeSupported:t=>t==='video/mp4'}).includes('mp4')));
 check('WebM is not relabelled as MP4',()=>assert.equal(chooseMime({isTypeSupported:t=>t==='video/webm'}),'video/webm'));
 check('no encoder produces explicit unsupported result',()=>assert.equal(chooseMime({isTypeSupported:()=>false}),null));
+check('timed tracks override proportional shot timing',()=>{const s=srtText(scenes,{cues:[{start:1.1,end:1.8,text:'Actual speech.'}]});assert.ok(s.includes('00:00:01,100 --> 00:00:01,800'));assert.ok(!s.includes('00:00:10,000'));});
+check('timed subtitle export does not fill a silence gap',()=>{const s=srtText(scenes,{cues:[{start:0,end:1,text:'First.'},{start:4,end:5,text:'Next.'}]});assert.equal((s.match(/-->/g)||[]).length,2);assert.ok(s.includes('00:00:04,000'));});
 console.log('FACTORY_FRONTEND_CHECKS='+n);
