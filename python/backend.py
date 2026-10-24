@@ -7,11 +7,12 @@ from embedded_core import parse_captions, classify, validate_metrics, validate_i
 from embedded_csv import csv_import
 import research_engine
 import factory_engine
+import timed_captions
 import release_services
 import creative_lab
 ROOT=Path('/reel-local')
 ROOT.mkdir(exist_ok=True)
-VERSION='1.0.0-rc.2'
+VERSION='1.0.0-rc.3'
 
 def restore(snapshot):
     for f in ROOT.iterdir():
@@ -47,6 +48,10 @@ def asset_save(a):
          'transcript_source':text(a.get('transcript_source','imported analysis'),120),
          'notices':[text(x,2000) for x in a.get('notices',[])[:30]],'app_version':VERSION,
          'timing_method':text(a.get('timing_method','imported'),120)}
+    if a.get('speech_timing') is not None:
+        timing=a['speech_timing']
+        if not isinstance(timing,dict) or timing.get('method')!='local-whisper-words' or not re.fullmatch(r'[a-f0-9]{64}',str(timing.get('audio_sha256',''))):raise ValueError('Invalid speech timing provenance.')
+        out['speech_timing']={'method':timing['method'],'audio_sha256':timing['audio_sha256'],'model':text(timing.get('model',''),100,True),'cues':timed_captions.validate_cues(timing.get('cues'),duration)}
     (ROOT/(identity+'.json')).write_text(json.dumps(out,allow_nan=False),encoding='utf-8')
     return out
 
@@ -257,9 +262,15 @@ def dispatch(s,path,method,d):
         if j['status']!='running':raise Conflict('Job is no longer running.')
         if d.get('error'):j.update(status='failed',stage='Failed',error=text(d['error'],1000));save_jobs(s,items);return j
         a=d['asset'];p=j['payload'];a['id']=p['asset_id'];a['title']=p['title']
-        transcript,estimated=parse_captions(p.get('transcript',''),a['duration'])
+        speech=d.get('speech')
+        if speech is not None:
+            if not isinstance(speech,dict) or speech.get('method')!='local-whisper-words':raise ValueError('Invalid local speech result.')
+            cues=timed_captions.validate_cues(speech.get('cues'),a['duration'])
+            transcript=[(c['start'],c['end'],c['text']) for c in cues];estimated=False
+            a['speech_timing']={k:speech[k] for k in ('method','audio_sha256','model','cues')}
+        else:transcript,estimated=parse_captions(p.get('transcript',''),a['duration'])
         a['segments']=[dict(index=i,start=t,end=e,text=words,role=classify(words,t,e,a['duration'])[0],reason=classify(words,t,e,a['duration'])[1],edited=False) for i,(t,e,words) in enumerate(transcript)]
-        a['transcript_source']='imported captions' if transcript else 'none'
+        a['transcript_source']='local English Whisper / word timestamps' if speech is not None else 'imported captions' if transcript else 'none'
         if not transcript:a.setdefault('notices',[]).append('No speech transcription was performed on this phone. Import SRT/VTT or desktop analysis JSON.')
         if estimated:a.setdefault('notices',[]).append('Plain-text times are proportional estimates, not speech alignment.')
         a=asset_save(a);post=s.add_post(a['id'],p.get('workspace','default'),p['metadata'])

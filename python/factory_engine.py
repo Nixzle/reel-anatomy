@@ -6,8 +6,9 @@ import math
 import re
 from studio_store import Conflict, text, uid, now, digest as store_digest
 import research_engine as research
+import timed_captions as captions
 
-VERSION = '0.6.0-factory'
+VERSION = '0.7.0-factory'
 NATURES = ('unreviewed','assertion','question','opinion','instruction','demonstration')
 TABLE = 'reel_campaigns'
 ATTESTATIONS = ('claims_checked','rights_checked','timing_checked','visuals_checked')
@@ -25,7 +26,7 @@ def digest(value):
 
 LIMITS = ['Human review is an attestation, not independent fact verification.',
           'No predicted views, guaranteed virality or causal uplift.',
-          'Captions follow the supplied shot timing, not automatic speech alignment.',
+          'Caption timing is identified per variant: planned fallback or imported/recognised narration timing; review recognition accuracy.',
           'Organic variants are not a randomised A/B experiment.']
 
 def setup(store):
@@ -150,12 +151,14 @@ def save_variant(store,data):
         old=variant_of(c,data.get('key'));incoming=data.get('variant',{})
         clean=clean_scenes(incoming.get('scenes'),c['duration'],[x['id'] for x in c['evidence']['claims']])
         old['history'].append({'revision':old['revision'],'scenes':old['scenes'],'caption':old['caption'],'at':now()})
+        old['history'][-1]['timed_captions']=copy.deepcopy(old.get('timed_captions'))
         old['history']=old['history'][-25:];old['scenes']=clean
         for key,limit in [('caption',2200),('hypothesis',1000),('primary_metric',200)]:old[key]=text(incoming.get(key,old[key]),limit,True)
         window=incoming.get('window',old['window'])
         if window not in ('24h','72h','7d'):raise ValueError('Choose a fixed observation window.')
         old.update(window=window,narration=clean_media(incoming.get('narration'),'audio'),silent_intentional=incoming.get('silent_intentional') is True,
                    revision=old['revision']+1,approval=None)
+        if 'timed_captions' in incoming:old['timed_captions']=captions.clean_track(incoming['timed_captions'],c['duration'])
         c['revision']+=1;c['updated_at']=now();put(store,c)
     return with_audits(store,c)
 
@@ -203,6 +206,15 @@ def audit(campaign,variant,current_evidence=None):
         if abs(n['duration']-campaign['duration'])>max(.5,campaign['duration']*.03):blockers.append('Narration length differs from the timeline. Edit the audio or planned timing.')
     elif not variant['silent_intentional']:blockers.append('Attach narration or explicitly choose an intentionally silent edit.')
     if len({s.get('url') for s in sources.values() if s.get('url')})<2:warnings.append('Fewer than two linked source URLs. This is not an independent-source count or a reason to invent more citations.')
+    blockers.extend(captions.check_track(variant.get('timed_captions'),campaign['duration'],variant.get('narration'),variant['scenes']))
+    if variant.get('timed_captions'):
+        caption_text=' '.join(cue['text'] for cue in variant['timed_captions']['cues'])
+        script_text=' '.join(scene['spoken'] for scene in variant['scenes'])
+        if re.findall(r'\w+',caption_text.casefold())!=re.findall(r'\w+',script_text.casefold()):
+            blockers.append('Timed caption wording differs from the source-linked spoken script. Correct the captions or the script, then rebind and review before final export.')
+        if re.search(r'\b(we guarantee|i guarantee|guaranteed to go viral|100% viral|guaranteed viral (?:reels|views|reach))\b',caption_text.lower()):
+            blockers.append('Timed captions include an unsupported performance guarantee.')
+        warnings.append('Recognition and timing remain estimates. Matching the written script does not prove the attached recording says those words.')
     if variant['silent_intentional']:warnings.append('This edit intentionally has no narration. Captions must carry the message.')
     approval=variant.get('approval')
     approved=bool(approval and approval.get('content_hash')==content_hash(campaign,variant) and approval.get('evidence_hash')==eh and all(approval.get('checks',{}).get(k) is True for k in ATTESTATIONS) and not blockers)
@@ -240,6 +252,8 @@ def make_package(store,data):
     c=get(store,data['id'],data.get('workspace','default'));v=variant_of(c,data.get('key'))
     state=with_audits(store,c)['audits'][v['key']];mode=data.get('mode','draft')
     if mode not in ('draft','reviewed'):raise ValueError('Choose draft or reviewed export.')
+    invalid=captions.check_track(v.get('timed_captions'),c['duration'],v.get('narration'),v['scenes'])
+    if invalid:raise ValueError(invalid[0])
     if mode=='reviewed' and not state['reviewed']:raise ValueError('A current human review with no unresolved production blockers is required.')
     result={'format':'reel-factory-package','schema':1,'version':VERSION,'created_at':now(),'campaign_id':c['id'],'workspace':c['workspace'],
             'campaign_revision':c['revision'],'title':c['title'],'duration':c['duration'],'variant':copy.deepcopy(v),'evidence':copy.deepcopy(c['evidence']),
@@ -266,6 +280,8 @@ def verify_package(p):
     normalized=clean_scenes(v.get('scenes'),p['duration'],ids)
     if any(isinstance(b.get('index'),bool) or b.get('index')!=i for i,b in enumerate(v['scenes'])):raise ValueError('Invalid shot index.')
     clean_media(v.get('narration'),'audio')
+    caption_errors=captions.check_track(v.get('timed_captions'),p['duration'],v.get('narration'),v['scenes'])
+    if caption_errors:raise ValueError(caption_errors[0])
     text(v.get('caption'),2200,True)
     if p.get('mode') not in ('draft','reviewed'):raise ValueError('Invalid package mode.')
     c={'id':p['campaign_id'],'workspace':p['workspace'],'title':p['title'],'duration':p['duration'],'evidence':evidence}
@@ -313,12 +329,28 @@ def import_bundle(store,rows):
         for v in c['variants']:
             if v.get('key') not in ('A','B','C'):raise ValueError('Invalid variant identity.')
             v['scenes']=clean_scenes(v['scenes'],c['duration'],ids);v['narration']=clean_media(v.get('narration'),'audio');v['approval']=None
+            if 'timed_captions' in v:v['timed_captions']=captions.clean_track(v['timed_captions'],c['duration'])
             for key,limit in [('caption',2200),('hypothesis',1000),('primary_metric',200),('name',120)]:text(v.get(key,''),limit,True)
         c['restore_note']='Imported metadata requires renewed review and local media attachment.';c['exports']=[];clean.append(c)
     with store.db() as db:
         db.execute('DELETE FROM reel_campaigns')
         for c in clean:db.execute('INSERT INTO reel_campaigns VALUES (?,?,?)',(c['id'],c['workspace'],json.dumps(c)))
     return True
+
+def save_captions(store,data):
+    with store.lock:
+        c=get(store,data['id'],data.get('workspace','default'))
+        if c['revision']!=data.get('revision'):raise Conflict('Campaign changed while captions were prepared. Reload before applying them.')
+        v=variant_of(c,data.get('key'))
+        if data.get('clear') is True:v['timed_captions']=None
+        else:
+            n=v.get('narration')
+            if not n or n['sha256']!=data.get('narration_sha256'):raise ValueError('Attach the matching narration before adding timed captions.')
+            cues=captions.parse_subtitles(data['subtitles'],c['duration']) if 'subtitles' in data else captions.validate_cues(data.get('cues'),c['duration'])
+            v['timed_captions']=captions.clean_track({'method':data.get('method','imported-subtitles'),'narration_sha256':n['sha256'],
+                'script_hash':captions.script_fingerprint(v['scenes']),'provenance':data.get('provenance','User-supplied timed subtitles; timing and wording require review.'),'cues':cues},c['duration'])
+        v['approval']=None;v['revision']+=1;c['revision']+=1;c['updated_at']=now();put(store,c)
+    return with_audits(store,c)
 
 def route(store,path,method,data,query):
     workspace=query.get('workspace',['default'])[0] if method=='GET' else data.get('workspace','default')
@@ -329,6 +361,7 @@ def route(store,path,method,data,query):
     else:
         if path.endswith('/create'):return create(store,data)
         if path.endswith('/save'):return save_variant(store,data)
+        if path.endswith('/captions'):return save_captions(store,data)
         if path.endswith('/refresh'):return refresh_evidence(store,data)
         if path.endswith('/approve'):return approve(store,data)
         if path.endswith('/package'):return make_package(store,data)

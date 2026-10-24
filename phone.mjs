@@ -1,3 +1,4 @@
+import {discover as discoverSpeech,available as speechAvailable,recognise as recogniseSpeech} from './desktop_speech.mjs';
 import {createStore,get,set,update,del,keys} from './vendor/idb-keyval.js';
 import {inspectVideo} from './media.mjs';
 const db=createStore('reel-anatomy-on-device-v1','library');
@@ -105,7 +106,18 @@ async function drive(){
           let reuse=null;try{reuse=await invoke('/api/project/'+j.payload.asset_id);}catch{}
           if(reuse){await invoke('/phone/reuse','POST',{id:j.id});continue;}
           const media=await inspectVideo(file);await set('thumbs:'+j.payload.asset_id,media.thumbnails,db);delete media.thumbnails;
-          await invoke('/phone/complete','POST',{id:j.id,asset:media});
+          let speech=null;
+          if(!j.payload.transcript.trim()&&speechAvailable()&&localStorage.getItem('reel-anatomy.local-speech')!=='off'){
+            try{
+              speech=await recogniseSpeech(file,{onProgress:message=>showMessage(message)});
+              if(Math.abs(speech.duration-media.duration)>1)throw Error('The decoded speech duration does not match this video. Import verified subtitles instead.');
+            }catch(error){
+              if(error.message.includes('No speech was recognised')||error.message.includes('container with an audio track')){
+                media.notices=[...(media.notices||[]),'Local speech scan found no recognised speech or no audio track. No transcript was invented.'];
+              }else throw error;
+            }
+          }
+          await invoke('/phone/complete','POST',{id:j.id,asset:media,speech});
         }catch(error){await invoke('/phone/complete','POST',{id:j.id,error:error.message});}
       }
     });
@@ -125,6 +137,7 @@ async function api(path,options){
     throw Error('The video remains in Library. Check its queue status before resubmitting.');
   }
   const value=await invoke(path,method,options?.body?JSON.parse(options.body):{});
+  if(path==='/api/health')return {...value,speech:speechAvailable(),desktop_companion:speechAvailable()};
   if(path.startsWith('/api/project/'))return hydrate(value);
   if(path==='/api/studio/queue'){void drive();}
   return value;
@@ -141,12 +154,19 @@ window.PhoneLocal={api,invoke,exportFile,hydrate,inspectState,restoreBundle,curr
 function bind(id,event,fn){document.getElementById(id).addEventListener(event,async ev=>{try{await fn(ev);}catch(error){showMessage(error.message);}});}
 async function start(){
   await api('/api/health');
+  await discoverSpeech();
   await loadScript('./web/app.js');await loadScript('./web/studio.js');
   await window.StudioUI.ready;
   const sanctum=await import('./sanctum.mjs');await sanctum.ready;
   const factory=await import('./factory.mjs');await factory.ready;
+  const captions=await import('./caption_editor.mjs');await captions.ready;
   const desk=await import('./release_desk.mjs');await desk.ready;
   const lab=await import('./creative_lab.mjs');await lab.ready;
+  const speechPanel=document.createElement('section');speechPanel.className='studio-card';
+  speechPanel.innerHTML='<h3>Local desktop speech</h3><p id="desktop-speech-info"></p><label class="check-label"><input id="desktop-speech-enable" type="checkbox"> Transcribe English speech for new videos without supplied subtitles on this computer.</label><p class="small-note">The Windows companion uses its bundled local speech model. The public web app never sends media to a different computer or cloud service. Transfers between the desktop and phone remain explicit project packs.</p><p><a href="https://github.com/Nixzle/reel-anatomy/blob/feature/production-completion-20261024/standalone/DESKTOP_COMPLETION.md" target="_blank" rel="noopener noreferrer">Desktop source and delivery status</a></p>';
+  document.getElementById('studio-settings').append(speechPanel);
+  document.getElementById('desktop-speech-info').textContent=speechAvailable()?'Bundled English speech recognition is available. Media stays on this computer.':'Automatic speech needs the desktop bundle. Import timed subtitles on this device.';
+  const speechCheck=document.getElementById('desktop-speech-enable');speechCheck.checked=speechAvailable()&&localStorage.getItem('reel-anatomy.local-speech')!=='off';speechCheck.disabled=!speechAvailable();speechCheck.onchange=()=>localStorage.setItem('reel-anatomy.local-speech',speechCheck.checked?'on':'off');
   document.getElementById('boot').hidden=true;
   window.StudioUI.show('home');
   bind('install-phone','click',()=>document.getElementById('install-dialog').showModal());
