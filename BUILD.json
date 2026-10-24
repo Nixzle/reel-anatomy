@@ -1,8 +1,8 @@
 {
   "version": "1.0.0-rc.3",
-  "source_commit": "a55c49ee6da5f4517069cc37ec124a02a718af53",
+  "source_commit": "30c79d2c82e876d2eead43b2fc9bd7acdd031353",
   "source_dirty": false,
-  "build": "a875f9b9d476d630",
+  "build": "6d8bc9c379b46f3a",
   "files": {
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "ACCEPTANCE.md": "adbaeabdebc75c9110fdecd1e6f9d80871a2dd006b83f84b08e395c52277e432",
@@ -34,7 +34,7 @@
     "icons/icon-180.png": "ae1044412e361bbaa8bd83f2fdad139501e2287b11586bc30d5267e1727410b7",
     "icons/icon-192.png": "74ff35baaabd343f83f5099c954c92f1123b65fc7523b2b512d2fd9c0caac813",
     "icons/icon-512.png": "0e9817c8a1d3397afb37e2c1395ec3f9e6d325b1230cc87cfe20febfe6e9be13",
-    "index.html": "8ee13da0da5f6c13fed9ce43faec0c541e9d09995495751e9cb81e13c416f635",
+    "index.html": "1c370f26aa82b5e86eb154326abebe1188b7b5de667f996da8bd31613ba467d9",
     "manifest.webmanifest": "fbfe015788b2c13a73e05af7436b4ed90c124c7db2537287a8935cdfa60cab5b",
     "media.mjs": "b3a9de0736033fb30f0f3aee2e4a43ad4f8075f266f8ec7f5f84bd33c76b55f4",
     "model-worker.mjs": "0d7b1a802c5ad24a67eed1cd2cae4b46a4afcbe4a62c737202a84163a57b3f9f",
