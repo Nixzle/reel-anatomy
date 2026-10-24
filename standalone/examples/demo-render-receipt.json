@@ -1,0 +1,14 @@
+{
+  "version": "0.6.0-factory",
+  "file": "reel-A-draft.mp4",
+  "sha256": "4523e756fde7716bd1ce0b1e935d88d758bbfe1f532c697af9f3d5dfe7f36dba",
+  "bytes": 196264,
+  "mode": "draft",
+  "package_hash": "c5d649b7879c862ca5cf4e9c0529676f3610181651f9d1be7ee9ef3a1a8675e2",
+  "width": 1080,
+  "height": 1920,
+  "duration": 24.0,
+  "audio": false,
+  "status": "Rendered and probed locally; not published.",
+  "source_validity": "Evidence is checked against this frozen package. The app must recheck live source revisions before future exports."
+}

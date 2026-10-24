@@ -1,0 +1,488 @@
+{
+  "version": "1.0.0-rc.1",
+  "target": "1.0.0",
+  "published": true,
+  "stable_qualified": false,
+  "checked_at": "2026-10-23T10:55:44.011897+00:00",
+  "tests": {
+    "python": 160,
+    "release_js": 12,
+    "service_worker_js": 4,
+    "factory_js": 7,
+    "research_js": 17,
+    "existing_frontend_js": 11,
+    "new_browser_workflow": 31,
+    "existing_sanctum_browser": 51,
+    "existing_desktop_browser": 19
+  },
+  "browser_checks": [
+    {
+      "name": "factory loads without changing private data or requiring a model",
+      "detail": true
+    },
+    {
+      "name": "release candidate opens a usable research-to-results start screen",
+      "detail": true
+    },
+    {
+      "name": "phone navigation exposes each workspace with a readable touch control",
+      "detail": true
+    },
+    {
+      "name": "actual PDF text becomes page-specific unreviewed evidence and blank pages stay unknown",
+      "detail": true
+    },
+    {
+      "name": "original PDF page can be inspected instead of trusting extraction alone",
+      "detail": true
+    },
+    {
+      "name": "saved HTML becomes readable text without scripts or remote resource requests",
+      "detail": true
+    },
+    {
+      "name": "reimporting a document reuses its page citations",
+      "detail": true
+    },
+    {
+      "name": "three editable openings start as drafts without mutating the source plan",
+      "detail": true
+    },
+    {
+      "name": "unreviewed campaign cannot obtain a reviewed render package",
+      "detail": true
+    },
+    {
+      "name": "local visual audio and evidence bindings pass production checks",
+      "detail": true
+    },
+    {
+      "name": "approval binds the exact script source and asset hashes",
+      "detail": true
+    },
+    {
+      "name": "production package captions and source-linked test card export",
+      "detail": true
+    },
+    {
+      "name": "actual downloaded portrait video decodes with audio and planned duration",
+      "detail": {
+        "file": "reel-f87841a3-A-reviewed.mp4",
+        "width": 720,
+        "height": 1280,
+        "duration": "10.006567",
+        "mime": "video/mp4;codecs=avc1.420020,mp4a.40.2"
+      }
+    },
+    {
+      "name": "the actual exported video enters our draft library idempotently without invented analytics",
+      "detail": true
+    },
+    {
+      "name": "cancelled render creates no completion receipt",
+      "detail": true
+    },
+    {
+      "name": "three opening variants render sequentially as visibly marked drafts",
+      "detail": true
+    },
+    {
+      "name": "changed source invalidates previous review before another final export",
+      "detail": true
+    },
+    {
+      "name": "backup restores campaigns but never restores approval as fresh authority",
+      "detail": true
+    },
+    {
+      "name": "factory editor fits a phone-width viewport",
+      "detail": true
+    },
+    {
+      "name": "diagnostics report capabilities without leaking source titles or prompts",
+      "detail": true
+    },
+    {
+      "name": "portable project pack includes original media documents and historical exports",
+      "detail": {
+        "assets": 5,
+        "outputs": 4,
+        "documents": 2,
+        "bytes": 7892636
+      }
+    },
+    {
+      "name": "incomplete upload leftovers are disclosed and do not break project packs",
+      "detail": true
+    },
+    {
+      "name": "changed archive bytes are rejected before any library write",
+      "detail": true
+    },
+    {
+      "name": "failed IndexedDB media write aborts the entire restore transaction",
+      "detail": true
+    },
+    {
+      "name": "cancelled restore creates no new library revision",
+      "detail": true
+    },
+    {
+      "name": "project pack restore commits metadata and media together while clearing old approval",
+      "detail": true
+    },
+    {
+      "name": "restored document originals remain inspectable",
+      "detail": true
+    },
+    {
+      "name": "offline installation retains a hash-matched app cache and excludes private API data",
+      "detail": {
+        "active": "reel-phone-ddaded4d5868ed1d-13c0051cf97f",
+        "count": 70,
+        "hasPrivate": false,
+        "indexMatch": true,
+        "version": "1.0.0-rc.1"
+      }
+    },
+    {
+      "name": "project library and original PDF reading survive a full offline restart",
+      "detail": true
+    },
+    {
+      "name": "no uncaught browser exceptions",
+      "detail": true
+    },
+    {
+      "name": "rendering does not upload footage or call external services",
+      "detail": true
+    }
+  ],
+  "live_full_text": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Social_media",
+      "title": "Social media",
+      "characters": 63010,
+      "level": "full_text",
+      "reviewed": false,
+      "provenance": "Wikipedia plain-text article retrieved 2026-10-23T10:36:38.344Z. Text only; figures and tables are not visually interpreted. Wikipedia contributors, CC BY-SA. The article may contain errors; inspect primary references.",
+      "milliseconds": 1695
+    },
+    {
+      "url": "https://europepmc.org/articles/PMC4383902",
+      "title": "Europe PMC: a full-text literature database for the life sciences and platform for innovation",
+      "characters": 24027,
+      "level": "full_text",
+      "reviewed": false,
+      "provenance": "Europe PMC open-access XML article retrieved 2026-10-23T10:36:40.479Z. Text only; figures and tables are not visually interpreted. This is an Open Access article distributed under the terms of the Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0/), which permits unrestricted reuse, distribution, and reproduction in any medium, provided the original work is properly cited.",
+      "milliseconds": 2135
+    }
+  ],
+  "gates": [
+    {
+      "gate": "all-python",
+      "exit": 0
+    },
+    {
+      "gate": "release-js",
+      "exit": 0
+    },
+    {
+      "gate": "factory-js",
+      "exit": 0
+    },
+    {
+      "gate": "research-js",
+      "exit": 0
+    },
+    {
+      "gate": "frontend",
+      "exit": 0
+    },
+    {
+      "gate": "candidate-gate",
+      "exit": 0
+    },
+    {
+      "gate": "build-final",
+      "exit": 0
+    },
+    {
+      "gate": "stable-promotion-correctly-refused",
+      "exit": 2,
+      "expected_exit": 2
+    },
+    {
+      "gate": "release-browser",
+      "exit": 0
+    },
+    {
+      "gate": "sanctum-regression",
+      "exit": 0
+    },
+    {
+      "gate": "desktop-regression",
+      "exit": 0
+    }
+  ],
+  "native_binding": {
+    "status": "QUALIFIED_LOCAL",
+    "source_pins_unchanged": true,
+    "doctor_exit": 0,
+    "inspect_exit": 0
+  },
+  "open_acceptance": [
+    {
+      "id": "model",
+      "title": "Measured generative reasoning and video semantics",
+      "status": "open",
+      "acceptance": "Explicitly enabled model, actual inference, representative labelled evaluation and error analysis. Runtime loading alone is not inference."
+    },
+    {
+      "id": "iphone",
+      "title": "Physical iPhone/Safari qualification",
+      "status": "open",
+      "acceptance": "Install, import, background/reconnect, render and play exported media on a physical supported iPhone."
+    },
+    {
+      "id": "platforms",
+      "title": "Authorised social-account intake",
+      "status": "open",
+      "acceptance": "Separately authorised platform connections with platform permission/policy checks and real retrieval receipts."
+    },
+    {
+      "id": "sync",
+      "title": "Cross-device synchronisation",
+      "status": "open",
+      "acceptance": "Real authenticated sync, conflict/recovery and privacy checks. Explicit project-pack transfer is not live sync."
+    },
+    {
+      "id": "outcomes",
+      "title": "Real-world cohort and campaign validation",
+      "status": "open",
+      "acceptance": "Ordinary and weak posts included, held-out evaluation and measured prospective own-post outcomes; no guarantee of viral reach."
+    }
+  ],
+  "boundaries": [
+    "No actual local language-model inference, no new model download or installer.",
+    "No physical iPhone or Safari export acceptance.",
+    "No social-account credential or connector, automatic publishing or live sync.",
+    "Tests use generated media/documents and isolated Chrome profiles on the Windows build host.",
+    "Public article requests validate retrieval and coverage, not correctness of their arguments.",
+    "The stable Windows executable and private canonical native renderer remain unchanged."
+  ],
+  "source_hashes": {
+    "standalone/phone.mjs": "53e234c7d753cd7d5f2acaee4c8bb158c3a468bf8926a0d8f3dc1b48fad53de8",
+    "standalone/project_pack.mjs": "6cab8b4459b0f435af20af1e196e71d0943c3f3632609eabb95b343053ac6c87",
+    "standalone/document_tools.mjs": "1bcbb6637f4f92aa9cb28e441dcb1c4b3d3133b621a0086343f9bf330758aa02",
+    "standalone/release_services.py": "dcf029e715ecd95087a68f6f8d3accd8aca93f20575591465f25e794c9248226",
+    "standalone/article_reader.mjs": "4395cf190ef21082cc0cc8539b50489cdf22ef996f63b0d369de3d51be0d9c59",
+    "standalone/factory_render.mjs": "e500c7abad76494fa3c8b467075ebe6a4e414120be0cdd03ad6c37e5cd1e4527",
+    "scripts/build_standalone.py": "589d214fab817fe7823fd367b0b305ff36b1a1fdabafe1dda14f8ff7a5cc2fa7"
+  },
+  "publication": {
+    "source_commit": "f66e5d4d8c1aea07a690916050a42e8279a2f464",
+    "build": "ddaded4d5868ed1d",
+    "version": "1.0.0-rc.1",
+    "rollback_commit": "524bc24086503920ec2ff7ccb658c457c28ca9b5",
+    "stable_qualified": false,
+    "manifest_files": 70,
+    "publication_commit": "bbb815ffe64acf0b713e87c40b1b60e760662bae",
+    "state": "verified-public-candidate",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "checked_at": "2026-10-23T10:54:08.232927+00:00",
+    "readiness_browser_checks": 31,
+    "sanctum_browser_checks": 51,
+    "full_text_provider_checks": 2
+  },
+  "public_browser_checks": [
+    {
+      "name": "factory loads without changing private data or requiring a model",
+      "detail": true
+    },
+    {
+      "name": "release candidate opens a usable research-to-results start screen",
+      "detail": true
+    },
+    {
+      "name": "phone navigation exposes each workspace with a readable touch control",
+      "detail": true
+    },
+    {
+      "name": "actual PDF text becomes page-specific unreviewed evidence and blank pages stay unknown",
+      "detail": true
+    },
+    {
+      "name": "original PDF page can be inspected instead of trusting extraction alone",
+      "detail": true
+    },
+    {
+      "name": "saved HTML becomes readable text without scripts or remote resource requests",
+      "detail": true
+    },
+    {
+      "name": "reimporting a document reuses its page citations",
+      "detail": true
+    },
+    {
+      "name": "three editable openings start as drafts without mutating the source plan",
+      "detail": true
+    },
+    {
+      "name": "unreviewed campaign cannot obtain a reviewed render package",
+      "detail": true
+    },
+    {
+      "name": "local visual audio and evidence bindings pass production checks",
+      "detail": true
+    },
+    {
+      "name": "approval binds the exact script source and asset hashes",
+      "detail": true
+    },
+    {
+      "name": "production package captions and source-linked test card export",
+      "detail": true
+    },
+    {
+      "name": "actual downloaded portrait video decodes with audio and planned duration",
+      "detail": {
+        "file": "reel-6ba22c2c-A-reviewed.mp4",
+        "width": 720,
+        "height": 1280,
+        "duration": "10.009633",
+        "mime": "video/mp4;codecs=avc1.420020,mp4a.40.2"
+      }
+    },
+    {
+      "name": "the actual exported video enters our draft library idempotently without invented analytics",
+      "detail": true
+    },
+    {
+      "name": "cancelled render creates no completion receipt",
+      "detail": true
+    },
+    {
+      "name": "three opening variants render sequentially as visibly marked drafts",
+      "detail": true
+    },
+    {
+      "name": "changed source invalidates previous review before another final export",
+      "detail": true
+    },
+    {
+      "name": "backup restores campaigns but never restores approval as fresh authority",
+      "detail": true
+    },
+    {
+      "name": "factory editor fits a phone-width viewport",
+      "detail": true
+    },
+    {
+      "name": "diagnostics report capabilities without leaking source titles or prompts",
+      "detail": true
+    },
+    {
+      "name": "portable project pack includes original media documents and historical exports",
+      "detail": {
+        "assets": 5,
+        "outputs": 4,
+        "documents": 2,
+        "bytes": 7878842
+      }
+    },
+    {
+      "name": "incomplete upload leftovers are disclosed and do not break project packs",
+      "detail": true
+    },
+    {
+      "name": "changed archive bytes are rejected before any library write",
+      "detail": true
+    },
+    {
+      "name": "failed IndexedDB media write aborts the entire restore transaction",
+      "detail": true
+    },
+    {
+      "name": "cancelled restore creates no new library revision",
+      "detail": true
+    },
+    {
+      "name": "project pack restore commits metadata and media together while clearing old approval",
+      "detail": true
+    },
+    {
+      "name": "restored document originals remain inspectable",
+      "detail": true
+    },
+    {
+      "name": "offline installation retains a hash-matched app cache and excludes private API data",
+      "detail": {
+        "active": "reel-phone-ddaded4d5868ed1d-f66e5d4d8c1a",
+        "count": 70,
+        "hasPrivate": false,
+        "indexMatch": true,
+        "version": "1.0.0-rc.1"
+      }
+    },
+    {
+      "name": "project library and original PDF reading survive a full offline restart",
+      "detail": true
+    },
+    {
+      "name": "no uncaught browser exceptions",
+      "detail": true
+    },
+    {
+      "name": "rendering does not upload footage or call external services",
+      "detail": true
+    }
+  ],
+  "public_full_text_checks": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Social_media",
+      "title": "Social media",
+      "characters": 63010,
+      "level": "full_text",
+      "reviewed": false,
+      "provenance": "Wikipedia plain-text article retrieved 2026-10-23T10:54:03.771Z. Text only; figures and tables are not visually interpreted. Wikipedia contributors, CC BY-SA. The article may contain errors; inspect primary references.",
+      "milliseconds": 1311
+    },
+    {
+      "url": "https://europepmc.org/articles/PMC4383902",
+      "title": "Europe PMC: a full-text literature database for the life sciences and platform for innovation",
+      "characters": 24027,
+      "level": "full_text",
+      "reviewed": false,
+      "provenance": "Europe PMC open-access XML article retrieved 2026-10-23T10:54:07.946Z. Text only; figures and tables are not visually interpreted. This is an Open Access article distributed under the terms of the Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0/), which permits unrestricted reuse, distribution, and reproduction in any medium, provided the original work is properly cited.",
+      "milliseconds": 4174
+    }
+  ],
+  "downloadable_web_archive": {
+    "version": "1.0.0-rc.1",
+    "source_commit": "f66e5d4d8c1aea07a690916050a42e8279a2f464",
+    "build": "ddaded4d5868ed1d",
+    "file": "ReelAnatomy-Web-1.0.0-rc.1.zip",
+    "bytes": 9634797,
+    "sha256": "b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7",
+    "zip_crc_passed": true,
+    "manifest_entries_matched": 70,
+    "stable_qualified": false
+  },
+  "github_prerelease": {
+    "tag": "v1.0.0-rc.1",
+    "url": "https://github.com/Nixzle/reel-anatomy/releases/tag/v1.0.0-rc.1",
+    "state": "published-prerelease-verified",
+    "is_prerelease": true,
+    "source_commit": "f66e5d4d8c1aea07a690916050a42e8279a2f464",
+    "archive": "ReelAnatomy-Web-1.0.0-rc.1.zip",
+    "sha256": "b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7",
+    "bytes": 9634797,
+    "manifest_files": 70,
+    "stable_qualified": false,
+    "archive_url": "https://github.com/Nixzle/reel-anatomy/releases/download/v1.0.0-rc.1/ReelAnatomy-Web-1.0.0-rc.1.zip",
+    "public_download_verified": true,
+    "previous_latest_stable_preserved": "v0.2.0",
+    "checked_at": "2026-10-23T10:58:42.775074+00:00"
+  }
+}

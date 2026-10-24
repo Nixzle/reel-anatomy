@@ -31,9 +31,9 @@ manifest={"version":version,"source_commit":sha,"python":platform.python_version
           "dependencies":{d.metadata["Name"]:d.version for d in metadata.distributions()}}
 call([sys.executable,"-m","PyInstaller","--noconfirm","--onedir","--name","ReelAnatomy",
       "--add-data","web;web","--add-data","models/base.en;models/base.en",
-      "--collect-all","faster_whisper","--collect-all","ctranslate2","--collect-all","imageio_ffmpeg","--hidden-import","studio_api","--hidden-import","studio_jobs","--hidden-import","studio_store","app.py"],"build")
+      "--collect-all","faster_whisper","--collect-all","ctranslate2","--collect-all","imageio_ffmpeg","--hidden-import","studio_api","--hidden-import","studio_jobs","--hidden-import","studio_store","--hidden-import","mobile_bridge","app.py"],"build")
 dist=root/"dist/ReelAnatomy"
-for name in ("README.md","LICENSE","THIRD_PARTY_NOTICES.md"):
+for name in ("README.md","LICENSE","THIRD_PARTY_NOTICES.md","MOBILE.md"):
     shutil.copy2(root/name,dist/name)
 notices=dist/"licenses";notices.mkdir(exist_ok=True)
 for d in metadata.distributions():

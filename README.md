@@ -1,82 +1,49 @@
-# Reel Anatomy Studio
+# Reel Anatomy / Sanctum
 
-A local-first Windows research and production app for short-form video.
+A local-first workspace for researching short-form content, keeping evidence attached to decisions, making original Reels and recording actual outcomes.
 
-**Current version: 0.2.0 beta.** It joins a research library, resumable video processing, descriptive pattern comparisons, filming briefs, rough-cut checks and outcome tracking. It does not promise virality.
+**Open the web app:** https://nixzle.github.io/reel-anatomy/
 
-## Download and run
+**Current status:** 1.0.0-rc.3. The web app is a release candidate, not qualified stable 1.0. The new desktop host is tested from source, but its Windows packaging command was blocked before execution. There is no new portable executable to download. Existing released Windows v0.2.0 assets are unchanged.
 
-Download **ReelAnatomy-Windows-x64.zip** from the v0.2.0 GitHub Release, extract the entire folder, and run **ReelAnatomy.exe**. Keep the `_internal` directory beside the executable. The interface opens in your browser; the server and analysis run on your computer. The portable Windows x64 package includes Python, English speech recognition and FFmpeg. It is unsigned; verify its checksum and respect device policy.
+## Workflow
 
-Existing v0.1.1 analyses remain in the same local data directory. They appear under **My research** with unknown creator, rights and distribution metadata until you supply those details. Do not run two versions against the same library simultaneously.
+1. In Sanctum, import sources, PDFs, saved articles and permitted transcripts. Read original material, retain counterevidence and link exact passages to claims.
+2. Use Creative Lab for your channel playbook, supplied audience questions, metric-blind script checks and actual retention observations.
+3. In Studio, create and edit an original filming brief, with an explicit hypothesis rather than a promised result.
+4. In Reel Factory, assemble owned/licensed footage, images and narration. Create three opening variants, attach evidence, inspect the actual edit and render a draft or a genuinely reviewed version.
+5. Register the actual exported file as our draft and use Results to preserve the original test and real observations.
 
-## The workflow
+The evidence interface is not this ChatGPT session. It does not inherit private memory, account connections or tools. Default evidence mode is labelled source retrieval. The included script planner is structured; optional language-model reasoning has its own setup and remains unqualified by broad semantic-quality evaluation.
 
-### Library: define a question and collect relevant posts
+## Narration-timed captions
 
-Create a research project with its topic, audience, platform and objective. Keep **References**, **Our published posts** and **Our drafts** separate. Include ordinary and unsuccessful posts as well as strong ones.
+The web app can import and edit SRT/VTT. A timed track binds the exact narration file and the spoken script/timeline. Changing the audio or script requires rechecking the track. Reviewed exports also reject caption wording that differs from the source-linked script. Both native and browser renderers use the timed track, including its silence gaps. Without a track, proportional planned captions remain explicitly labelled.
 
-Upload authorised MP4, MOV, M4V or WEBM footage. Each file may be up to 200 MB; the queue accepts up to 200 unfinished jobs. Optional SRT/VTT/TXT files are matched by filename. Processing uses one worker, survives browser reloads, reuses identical media/transcript analysis and keeps distinct publication records separate. Interrupted jobs pause for explicit resume after an app restart; queued work can continue while the app is running. Pause affects the next job, not a currently running operation.
+On the existing configured Windows development computer, the unified host runs with:
 
-Enter creator, topic cohort, publication time, source link, collection and whether distribution was organic, paid or unknown. Source links document provenance; they do not trigger downloading or scraping. Metadata CSV templates use exact post IDs to avoid ambiguous matches.
+    .venv\Scripts\python.exe desktop_studio.py
 
-### Breakdown: inspect evidence
+It serves the same app at http://127.0.0.1:8766 and uses the existing local English Whisper model for video transcription and narration timing. This command is not a package installation. A recipient without the configured Python environment/model does not yet have a new one-click desktop release. See standalone/DESKTOP_COMPLETION.md for the tested scope and blocked delivery status.
 
-Speech transcription and estimated scene boundaries have separate seekable timelines. Edit the transcript, primary narrative role and shot descriptions. Roles from the included deterministic rules are suggestions, not semantic-model predictions. Imported plain-text timestamps are explicitly approximate; timed captions preserve their supplied timing.
+Recognition and word times are estimates, not perfect forced alignment. Check the recording and text. Silent clips do not get fabricated speech. Nothing is automatically posted to a social account.
 
-### Patterns: compare similar observations
+## Data and recovery
 
-Append actual snapshots with a source and a timezone-aware capture timestamp. Supported windows are 24 hours, 72 hours, seven days and lifetime. Age-window checks reject mislabeled snapshots. Missing metrics remain unknown. The app accepts observed views, engagement counts, qualified conversions, average watch time, three-second retention and completion percentages when supplied by your source.
+The library is stored in this browser. Desktop and hosted-phone origins are separate. Project packs transfer research and selected original media/documents explicitly; they are not live sync. Backups and packs require deliberate storage outside the browser because browser data can be evicted. Packs are not encrypted. Restoring a campaign clears previous approval, and invalid or interrupted restores must not replace committed work.
 
-The Patterns screen keeps view definitions separate. It normalises to at least three earlier matched posts from the same creator, then compares only creator/topic/duration/format strata containing both feature states. It shows sample sizes, supporting examples, counterexamples and exploratory creator-cluster bootstrap intervals when enough matched data exists. Lifetime totals do not become age-matched data. There is no calibrated virality score, causal-effect claim or guarantee that patterns generalise.
+Save work and close old app tabs to activate an update. Do not clear website data just to update. Application-cache files are hash checked. Source footage, prompts and credentials are not published with the app.
 
-Choose **Use as a test hypothesis** to bring a pattern into Studio. The evidence state, comparison window and counterexamples are retained with the new brief. Sparse evidence remains visibly sparse.
+## Verification and remaining work
 
-### Studio: plan an original post
+The implementation has deterministic Python/JavaScript tests, actual browser and native video checks, generated-document tests, recovery tests and source-mode local speech inference. Exact current receipts are retained in standalone/PRODUCTION_RELEASE.md and standalone/PRODUCTION_VERIFICATION.json once the delivery record is complete. Historic release records remain in standalone and RELEASE_HISTORY.md.
 
-Supply a topic, audience, goal, honest promise, actual proof, method, available footage and call to action. The included **structured planner** creates three opening alternatives and a five-beat filming plan from those facts. It retrieves relevant reference structures without copying reference scripts. This default planner is not learned AI.
+Original stable-1.0 requirements remain in standalone/RELEASE_TARGET.json: measured generative/vision quality, physical iPhone/Safari qualification, authorised social-account intake, authenticated live sync and real-world cohort/campaign validation. A speech recogniser, synthetic fixture or successful renderer does not close those requirements. No guaranteed virality or calibrated view probability is claimed.
 
-Edit and save the script with revision history. Export a standalone, phone-friendly HTML filming brief or Markdown. Exported HTML has no application scripts and does not expose the local server. Upload a rough cut to compare actual length, speech timing, role-based demonstration timing and CTA observations with the plan. Visual truth, caption readability and claim support still need human review unless supported by inspected evidence.
+The old denied remote-relay deployment and the newly blocked Windows packaging operation were not retried through alternative routes. No new model download, installer, paid provider or account connection was activated in the rc.3 iteration.
 
-### Results: learn from our own posts
+## Source and licences
 
-Before publishing, record the one change, hypothesis, primary metric, observation window and draft. The app freezes the script revision. After publication, enter the real publication time and append outcomes. Earlier comparable own posts form a descriptive baseline when at least three are available. Save what happened, including disappointing outcomes. Organic uploads are not randomised A/B experiments.
+The standalone web build reuses the existing Store, Pyodide, SQLite, PDF.js, Readability, WebLLM runtime and browser media APIs. Licensed donors and exact pins are recorded in standalone/DONORS.md and the runtime-pin JSON files. Model weights, private libraries and generated test output are not committed. Do not redistribute system font files.
 
-## Optional learned semantic analysis
-
-A local-only Ollama connector is implemented at **127.0.0.1:11434**. Settings lists already installed models. No runtime, weights or paid service is installed or purchased by this app. Declared cloud-backed models are rejected, and no cloud fallback is made. A modified local service could still forward requests; control and trust your local service configuration.
-
-A configured text model can suggest multiple narrative roles and refine scripts. A vision-capable model can describe sampled still frames. Inference uses the documented Ollama chat/schema API, validates returned evidence indices, pins model identity, caches results and keeps performance metadata out of the classification prompt. Suggestions require explicit application. Frame descriptions do not establish camera movement, sound design or unsampled content.
-
-**Release verification boundary:** this version's local-model transport and validation are tested with synthetic responses. No compatible service/model was available on the build host. Real semantic quality, throughput and accuracy on representative creator videos have not been measured. The default research/planning/media workflow works without that optional service.
-
-Official integration references: https://docs.ollama.com/api/chat and https://docs.ollama.com/capabilities/structured-outputs .
-
-## Privacy and storage
-
-Data stays under `%LOCALAPPDATA%/ReelAnatomy` on Windows or `~/ReelAnatomy` elsewhere. The studio stores metadata in `studio.sqlite3`; original analyses remain JSON files. `REEL_ANATOMY_HOME` selects a different directory and `REEL_ANATOMY_PORT` changes localhost port 8765. The server binds only to loopback and checks Host and browser-origin boundaries. It is for one trusted local user, not public internet hosting.
-
-Back up the entire data directory with the app closed to include media and all research state. The research JSON export includes metadata, snapshots, plans and experiments, not videos. It is an export, not a claimed full restore/import format. Close the app before moving or deleting its data.
-
-## Developer setup and verification
-
-Python 3.13 is used for the verified Windows build. Create an isolated virtual environment and install the reviewed requirements only when intentionally setting up a developer environment:
-
-    python -m venv .venv
-    .venv\Scripts\python.exe -m pip install -r requirements-build.txt
-    .venv\Scripts\python.exe app.py
-
-Speech uses an existing cached `Systran/faster-whisper-base.en` model or `models/base.en`; it never downloads one during analysis. Model weights are not in Git. Python 3.10+ source use is intended, but other operating systems and Python versions are not independently qualified by this release.
-
-    .venv\Scripts\python.exe -m unittest discover -v
-    node test_frontend.cjs
-    node scripts/browser-smoke.mjs
-    node scripts/studio-smoke.mjs
-
-Browser tests use an existing Chrome installation and Node, with isolated profiles and synthetic media. They install nothing. `scripts/package_release.py` requires a clean committed tree, packages the current application version and runs real executable media checks with an empty external model cache. The release must be downloaded again, hash-checked and tested before handback. The model-contract fixtures are not semantic-model benchmarks.
-
-## Boundaries still open
-
-No native Instagram/TikTok/YouTube account connectors, private analytics, automatic web scraping, automatic publishing or generated imagery are included. Native text posts and carousels are not ingestion formats in this video-first release. A native iPhone application, shared hosted workspace, a second physical test computer and human usability review remain separate acceptance gates. See HANDOFF.md for ownership and next acceptance criteria.
-
-Original source is MIT licensed. Bundled libraries, the speech model and FFmpeg retain their own notices and licences; see THIRD_PARTY_NOTICES.md and the packaged licenses directory.
+The checked local Sanctum Reel Factory binding pins its implementation and refuses unexpected source changes. That binding is a local production tool, not a new global ChatGPT connector or publishing authority.

@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0-rc.3",
+  "web": {
+    "state": "verified-public",
+    "source_commit": "30c79d2c82e876d2eead43b2fc9bd7acdd031353",
+    "build": "6d8bc9c379b46f3a",
+    "publication_commit": "3ccdbc21c3878458bf1bfa1e33cb2ff98bc64904",
+    "rollback_commit": "c1bbc7e36de377f4fa8152698b6afe255cbc89da",
+    "prior_fully_verified_build": "a875f9b9d476d630",
+    "changed_manifest_files": [
+      "index.html"
+    ],
+    "unchanged_runtime_files": 76,
+    "scope": "Two descriptive text corrections; no runtime implementation change.",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "version": "1.0.0-rc.3",
+    "manifest_files": 77,
+    "service_worker_matched": true,
+    "verified_at": "2026-10-24T11:52:35.389141+00:00"
+  },
+  "python_tests": 220,
+  "javascript_checks": 53,
+  "public_browser_checks": {
+    "timed_captions": 17,
+    "production_and_recovery": 31,
+    "sanctum": 51,
+    "creative_lab": 20
+  },
+  "source_mode_desktop_browser_checks": 19,
+  "actual_speech": {
+    "performed": true,
+    "model": "existing local faster-whisper/base.en",
+    "mode": "CPU int8, two threads",
+    "new_weights_downloaded": false,
+    "scope": "Existing short generated English narration fixture; word timing and pauses checked. Not general semantic/vision evaluation."
+  },
+  "native_factory": {
+    "version": "0.7.0-factory",
+    "status": "QUALIFIED_LOCAL",
+    "canonical_merge": "56248be7d101ab997a8dbbcfca25c98b8163652a",
+    "checks": [
+      {
+        "check": "binding-doctor",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "check": "binding-inspect-timed",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "check": "binding-render-timed",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "check": "binding-batch",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "check": "binding-existing-output-rejected",
+        "exit": 1,
+        "expected": 1
+      },
+      {
+        "check": "altered caption implementation pin refused",
+        "exit": 1,
+        "expected": 1
+      }
+    ]
+  },
+  "windows_distribution": {
+    "state": "blocked-before-build",
+    "new_executable_exists": false,
+    "new_archive_exists": false,
+    "fresh_binary_acceptance_performed": false,
+    "reason": "OpenAI could not determine the safety status of the packaging request. No alternate packaging route or retry was used.",
+    "older_stable_release_unchanged": "v0.2.0"
+  },
+  "environment": "Existing Windows host; isolated Chrome profiles at 390px; generated media, documents and observations. No physical iPhone or real campaign acceptance.",
+  "open_original_gates": [
+    "generative and semantic vision quality",
+    "physical iPhone/Safari",
+    "authorised social-platform intake",
+    "authenticated live synchronisation",
+    "real cohort and prospective campaign outcomes"
+  ],
+  "source_hashes": {
+    "desktop_studio.py": "5b6d0f00707124dfad14fc20563ccdf47e501d1e9a208d63e6580e8e6b14c28b",
+    "standalone/timed_captions.py": "7f5a56fb8828769554bc62ef34636ff4055bb9aa4f373d106b17255868bea831",
+    "standalone/caption_editor.mjs": "273c64b8e4a41abf2c4fdd8441c21308b706b1e1b5a9b3eb914d93a0ac7a50a9",
+    "standalone/desktop_speech.mjs": "2fcf50f0267cb6f635f719cfef67a9d48278b864c7c1b85ef646dd1732ea3082",
+    "standalone/factory_engine.py": "17d6668283ef53453a099bfb9742548a855f0ecc429225a32d7994e859faaf74",
+    "scripts/reel_factory.py": "e028556e067844ae954b18acb43910877968e128b160980ba88ec9c38688ea4d"
+  },
+  "verified_at": "2026-10-24T11:54:43.382959+00:00"
+}

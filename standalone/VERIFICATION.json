@@ -1,0 +1,164 @@
+{
+  "edition": "0.4.0-phone",
+  "published": true,
+  "url": "https://nixzle.github.io/reel-anatomy/",
+  "build": "fe74032a5f637b18",
+  "source_commit": "00017cbd5ea15a3e26db6703e0b7fbad07ebaa70",
+  "static_publication_commit": "b892394a7887e1e026deec7bd15907a55977485a",
+  "verified_at": "2026-10-23T00:19:13.703051+00:00",
+  "public_file_hashes_verified": 33,
+  "live_browser_checks": 32,
+  "desktop_studio_regression_checks": 19,
+  "frontend_checks": 11,
+  "checks": [
+    {
+      "name": "Python/SQLite studio boots in a phone-width browser with no server API",
+      "detail": true
+    },
+    {
+      "name": "390px layout has no horizontal overflow",
+      "detail": true
+    },
+    {
+      "name": "capabilities do not claim an absent speech model",
+      "detail": {
+        "ok": true,
+        "version": "0.4.0-phone",
+        "ffmpeg": false,
+        "speech": false,
+        "local_only": true,
+        "phone": true
+      }
+    },
+    {
+      "name": "research project stores audience topic platform and goal",
+      "detail": true
+    },
+    {
+      "name": "batch upload enters a paused durable queue",
+      "detail": true
+    },
+    {
+      "name": "identical media and matched subtitles reuse analysis without merging post records",
+      "detail": true
+    },
+    {
+      "name": "underscore subtitle filenames match and original timing is retained",
+      "detail": true
+    },
+    {
+      "name": "timed metrics retain provenance retention and unknown counts",
+      "detail": true
+    },
+    {
+      "name": "sparse evidence is not promoted to a winning formula",
+      "detail": true
+    },
+    {
+      "name": "pattern becomes an original five-beat brief with retained evidence limits",
+      "detail": true
+    },
+    {
+      "name": "script edits preserve prior revisions",
+      "detail": true
+    },
+    {
+      "name": "phone filming brief and Markdown export include evidence without executable scripts",
+      "detail": true
+    },
+    {
+      "name": "rough-cut review compares actual footage with the saved brief",
+      "detail": true
+    },
+    {
+      "name": "prospective test freezes the chosen script and hypothesis",
+      "detail": true
+    },
+    {
+      "name": "published observations and outcome review retain the original hypothesis",
+      "detail": true
+    },
+    {
+      "name": "no hidden language-model service or download",
+      "detail": true
+    },
+    {
+      "name": "all five studio screens fit a 390px viewport",
+      "detail": true
+    },
+    {
+      "name": "simulated Dynamic Island and home indicator do not cover controls",
+      "detail": true
+    },
+    {
+      "name": "library brief and outcome survive a browser restart",
+      "detail": true
+    },
+    {
+      "name": "portable backup includes analysis and scripts, not source video",
+      "detail": true
+    },
+    {
+      "name": "malformed backup is rejected without changing the committed library",
+      "detail": true
+    },
+    {
+      "name": "metadata backup restores the complete workspace",
+      "detail": true
+    },
+    {
+      "name": "research JSON import creates a separate project without overwriting the original",
+      "detail": true
+    },
+    {
+      "name": "older desktop exports preserve unknown analysis instead of fabricating it",
+      "detail": true
+    },
+    {
+      "name": "duplicate analysis import never overwrites an existing editable asset",
+      "detail": true
+    },
+    {
+      "name": "backup rejects hostile DOM reference identities",
+      "detail": true
+    },
+    {
+      "name": "a separate browser user has no access to the first user library",
+      "detail": true
+    },
+    {
+      "name": "iPhone installation instructions are present",
+      "detail": true
+    },
+    {
+      "name": "entire Python studio and saved work reopen offline, not just a landing page",
+      "detail": true
+    },
+    {
+      "name": "saved script is editable offline",
+      "detail": true
+    },
+    {
+      "name": "no uncaught browser errors",
+      "detail": true
+    },
+    {
+      "name": "only static same-origin GET requests, no research upload or desktop relay",
+      "detail": true
+    }
+  ],
+  "privacy": "Only static same-origin GET network requests observed. Research, videos and metrics stayed in browser IndexedDB. No relay, cookie-session service or desktop connection.",
+  "donors": [
+    "Pyodide pinned runtime and SQLite",
+    "idb-keyval 6.2.2",
+    "existing Reel Anatomy Python Store and production interface"
+  ],
+  "limitations": [
+    "Real iPhone/Safari installation and codec behaviour have not been physically tested.",
+    "Phone transcription and learned semantic models are not included. Import SRT/VTT or Windows analysis JSON.",
+    "File exchange is explicit; automatic cross-device synchronisation is not included.",
+    "Backups exclude original media. Browser storage can be evicted.",
+    "Generated fixtures validate workflow, not real campaign uplift or massive-corpus performance."
+  ],
+  "prior_denials": "The denied Cloudflare relay operations were not repeated or redirected. The relay candidate remains undeployed."
+}

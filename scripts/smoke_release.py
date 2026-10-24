@@ -71,6 +71,13 @@ def run(executable, output):
             with urllib.request.urlopen(request,timeout=30) as response:plan=json.load(response)
             assert len(plan["beats"])==5 and plan["pattern_basis"]["feature"]["status"]=="insufficient matched evidence"
             ok("packaged production planner retains sparse-evidence warnings without a language-model service")
+            phone=get("/api/mobile/status")
+            assert phone["configured"] is False and phone["enabled"] is False
+            assert "secret" not in phone
+            ok("portable phone bridge is included but disabled without owner configuration")
+            manifest=get("/manifest.webmanifest")
+            assert manifest["display"]=="standalone"
+            ok("mobile manifest and bundled offline assets survive packaging")
             Path(output).write_text(json.dumps({"passed":True,"version":health["version"],"checks":checks},indent=2),encoding="utf-8")
         finally:
             process.terminate()

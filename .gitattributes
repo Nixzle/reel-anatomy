@@ -1,0 +1,12 @@
+# Keep the hash-pinned upstream WebLLM bundle byte-for-byte, including vendor whitespace.
+standalone/vendor/webllm.mjs -text -whitespace
+standalone/vendor/webllm.LICENSE -text
+# Preserve exact licensed document/archive donor bytes and upstream formatting.
+standalone/vendor/pdfjs/* -text -whitespace
+standalone/vendor/Readability.js -text -whitespace
+standalone/vendor/Readability.LICENSE.md -text
+standalone/vendor/fflate.mjs -text -whitespace
+standalone/vendor/fflate.LICENSE -text
+
+# PDF fixture byte offsets and binary contents must never be line-ending-normalised.
+tests/fixtures/*.pdf binary

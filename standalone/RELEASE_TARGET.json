@@ -1,0 +1,76 @@
+{
+  "target": "1.0.0",
+  "candidate": "1.0.0-rc.3",
+  "channel": "release-candidate",
+  "stable_qualified": false,
+  "owner": "Ultron Prime",
+  "gates": [
+    {
+      "id": "documents",
+      "title": "Page-grounded document research",
+      "status": "checked",
+      "acceptance": "Actual PDF/HTML extraction and original-page inspection with exact page provenance and no active content.",
+      "evidence": {
+        "suite": "scripts/release-smoke.mjs",
+        "receipt": "standalone/READINESS_VERIFICATION.json",
+        "scope": "Isolated Windows Chrome at phone width with real generated media/document fixtures. Physical iPhone remains a separate open gate."
+      }
+    },
+    {
+      "id": "recovery",
+      "title": "Recoverable library and media",
+      "status": "checked",
+      "acceptance": "Pack roundtrip, changed-byte rejection, transaction rollback, restored media and old-backup compatibility.",
+      "evidence": {
+        "suite": "scripts/release-smoke.mjs",
+        "receipt": "standalone/READINESS_VERIFICATION.json",
+        "scope": "Isolated Windows Chrome at phone width with real generated media/document fixtures. Physical iPhone remains a separate open gate."
+      }
+    },
+    {
+      "id": "production",
+      "title": "Actual export-to-results loop",
+      "status": "checked",
+      "acceptance": "Real rendered file is hash-matched and registered as our draft without fabricated publication or metrics.",
+      "evidence": {
+        "suite": "scripts/release-smoke.mjs",
+        "receipt": "standalone/READINESS_VERIFICATION.json",
+        "scope": "Isolated Windows Chrome at phone width with real generated media/document fixtures. Physical iPhone remains a separate open gate."
+      }
+    },
+    {
+      "id": "model",
+      "title": "Measured generative reasoning and video semantics",
+      "status": "open",
+      "acceptance": "Explicitly enabled model, actual inference, representative labelled evaluation and error analysis. Runtime loading alone is not inference."
+    },
+    {
+      "id": "iphone",
+      "title": "Physical iPhone/Safari qualification",
+      "status": "open",
+      "acceptance": "Install, import, background/reconnect, render and play exported media on a physical supported iPhone."
+    },
+    {
+      "id": "platforms",
+      "title": "Authorised social-account intake",
+      "status": "open",
+      "acceptance": "Separately authorised platform connections with platform permission/policy checks and real retrieval receipts."
+    },
+    {
+      "id": "sync",
+      "title": "Cross-device synchronisation",
+      "status": "open",
+      "acceptance": "Real authenticated sync, conflict/recovery and privacy checks. Explicit project-pack transfer is not live sync."
+    },
+    {
+      "id": "outcomes",
+      "title": "Real-world cohort and campaign validation",
+      "status": "open",
+      "acceptance": "Ordinary and weak posts included, held-out evaluation and measured prospective own-post outcomes; no guarantee of viral reach."
+    }
+  ],
+  "notes": [
+    "The original full product objective is preserved. Prerelease labels must not be promoted to stable while critical gates are open.",
+    "The research assistant does not inherit private ChatGPT memory, this model or connected tools."
+  ]
+}

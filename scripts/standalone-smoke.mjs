@@ -1,0 +1,128 @@
+// Isolated browser acceptance for the standalone app. No accounts or relay.
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {spawn,spawnSync} from 'node:child_process';
+const root=process.cwd(),run=path.join(root,'.local','standalone-browser-'+Date.now());fs.mkdirSync(run,{recursive:true});
+const origin=process.env.RA_PHONE_ORIGIN||'http://127.0.0.1:18920/';
+const profile=path.join(run,'chrome');fs.mkdirSync(profile);
+const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
+const log=fs.createWriteStream(path.join(run,'chrome.log'));chrome.stdout.pipe(log);chrome.stderr.pipe(log);
+let ws,session,id=0;const pending=new Map(),errors=[],requests=[],checks=[];
+const delay=ms=>new Promise(r=>setTimeout(r,ms));const pause=delay;
+async function until(fn,label,limit=60000){const end=Date.now()+limit;while(Date.now()<end){const result=await fn();if(result)return result;await delay(150);}throw Error('Timed out: '+label);}
+function send(method,params={},sid=session){return new Promise((resolve,reject)=>{const n=++id,timer=setTimeout(()=>{pending.delete(n);reject(Error('CDP timeout '+method));},60000);pending.set(n,{resolve,reject,timer});ws.send(JSON.stringify({id:n,method,params,...(sid?{sessionId:sid}:{})}));});}
+async function evaluate(expression){const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true,userGesture:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result?.value;}
+const pass=(name,detail=true)=>{checks.push({name,detail});console.log('PASS',name,JSON.stringify(detail));};
+async function shot(name){const r=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(run,name+'.png'),Buffer.from(r.data,'base64'));}
+async function click(selector){return evaluate('document.querySelector('+JSON.stringify(selector)+').click()');}
+async function input(selector,value){return evaluate('(()=>{const e=document.querySelector('+JSON.stringify(selector)+');e.value='+JSON.stringify(value)+';e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));})()');}
+async function files(selector,list){const doc=await send('DOM.getDocument');const n=await send('DOM.querySelector',{nodeId:doc.root.nodeId,selector});await send('DOM.setFileInputFiles',{nodeId:n.nodeId,files:list});}
+const py=path.join(root,'.venv','Scripts','python.exe');
+const ff=spawnSync(py,['-c','import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())'],{encoding:'utf8'}).stdout.trim();
+const video=path.join(run,'synthetic-reel.mp4');
+const made=spawnSync(ff,['-hide_banner','-loglevel','error','-f','lavfi','-i','color=black:s=320x180:r=25:d=2','-f','lavfi','-i','color=white:s=320x180:r=25:d=2','-i',path.join(root,'tests','fixtures','speech.wav'),'-filter_complex','[0:v][1:v]concat=n=2:v=1:a=0[out]','-map','[out]','-map','2:a','-c:v','libx264','-threads','2','-pix_fmt','yuv420p','-c:a','aac','-shortest','-y',video],{encoding:'utf8',timeout:30000});
+assert.equal(made.status,0,made.stderr);
+const post=async(route,data)=>evaluate('PhoneLocal.api('+JSON.stringify('/api/studio/'+route)+',{method:"POST",body:'+JSON.stringify(JSON.stringify(data))+'})');
+const read=async route=>evaluate('PhoneLocal.api('+JSON.stringify('/api/studio/'+route)+')');
+const formInput=(form,name,value)=>input('#'+form+' [name="'+name+'"]',value);
+const localDate=date=>new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,19);
+
+try{
+ await until(()=>fs.existsSync(path.join(profile,'DevToolsActivePort')),'Chrome');
+ const [port,route]=fs.readFileSync(path.join(profile,'DevToolsActivePort'),'utf8').trim().split('\n');ws=new WebSocket('ws://127.0.0.1:'+port+route);
+ await new Promise((r,j)=>{ws.addEventListener('open',r,{once:true});ws.addEventListener('error',j,{once:true});});
+ ws.addEventListener('message',event=>{const m=JSON.parse(event.data);if(m.id){const p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}}else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails);else if(m.method==='Network.requestWillBeSent')requests.push({url:m.params.request.url,method:m.params.request.method});else if(m.method==='Page.javascriptDialogOpening')void send('Page.handleJavaScriptDialog',{accept:true},m.sessionId);});
+ const context=(await send('Target.createBrowserContext',{},null)).browserContextId;
+ const target=(await send('Target.createTarget',{url:'about:blank',browserContextId:context},null)).targetId;
+ session=(await send('Target.attachToTarget',{targetId:target,flatten:true},null)).sessionId;
+ await send('Page.enable');await send('Runtime.enable');await send('Network.enable');await send('Log.enable');
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ await send('Page.navigate',{url:origin});
+ await until(async()=>{const s=await evaluate('({done:document.getElementById("boot")?.hidden,text:document.getElementById("boot-status")?.textContent})');if(s?.text?.includes('No library was erased'))throw Error(s.text);return s?.done;},'on-device Python');
+ await until(()=>evaluate('document.getElementById("research-select")?.options.length>0'),'research UI');
+ pass('Python/SQLite studio boots in a phone-width browser with no server API');
+ assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true);pass('390px layout has no horizontal overflow');await shot('phone-library');
+ const health=await evaluate('PhoneLocal.api("/api/health")');assert.equal(health.phone,true);assert.equal(health.speech,false);pass('capabilities do not claim an absent speech model',health);
+ await click('#new-research');
+ for(const [name,value] of Object.entries({title:'Synthetic software research',topic:'Software demonstrations',audience:'Independent creators',objective:'Saves'}))await formInput('research-form',name,value);
+ await click('#research-form .primary-button');
+ await until(()=>evaluate('document.getElementById("research-select").selectedOptions[0]?.textContent==="Synthetic software research"'),'research created');
+ const workspace=await evaluate('document.getElementById("research-select").value');
+ pass('research project stores audience topic platform and goal');
+ const one=path.join(run,'software_clip_one.mp4'),two=path.join(run,'software_clip_two.mp4');fs.copyFileSync(video,one);fs.copyFileSync(video,two);
+ const captions='1\n00:00:00,000 --> 00:00:01,500\nWhy compare software openings?\n\n2\n00:00:02,000 --> 00:00:03,900\nFollow the evidence, not a promise.\n';
+ const srt1=path.join(run,'software_clip_one.srt'),srt2=path.join(run,'software_clip_two.srt');fs.writeFileSync(srt1,captions);fs.writeFileSync(srt2,captions);
+ await click('#queue-toggle');await until(async()=>(await read('jobs')).paused,'pause persisted');
+ await files('#queue-files',[one,two]);await files('#queue-captions',[srt1,srt2]);
+ await formInput('queue-form','creator','Synthetic Creator');await formInput('queue-form','cohort','software');await formInput('queue-form','distribution','organic');await click('#queue-form [name="rights_confirmed"]');await click('#queue-submit');
+ await until(async()=>(await read('jobs')).jobs.length===2,'two jobs accepted');assert.ok((await read('jobs')).jobs.every(j=>j.status==='queued'));pass('batch upload enters a paused durable queue');
+ const beforeQueueReload=await evaluate('performance.timeOrigin');await send('Page.reload',{ignoreCache:true});await until(()=>evaluate('performance.timeOrigin!=='+beforeQueueReload+'&&document.getElementById("boot")?.hidden&&document.getElementById("research-select")?.value==='+JSON.stringify(workspace)),'research selection and app readiness survive reload');await click('[data-studio-tab="library"]');await until(()=>evaluate('document.getElementById("queue-toggle").textContent==="Resume queue"'),'pause survives reload');
+ await click('#queue-toggle');await until(async()=>(await read('jobs')).jobs.every(j=>j.status==='complete'),'queued media completed');
+ let posts=(await read('library?workspace='+workspace)).posts;assert.equal(posts.length,2);assert.equal(posts[0].asset_id,posts[1].asset_id);pass('identical media and matched subtitles reuse analysis without merging post records');
+ const asset=await evaluate('PhoneLocal.api('+JSON.stringify('/api/project/'+posts[0].asset_id)+')');assert.equal(asset.segments[0].text,'Why compare software openings?');assert.equal(asset.transcript_source,'imported captions');pass('underscore subtitle filenames match and original timing is retained');
+ await until(()=>evaluate('document.querySelectorAll("#research-posts [data-post]").length===2'),'library rendered');await shot('desktop-library');
+ const first=posts[0],published=new Date(Date.now()-14*86400000),observed=new Date(published.getTime()+72*3600000);
+ await click('[data-post="'+first.id+'"]');await until(()=>evaluate('document.getElementById("post-dialog").open'),'metadata dialog');
+ await formInput('post-meta-form','published_at',localDate(published));await formInput('post-meta-form','source_url','https://example.com/synthetic-fixture');await click('#post-meta-form .primary-button');
+ await until(async()=>Boolean((await read('post?id='+first.id)).post.published_at),'metadata saved');
+ await formInput('snapshot-form','window','72h');await formInput('snapshot-form','observed_at',localDate(observed));await formInput('snapshot-form','views','100');await formInput('snapshot-form','retention_3s_pct','45.5');await formInput('snapshot-form','source','Synthetic test observation, not real social data');await click('#snapshot-form .primary-button');
+ await until(async()=>(await read('post?id='+first.id)).snapshots.length===1,'snapshot appended');const snapshot=(await read('post?id='+first.id)).snapshots[0];assert.equal(snapshot.metrics.retention_3s_pct,45.5);assert.equal(snapshot.metrics.likes,undefined);pass('timed metrics retain provenance retention and unknown counts');await click('#close-post-dialog');
+ await click('[data-studio-tab="patterns"]');await input('#pattern-window','72h');await click('#find-patterns');await until(()=>evaluate('document.querySelectorAll("[data-use-pattern]").length===5'),'pattern results');assert.ok((await evaluate('document.getElementById("pattern-output").textContent')).includes('insufficient matched evidence'));pass('sparse evidence is not promoted to a winning formula');await shot('desktop-patterns');
+ await click('[data-use-pattern="early_demo"]');assert.equal(await evaluate('document.getElementById("brief-pattern").value'),'early_demo');
+ const brief={topic:'Compare software video openings',audience:'Independent creators',goal:'Saves',promise:'Understand the opening before copying it',method:'Load two clips and inspect the first five seconds on the timeline.',proof:'This demonstration shows two synthetic test clips, not measured performance.',footage:'My own screen recording',tone:'Direct and practical',cta:'Save this comparison checklist.'};
+ for(const [name,value] of Object.entries(brief))await formInput('brief-form',name,value);await click('#create-plan');await until(()=>evaluate('document.querySelectorAll(".plan-beat").length===5'),'filming plan created');
+ let plan=(await read('plans?workspace='+workspace)).plans[0];assert.equal(plan.beats[3].spoken,brief.proof);assert.equal(plan.pattern_basis.feature.key,'early_demo');assert.ok(plan.limits.some(x=>x.includes('insufficient')));pass('pattern becomes an original five-beat brief with retained evidence limits');
+ await input('[data-beat="0"][data-field="spoken"]','Here is our actual comparison, before the explanation.');await click('#save-plan');await until(async()=>(await read('plans?workspace='+workspace)).plans[0].revision===2,'plan edit persisted');plan=(await read('plans?workspace='+workspace)).plans[0];assert.equal(plan.history.length,1);pass('script edits preserve prior revisions');await shot('desktop-studio');
+ const downloads=path.join(run,'downloads');fs.mkdirSync(downloads);await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads,browserContextId:context},null);
+ await click('#export-filming-html');await click('#export-filming-md');await until(()=>fs.existsSync(path.join(downloads,'filming-brief.html'))&&fs.existsSync(path.join(downloads,'filming-brief.md')),'production exports');assert.ok(fs.readFileSync(path.join(downloads,'filming-brief.md'),'utf8').includes('Selected pattern hypothesis'));assert.ok(!fs.readFileSync(path.join(downloads,'filming-brief.html'),'utf8').includes('<script'));pass('phone filming brief and Markdown export include evidence without executable scripts');
+ await click('[data-studio-tab="library"]');const draft=path.join(run,'our-draft.mp4');fs.copyFileSync(video,draft);await files('#queue-files',[draft]);await files('#queue-captions',[]);await formInput('queue-form','collection','draft');await evaluate('document.querySelector("#queue-form [name=rights_confirmed]").checked=true');await click('#queue-submit');await until(async()=>(await read('jobs')).jobs.length===3&&(await read('jobs')).jobs.every(j=>j.status==='complete'),'draft analysed');
+ posts=(await read('library?workspace='+workspace)).posts;const own=posts.find(p=>p.collection==='draft');assert.ok(own);
+ await click('[data-studio-tab="create"]');await until(()=>evaluate('[...document.getElementById("draft-review-post").options].some(o=>o.value==='+JSON.stringify(own.id)+')'),'draft selector');await input('#draft-review-post',own.id);await click('#draft-review-form .primary-button');await until(()=>evaluate('document.getElementById("draft-review-output").textContent.includes("Actual length")'),'rough cut review');assert.ok((await evaluate('document.getElementById("draft-review-output").textContent')).includes('planned length'));pass('rough-cut review compares actual footage with the saved brief');
+ await click('[data-studio-tab="results"]');await input('#experiment-plan',plan.id);await input('#experiment-post',own.id);await formInput('experiment-form','change','Show the actual result before explaining the method.');await click('#experiment-form .primary-button');await until(async()=>(await read('results?workspace='+workspace)).experiments.length===1,'prospective test saved');
+ const experiment=(await read('results?workspace='+workspace)).experiments[0];assert.equal(experiment.plan_revision,2);assert.equal(experiment.frozen_plan.beats[0].spoken,plan.beats[0].spoken);pass('prospective test freezes the chosen script and hypothesis');
+ await pause(1200);await click('[data-result-post="'+own.id+'"]');await until(()=>evaluate('document.getElementById("post-dialog").open'),'own metadata');await formInput('post-meta-form','collection','own');await formInput('post-meta-form','published_at',localDate(new Date()));await click('#post-meta-form .primary-button');await until(async()=>(await read('post?id='+own.id)).post.collection==='own','publication metadata');await click('#close-post-dialog');await click('[data-publish="'+experiment.id+'"]');await until(async()=>(await read('results?workspace='+workspace)).experiments[0].status==='published','publication recorded');
+ await click('[data-result-post="'+own.id+'"]');await formInput('snapshot-form','window','lifetime');await formInput('snapshot-form','observed_at',localDate(new Date()));await formInput('snapshot-form','views','10');await formInput('snapshot-form','source','Synthetic browser fixture; not a real campaign');await click('#snapshot-form .primary-button');await until(async()=>(await read('post?id='+own.id)).snapshots.length===1,'actual observation stored');await click('#close-post-dialog');
+ await input('[data-assessment="'+experiment.id+'"]','Synthetic workflow check; no actual campaign improvement was measured.');await click('[data-assess="'+experiment.id+'"]');await until(async()=>(await read('results?workspace='+workspace)).experiments[0].status==='reviewed','outcome review retained');pass('published observations and outcome review retain the original hypothesis');
+ await shot('desktop-results');
+ assert.equal((await read('bootstrap')).model.enabled,false);pass('no hidden language-model service or download');
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ for(const tab of ['library','patterns','create','results','settings']){await click('[data-studio-tab="'+tab+'"]');await pause(150);assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true,'overflow in '+tab);await shot('mobile-'+tab);}pass('all five studio screens fit a 390px viewport');
+ await evaluate('document.documentElement.style.setProperty("--phone-safe-top","59px");document.documentElement.style.setProperty("--phone-safe-bottom","34px");window.scrollTo(0,0)');await pause(200);
+ const g=await evaluate('({top:document.querySelector(".brand").getBoundingClientRect().top,bottom:document.querySelector(".workspace-tabs button").getBoundingClientRect().bottom,height:innerHeight})');assert.ok(g.top>=59,JSON.stringify(g));assert.ok(g.bottom<=g.height-34,JSON.stringify(g));await shot('iphone-safe-areas');pass('simulated Dynamic Island and home indicator do not cover controls');
+ const beforeStateReload=await evaluate('performance.timeOrigin');await send('Page.reload',{ignoreCache:true});await until(()=>evaluate('performance.timeOrigin!=='+beforeStateReload+'&&document.getElementById("boot")?.hidden&&document.getElementById("research-select")?.value==='+JSON.stringify(workspace)),'state after full app reload');assert.equal((await read('plans?workspace='+workspace)).plans[0].revision,2);assert.equal((await read('results?workspace='+workspace)).experiments[0].status,'reviewed');pass('library brief and outcome survive a browser restart');
+
+ await click('[data-studio-tab="settings"]');await click('#export-backup');await until(()=>fs.existsSync(path.join(downloads,'reel-anatomy-backup.json')),'metadata backup');
+ const backup=JSON.parse(fs.readFileSync(path.join(downloads,'reel-anatomy-backup.json'),'utf8'));assert.equal(backup.format,'reel-anatomy-phone-backup');assert.ok(backup.tables.posts.length>=3);assert.ok(!JSON.stringify(backup).includes('data:video'));pass('portable backup includes analysis and scripts, not source video');
+ const before=await read('library?workspace='+workspace);
+ const bad=structuredClone(backup);bad.assets['invalid-id']={id:'invalid-id',title:'x',duration:2,segments:[],shots:[]};
+ const rejection=await evaluate('PhoneLocal.invoke("/phone/import-backup","POST",'+JSON.stringify(bad)+').then(()=>false,e=>e.message)');assert.ok(rejection);assert.equal((await read('library?workspace='+workspace)).posts.length,before.posts.length);pass('malformed backup is rejected without changing the committed library');
+ await evaluate('PhoneLocal.invoke("/phone/import-backup","POST",'+JSON.stringify(backup)+')');assert.equal((await read('library?workspace='+workspace)).posts.length,before.posts.length);pass('metadata backup restores the complete workspace');
+
+ const allBefore=(await read('bootstrap')).research.length;
+ const exported=await read('export?workspace='+workspace);
+ const imported=await evaluate('PhoneLocal.invoke("/phone/import-research","POST",'+JSON.stringify(exported)+')');
+ assert.notEqual(imported.workspace,workspace);assert.equal(imported.posts,3);assert.equal((await read('library?workspace='+workspace)).posts.length,3);assert.equal((await read('bootstrap')).research.length,allBefore+1);pass('research JSON import creates a separate project without overwriting the original');
+ const legacy=structuredClone(exported);delete legacy.assets;
+ const metadataOnly=await evaluate('PhoneLocal.invoke("/phone/import-research","POST",'+JSON.stringify(legacy)+')');assert.ok(metadataOnly.missing_analysis>0);
+ const records=(await read('library?workspace='+metadataOnly.workspace)).posts;const missing=await read('post?id='+records[0].id);assert.equal(missing.asset.segments.length,0);assert.ok(missing.asset.notices[0].includes('Only metadata'));pass('older desktop exports preserve unknown analysis instead of fabricating it');
+ const fullAnalysis=await evaluate('PhoneLocal.api('+JSON.stringify('/api/project/'+first.asset_id)+')');
+ const copy=await evaluate('PhoneLocal.invoke("/phone/import-analysis","POST",'+JSON.stringify({analysis:fullAnalysis,workspace:'default'})+')');assert.notEqual(copy.asset_id,fullAnalysis.id);pass('duplicate analysis import never overwrites an existing editable asset');
+ const poison=structuredClone(backup);poison.tables.documents[0].references=[{asset_id:'x\" onclick=\"alert(1)',title:'Injected reference'}];
+ assert.ok(await evaluate('PhoneLocal.invoke("/phone/import-backup","POST",'+JSON.stringify(poison)+').then(()=>false,e=>e.message)'));pass('backup rejects hostile DOM reference identities');
+ const context2=(await send('Target.createBrowserContext',{},null)).browserContextId;
+ const target2=(await send('Target.createTarget',{url:origin,browserContextId:context2},null)).targetId;
+ const session2=(await send('Target.attachToTarget',{targetId:target2,flatten:true},null)).sessionId;
+ await send('Runtime.enable',{},session2);
+ const ev2=async expression=>{const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true},session2);if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result?.value;};
+ await until(()=>ev2('!!window.PhoneLocal&&document.getElementById("boot")?.hidden'),'second browser user');
+ assert.equal((await ev2('PhoneLocal.api("/api/studio/library?workspace=default")')).posts.length,0);assert.equal((await ev2('PhoneLocal.api("/api/studio/bootstrap")')).research.length,1);pass('a separate browser user has no access to the first user library');
+ await send('Target.closeTarget',{targetId:target2},null);
+ await click('#install-phone');assert.ok(await evaluate('document.getElementById("install-dialog").innerText.includes("Add to Home Screen")'));await shot('install-instructions');await click('#close-install');pass('iPhone installation instructions are present');
+ await evaluate('navigator.serviceWorker.ready.then(()=>true)');const previousBoot=await evaluate('performance.timeOrigin');await send('Page.reload');await until(()=>evaluate('performance.timeOrigin!=='+previousBoot+'&&document.getElementById("boot")?.hidden&&!!window.PhoneLocal&&!!navigator.serviceWorker.controller'),'service-worker control');
+ const onlineBoot=await evaluate('performance.timeOrigin');await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});await send('Page.reload');await until(()=>evaluate('performance.timeOrigin!=='+onlineBoot+'&&document.getElementById("boot")?.hidden&&!!window.PhoneLocal&&document.getElementById("research-select")?.options.length>1'),'full offline reload');
+ assert.equal((await read('plans?workspace='+workspace)).plans[0].revision,2);pass('entire Python studio and saved work reopen offline, not just a landing page');
+ await click('[data-studio-tab="create"]');await input('#plan-select',plan.id);await click('#load-plan');await until(()=>evaluate('document.querySelectorAll(".plan-beat").length===5'),'offline brief');await shot('offline-filming');pass('saved script is editable offline');
+ await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+
+ assert.equal(errors.length,0,JSON.stringify(errors));pass('no uncaught browser errors');
+ assert.ok(requests.every(r=>r.method==='GET'&&(r.url.startsWith('data:')||r.url.startsWith('blob:')||r.url.startsWith(origin))),JSON.stringify(requests));pass('only static same-origin GET requests, no research upload or desktop relay');
+ fs.writeFileSync(path.join(run,'result.json'),JSON.stringify({passed:true,checks,errors,requests},null,2));fs.writeFileSync(path.join(root,'.local/standalone-v040/browser-latest.json'),JSON.stringify({run,passed:true,checks:checks.length},null,2));console.log('EVIDENCE='+run);
+}catch(error){try{await shot('failure');console.error('PAGE',await evaluate('document.body.innerText.slice(-3500)'));}catch{}fs.writeFileSync(path.join(run,'result.json'),JSON.stringify({passed:false,error:String(error),checks,errors,requests},null,2));console.error(error);process.exitCode=1;}finally{try{await send('Browser.close',{},null);}catch{}ws?.close();chrome.kill();for(const p of pending.values())clearTimeout(p.timer);}

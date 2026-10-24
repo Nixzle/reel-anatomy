@@ -24,6 +24,9 @@ jobs:
           node --check web/studio.js
           node --check web/app.js
           node test_frontend.cjs
+          node --check web/mobile.js
+          node test_relay.mjs
+          python scripts/build_mobile.py
       - name: Build and exercise portable executable
         run: python scripts/package_release.py
       - uses: actions/upload-artifact@v4
