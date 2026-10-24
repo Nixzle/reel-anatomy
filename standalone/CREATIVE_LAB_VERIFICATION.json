@@ -1,0 +1,163 @@
+{
+  "version": "1.0.0-rc.2",
+  "stage": "local-qualified-awaiting-public-readback",
+  "checked_at": "2026-10-24T06:15:55.082854+00:00",
+  "tests": {
+    "python": 190,
+    "creative_lab_python": 30,
+    "javascript": 51,
+    "creative_browser": 20,
+    "readiness_browser": 31,
+    "sanctum_browser": 51,
+    "desktop_browser": 19
+  },
+  "creative_checks": [
+    {
+      "name": "Creative Lab tab and panels fit the existing Sanctum at phone width",
+      "detail": true
+    },
+    {
+      "name": "user-authored voice profile saves with revision and example permission",
+      "detail": true
+    },
+    {
+      "name": "audience text is filtered and author identities are not stored",
+      "detail": true
+    },
+    {
+      "name": "repeat observations do not inflate demand counts",
+      "detail": true
+    },
+    {
+      "name": "audience CSV handles untrusted text and drops author columns",
+      "detail": true
+    },
+    {
+      "name": "audience observations and channel guidance are frozen with the filming brief",
+      "detail": true
+    },
+    {
+      "name": "metric-blind review flags voice conflicts payoff timing and reference wording",
+      "detail": true
+    },
+    {
+      "name": "review flags lead to the saved script rather than dead report text",
+      "detail": true
+    },
+    {
+      "name": "local assistant context carries bounded project voice guidance without claiming training",
+      "detail": true
+    },
+    {
+      "name": "changed guidance invalidates an old creative review",
+      "detail": true
+    },
+    {
+      "name": "actual supplied retention points link to transcript intervals and preserve unknown sample size",
+      "detail": true
+    },
+    {
+      "name": "retention review seeks into the imported local video",
+      "detail": true
+    },
+    {
+      "name": "missing retention points cannot quietly become zero",
+      "detail": true
+    },
+    {
+      "name": "metadata backup restores voice audience reviews and retention together",
+      "detail": true
+    },
+    {
+      "name": "portable project packs carry the new creative records and original media together",
+      "detail": {
+        "bytes": 48442,
+        "records": 5
+      }
+    },
+    {
+      "name": "hostile restored review references are rejected without committing a changed library",
+      "detail": true
+    },
+    {
+      "name": "creative records remain project-scoped",
+      "detail": true
+    },
+    {
+      "name": "all four lab panels fit a 390px viewport",
+      "detail": true
+    },
+    {
+      "name": "playbook audience review and retention survive full offline restart",
+      "detail": true
+    },
+    {
+      "name": "no uncaught errors model calls or audience uploads",
+      "detail": true
+    }
+  ],
+  "gates": [
+    {
+      "gate": "all-python",
+      "exit": 0
+    },
+    {
+      "gate": "research-js",
+      "exit": 0
+    },
+    {
+      "gate": "factory-js",
+      "exit": 0
+    },
+    {
+      "gate": "release-js",
+      "exit": 0
+    },
+    {
+      "gate": "legacy-js",
+      "exit": 0
+    },
+    {
+      "gate": "candidate-gate",
+      "exit": 0
+    },
+    {
+      "gate": "build-final",
+      "exit": 0
+    },
+    {
+      "gate": "service-worker",
+      "exit": 0
+    },
+    {
+      "gate": "creative-browser",
+      "exit": 0
+    },
+    {
+      "gate": "existing-readiness-browser",
+      "exit": 0
+    },
+    {
+      "gate": "existing-sanctum-browser",
+      "exit": 0
+    },
+    {
+      "gate": "desktop-regression",
+      "exit": 0
+    }
+  ],
+  "environment": "Isolated Chrome profiles at 390px on the existing Windows build host; synthetic text, media and analytics, not actual audience outcomes.",
+  "private_context_published": false,
+  "model_calls": false,
+  "paid_services": false,
+  "new_dependencies": false,
+  "original_acceptance_preserved": true,
+  "limitations": [
+    "No physical iPhone/Safari test.",
+    "The channel profile is user-authored guidance, not a trained model.",
+    "Review flags and exact-word similarity are heuristics, not semantic originality or outcome predictions.",
+    "Retention is user-imported; no platform account connection is established.",
+    "Audience filtering is partial, not complete anonymisation.",
+    "No claim that these features are unique across all competing products."
+  ]
+}

@@ -104,3 +104,10 @@ This remains a candidate: stable promotion is explicitly refused while model, ph
 ### Candidate downloadable release verified
 
 GitHub prerelease v1.0.0-rc.1 is public at https://github.com/Nixzle/reel-anatomy/releases/tag/v1.0.0-rc.1. The public ZIP was downloaded and SHA-256 checked: b00aea015a533526ed5e730bb6f41f40bbbdded3e064dd1c4416c3386cbaf4a7. Tag points to implementation f66e5d4d8c1aea07a690916050a42e8279a2f464; site and downloadable bytes are separately verified. Stable Windows v0.2.0 remains latest. No released asset was replaced. Source worktree is clean after this receipt commit.
+
+
+## Creative Lab iteration, 24 October 2026
+
+Owner requested comparison against others and implementation of useful gaps. Added project-authored voice playbooks, permission-gated audience CSV/text intake with deduplication and partial identifier removal, audience-to-brief snapshots, metric-blind editorial checks, reference-wording review and actual retention-to-transcript inspection. Uses existing Store/player/script editor/backup stack; no extra packages, paid services, account scraping or model downloads. Native factory pins unchanged. The comparator documents primary vendor sources and avoids claiming unverified uniqueness. Original 1.0 acceptance gates are preserved. Candidate identity: 1.0.0-rc.2; branch feature/creative-lab-20261024.
+
+Focused evidence: 30 Python tests and the first 19-browser-check pass. An early harness asserted async brief-note content before render; retained failure and added a wait for the unchanged assertion. Final integration, portable-pack coverage and public exact-build verification are still required at this checkpoint. Raw receipts: .local/creative-lab-20261024 and .local/creative-lab-browser-*. Scope and limits: standalone/CREATIVE_LAB.md.

@@ -22,9 +22,10 @@ for item in pins:
     f=root/'.local/standalone-v040/runtime'/item['name']
     assert f.stat().st_size==item['bytes'] and hashlib.sha256(f.read_bytes()).hexdigest()==item['sha256'],'Runtime changed: '+f.name
     shutil.copy2(f,out/'runtime'/f.name)
-for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css','document_tools.mjs','article_reader.mjs','pack_worker.mjs','project_pack.mjs','release_desk.mjs','release_desk.css','RELEASE_TARGET.json'):shutil.copy2(root/'standalone'/name,out/name)
+for name in ('worker.mjs','media.mjs','phone.mjs','phone.css','research_services.mjs','sanctum.mjs','sanctum.css','model-worker.mjs','SANCTUM_PROFILE.json','factory.mjs','factory_render.mjs','factory.css','creative_lab.mjs','creative_lab.css','document_tools.mjs','article_reader.mjs','pack_worker.mjs','project_pack.mjs','release_desk.mjs','release_desk.css','RELEASE_TARGET.json'):shutil.copy2(root/'standalone'/name,out/name)
 shutil.copy2(root/'standalone/backend.py',out/'python/backend.py')
 shutil.copy2(root/'standalone/release_services.py',out/'python/release_services.py')
+shutil.copy2(root/'standalone/creative_lab.py',out/'python/creative_lab.py')
 shutil.copy2(root/'standalone/research_engine.py',out/'python/research_engine.py')
 shutil.copy2(root/'standalone/factory_engine.py',out/'python/factory_engine.py')
 store_source=(root/'studio_store.py').read_text(encoding='utf-8')
@@ -65,6 +66,8 @@ html=html.replace('<button data-studio-tab="sanctum">','<button data-studio-tab=
 html=html.replace('        <section id="studio-library"',(root/'standalone/release_desk.html').read_text(encoding='utf-8')+'\n        <section id="studio-library"',1)
 html=html.replace('</head>','<link rel="stylesheet" href="./release_desk.css"></head>')
 html=html.replace('https://api.crossref.org ', 'https://api.crossref.org https://www.ebi.ac.uk ')
+html=html.replace('<!-- CREATIVE_LAB -->',(root/'standalone/creative_lab.html').read_text(encoding='utf-8'))
+html=html.replace('</head>','<link rel="stylesheet" href="./creative_lab.css"></head>')
 (out/'index.html').write_text(html,encoding='utf-8')
 js=(out/'web/app.js').read_text(encoding='utf-8')
 a=js.index('async function api(path, options) {');b=js.index('async function loadLibrary()',a)
@@ -87,6 +90,8 @@ js=js.replace('initStudio().catch(', 'window.StudioUI.ready=initStudio().catch('
 # Desktop semantic controls remain unavailable on the phone; Ultron has a separate opt-in local text model.
 js=js.replace('data-deep=', 'disabled title="Automatic semantic analysis requires the desktop edition" data-deep=')
 js=js.replace('id="refine-plan"','id="refine-plan" disabled title="Use the desktop edition for learned refinement"').replace('Refine with configured local model','Desktop refinement')
+js=js.replace('...values,duration:Number(values.duration),workspace:S.workspace','...values,duration:Number(values.duration),workspace:S.workspace,lab_signal_ids:window.CreativeLab?.pendingSignalIds()||[]')
+js=js.replace('notice("Original filming brief saved.");','window.CreativeLab?.clearPending();notice("Original filming brief saved.");')
 (out/'web/studio.js').write_text(js,encoding='utf-8')
 manifest={'id':'./','name':'Reel Anatomy Studio','short_name':'Reel Anatomy','start_url':'./','scope':'./','display':'standalone','background_color':'#eceae4','theme_color':'#eceae4','icons':[{'src':'./icons/icon-192.png','sizes':'192x192','type':'image/png'},{'src':'./icons/icon-512.png','sizes':'512x512','type':'image/png'}]}
 (out/'manifest.webmanifest').write_text(json.dumps(manifest,indent=2),encoding='utf-8');(out/'.nojekyll').write_text('')
@@ -94,7 +99,7 @@ shutil.copy2(root/'LICENSE',out/'LICENSE')
 (out/'examples').mkdir(exist_ok=True)
 for name in ('reel-factory-A-draft.mp4','reel-factory-B-draft.mp4','reel-factory-C-draft.mp4','demo-captions.srt','demo-package.json','demo-render-receipt.json','README.md'):
     shutil.copy2(root/'standalone/examples'/name,out/'examples'/name)
-for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json','MODEL_RUNTIME_PIN.json','DOCUMENT_RUNTIME_PINS.json','FACTORY.md'):
+for name in ('DONORS.md','ACCEPTANCE.md','RUNTIME_PINS.json','MODEL_RUNTIME_PIN.json','DOCUMENT_RUNTIME_PINS.json','FACTORY.md','CREATIVE_LAB.md'):
     if (root/'standalone'/name).exists():shutil.copy2(root/'standalone'/name,out/name)
 files=sorted(str(f.relative_to(out)).replace('\\','/') for f in out.rglob('*') if f.is_file() and f.name not in ('sw.js','BUILD.json'))
 version=hashlib.sha256(''.join(hashlib.sha256((out/f).read_bytes()).hexdigest() for f in files).encode()).hexdigest()[:16]
