@@ -1,0 +1,151 @@
+{
+  "candidate": "1.0.0-rc.4",
+  "published": false,
+  "checked_at": "2026-10-24T12:41:00.983683+00:00",
+  "checks": {
+    "python": 220,
+    "existing_javascript": 53,
+    "new_connection_crypto_protocol": 46,
+    "new_browser_workflow": 21,
+    "official_sdk_load": 3,
+    "existing_browser_workflow": 119
+  },
+  "new_browser_checks": [
+    {
+      "name": "opening the app makes no account request and no cloud upload",
+      "detail": true
+    },
+    {
+      "name": "Google setup is blocked until the privacy consent is explicit",
+      "detail": true
+    },
+    {
+      "name": "read-only channel ownership and untrusted channel text reach the real UI safely",
+      "detail": true
+    },
+    {
+      "name": "official count strings and missing metrics remain exact, without a viral score",
+      "detail": true
+    },
+    {
+      "name": "retention report preserves returned ratios, including repeat viewing above one",
+      "detail": true
+    },
+    {
+      "name": "account reports and tokens do not enter the research backup",
+      "detail": true
+    },
+    {
+      "name": "disconnect immediately clears displayed account data",
+      "detail": true
+    },
+    {
+      "name": "recovery key is exported separately and no cloud mutation occurs before sync approval",
+      "detail": true
+    },
+    {
+      "name": "reviewed upload uses actual WebCrypto ciphertext and preserves unchanged local state",
+      "detail": true
+    },
+    {
+      "name": "separate browser storage retrieves, decrypts and atomically applies the shared metadata",
+      "detail": true
+    },
+    {
+      "name": "disjoint offline edits merge without losing either device's new record",
+      "detail": true
+    },
+    {
+      "name": "same-record edits require an explicit, version-bound conflict decision",
+      "detail": true
+    },
+    {
+      "name": "new local edits after preview cannot be overwritten or uploaded as an obsolete snapshot",
+      "detail": true
+    },
+    {
+      "name": "a simulated lost upload acknowledgement is reconciled without a duplicate cloud checkpoint",
+      "detail": true
+    },
+    {
+      "name": "atomic restore checks the exact reviewed revision, not merely the latest one",
+      "detail": true
+    },
+    {
+      "name": "persisted vault stores non-extractable keys and no OAuth token",
+      "detail": true
+    },
+    {
+      "name": "sync and backup paths still exclude account sessions and recovery secrets",
+      "detail": true
+    },
+    {
+      "name": "portable project packs exclude vault keys and account report sessions",
+      "detail": true
+    },
+    {
+      "name": "connection and sync controls remain usable at a 390px viewport",
+      "detail": true
+    },
+    {
+      "name": "revocation is requested explicitly and clears connected-session state",
+      "detail": true
+    },
+    {
+      "name": "offline restart retains research but does not revive account access or contact Google",
+      "detail": true
+    }
+  ],
+  "official_sdk_checks": [
+    {
+      "name": "no Google SDK is present before explicit consent",
+      "detail": true
+    },
+    {
+      "name": "official Google Identity Services loads under the deployed CSP without starting account consent",
+      "detail": true
+    },
+    {
+      "name": "only the official hosted SDK is used; no token client request or API account call occurred",
+      "detail": true
+    }
+  ],
+  "evidence_scope": {
+    "application_crypto_and_storage": "Actual WebCrypto and IndexedDB in two isolated Chrome browser contexts.",
+    "google_account_transport": "Synthetic OAuth tokens and simulated Google API/Drive responses, never a real user account or cloud file.",
+    "google_sdk": "Real official hosted Identity Services loaded under CSP, without requesting account consent or a token.",
+    "physical_devices": "No physical iPhone or second physical device qualification.",
+    "live_account_status": "Not configured; operator-owned Google web client and user consent required."
+  },
+  "privacy": {
+    "tokens": "Memory only; not in URLs, library, backups or sync.",
+    "youtube_data": "Session-only raw reports, excluded from custom derived scores, assistant inputs and persistent research.",
+    "drive_scope": "App-specific appDataFolder only.",
+    "sync": "Encrypted whole-library metadata, no original media. Explicit preview and conflict approval."
+  },
+  "original_limits": [
+    "Model reasoning/semantic-video evaluation remains open.",
+    "Physical iPhone/Safari remains open.",
+    "Actual owner-account and real cross-device Google acceptance remain pending.",
+    "Instagram and TikTok account connectors are not implemented by this iteration.",
+    "Real cohort and campaign outcomes remain open.",
+    "Previously blocked Windows packaging and relay work were not retried."
+  ],
+  "vendor_reproducibility": {
+    "file": "standalone\\vendor\\webllm.mjs",
+    "before_sha256": "4c9772f6973eb03b2499c2128a71a2f9cfb542321dc4ef01a66de4a9f376c66f",
+    "restored_sha256": "ae2642e73a4a9896c21efb3a067c4666446f8b49cbe2012f4b576f5d83d5f206",
+    "retained_source": ".local\\sanctum-v050\\donor\\index.js",
+    "line_ending_difference_only": true,
+    "restored_original_crlf_count": 248,
+    "public_runtime_was_already_correct": true,
+    "pin_changed": false
+  },
+  "source_hashes": {
+    "standalone/google_connections.mjs": "1ce5f5e5b7cc7d1f10af49035a859fbcefbff7994ac92ec7e20e7d4735e0cb19",
+    "standalone/vault_sync.mjs": "4d4d74cd87d80996f856491f8426639a96c66298b76791be88824410b3d9d3b0",
+    "standalone/connections_ui.mjs": "271f0dccd000b73a29708c0d9ca1788e0475a4ed10bcab3747a9256a73681d27",
+    "standalone/phone.mjs": "90b7312e7b14c69d0a2c1b3c1cfe57c7614a472b6c859043e3e0737fe63a7565",
+    "scripts/build_standalone.py": "e6106a10a36f503f7e8d9bdd02bd5cf4775ffec932ee86b420987977cd15873f"
+  }
+}

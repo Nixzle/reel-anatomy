@@ -17,7 +17,7 @@ function call(request){return new Promise((resolve,reject)=>{
  waiting.set(id,{resolve,reject,timer});worker.postMessage({id,request});
 });}
 async function inspectState(){const state=await get('state',db)||{revision:0,snapshot:null};return {revision:state.revision};}
-function restoreBundle(library,additions=[],{signal}={}){
+function restoreBundle(library,additions=[],{signal,expectedRevision}={}){
  const operation=tail.catch(()=>{}).then(async()=>{
   if(driving||window.ReelFactory?.state?.busy)throw Error('An active media job must finish before restore.');
   if(!navigator.locks)throw Error('This browser does not support safe cross-tab restore locks.');
@@ -26,6 +26,7 @@ function restoreBundle(library,additions=[],{signal}={}){
    return navigator.locks.request('reel-anatomy-factory-render',{ifAvailable:true},async renderLock=>{
     if(!renderLock)throw Error('Another tab is rendering. Finish that work first.');
     const old=await get('state',db)||{revision:0,snapshot:null};
+    if(expectedRevision!==undefined&&old.revision!==expectedRevision)throw Error('This device changed since the sync preview. No restore was committed.');
     const backup=await call({path:'/phone/export',method:'GET',data:{},snapshot:old.snapshot});
     const candidate=await call({path:'/phone/import-backup',method:'POST',data:library,snapshot:old.snapshot});
     if(!candidate.snapshot)throw Error('Restore validation did not produce a candidate state.');
@@ -49,6 +50,16 @@ function restoreBundle(library,additions=[],{signal}={}){
   });
  });
  tail=operation;return operation;
+}
+function validateBundle(library,expectedRevision){
+ const operation=tail.catch(()=>{}).then(async()=>{
+  const current=await get('state',db)||{revision:0,snapshot:null};
+  if(expectedRevision!==undefined&&current.revision!==expectedRevision)throw Error('This device changed during sync planning.');
+  const candidate=await call({path:'/phone/import-backup',method:'POST',data:library,snapshot:current.snapshot});
+  if(!candidate.snapshot)throw Error('Invalid sync candidate.');
+  const normal=await call({path:'/phone/export',method:'GET',data:{},snapshot:candidate.snapshot});
+  return normal.value;
+ });tail=operation;return operation;
 }
 function invoke(path,method='GET',data={}){
   const operation=tail.catch(()=>{}).then(async()=>{
@@ -150,7 +161,7 @@ function exportFile(name,value,type='application/json'){
   window.PhoneLocal.lastExport={name,blob};document.getElementById('share-export').hidden=false;
 }
 async function loadScript(src){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(Error('Could not load '+src));document.body.append(s);});}
-window.PhoneLocal={api,invoke,exportFile,hydrate,inspectState,restoreBundle,current:()=>null};
+window.PhoneLocal={api,invoke,exportFile,hydrate,inspectState,restoreBundle,validateBundle,current:()=>null};
 function bind(id,event,fn){document.getElementById(id).addEventListener(event,async ev=>{try{await fn(ev);}catch(error){showMessage(error.message);}});}
 async function start(){
   await api('/api/health');
@@ -162,6 +173,7 @@ async function start(){
   const captions=await import('./caption_editor.mjs');await captions.ready;
   const desk=await import('./release_desk.mjs');await desk.ready;
   const lab=await import('./creative_lab.mjs');await lab.ready;
+  const connections=await import('./connections_ui.mjs');await connections.ready;
   const speechPanel=document.createElement('section');speechPanel.className='studio-card';
   speechPanel.innerHTML='<h3>Local desktop speech</h3><p id="desktop-speech-info"></p><label class="check-label"><input id="desktop-speech-enable" type="checkbox"> Transcribe English speech for new videos without supplied subtitles on this computer.</label><p class="small-note">The Windows companion uses its bundled local speech model. The public web app never sends media to a different computer or cloud service. Transfers between the desktop and phone remain explicit project packs.</p><p><a href="https://github.com/Nixzle/reel-anatomy/blob/feature/production-completion-20261024/standalone/DESKTOP_COMPLETION.md" target="_blank" rel="noopener noreferrer">Desktop source and delivery status</a></p>';
   document.getElementById('studio-settings').append(speechPanel);
