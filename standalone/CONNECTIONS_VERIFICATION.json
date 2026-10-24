@@ -6,7 +6,7 @@
     "python": 220,
     "existing_javascript": 53,
     "new_connection_crypto_protocol": 46,
-    "new_browser_workflow": 21,
+    "new_browser_workflow": 22,
     "official_sdk_load": 3,
     "existing_browser_workflow": 119
   },
@@ -88,6 +88,10 @@
       "detail": true
     },
     {
+      "name": "token expiration clears the Drive display identity without deleting recovery keys or library data",
+      "detail": true
+    },
+    {
       "name": "revocation is requested explicitly and clears connected-session state",
       "detail": true
     },
@@ -144,7 +148,7 @@
   "source_hashes": {
     "standalone/google_connections.mjs": "1ce5f5e5b7cc7d1f10af49035a859fbcefbff7994ac92ec7e20e7d4735e0cb19",
     "standalone/vault_sync.mjs": "4d4d74cd87d80996f856491f8426639a96c66298b76791be88824410b3d9d3b0",
-    "standalone/connections_ui.mjs": "271f0dccd000b73a29708c0d9ca1788e0475a4ed10bcab3747a9256a73681d27",
+    "standalone/connections_ui.mjs": "8d93f7023b6660198dc407eb4724a3ba2befa645c67aa091a70da8adaca8bf64",
     "standalone/phone.mjs": "90b7312e7b14c69d0a2c1b3c1cfe57c7614a472b6c859043e3e0737fe63a7565",
     "scripts/build_standalone.py": "e6106a10a36f503f7e8d9bdd02bd5cf4775ffec932ee86b420987977cd15873f"
   }

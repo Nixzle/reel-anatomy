@@ -18,7 +18,7 @@ The separation is intentional: Google's current YouTube API rules restrict deriv
 
 ## Encrypted sync
 
-Connect Drive using only the non-sensitive drive.appdata scope. Create a vault, save its private recovery-key file outside the browser and confirm that it is saved. The active AES/HMAC CryptoKeys are non-extractable, stored separately in IndexedDB, and never included in project backups. On another device with the same registered client and Google account, import the recovery key, authorise Drive, then review sync.
+Connect Drive using only the non-sensitive drive.appdata scope. Create a vault, save its private recovery-key file outside the browser and confirm that it is saved. The active AES/HMAC CryptoKeys are non-extractable, stored separately in IndexedDB, and never included in project backups. The vault also retains the opaque Drive permissionId needed to match the authorising account; the display name is not persisted. On another device with the same registered client and Google account, import the recovery key, authorise Drive, then review sync.
 
 The implementation uses WebCrypto HKDF to derive separate AES-256-GCM content and HMAC-SHA-256 index keys from 32 random bytes. Each checkpoint has a fresh 96-bit nonce. Source titles and scripts are encrypted; index metadata reveals only opaque IDs, authenticated parents and ciphertext hashes. Encryption does not protect a compromised browser or device, and losing the recovery key can make checkpoints unrecoverable.
 
