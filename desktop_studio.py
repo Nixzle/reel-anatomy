@@ -29,7 +29,7 @@ MAX_BYTES=100*1024*1024
 TOKEN=secrets.token_urlsafe(32)
 LOCK=threading.RLock()
 JOBS={}
-VERSION='1.0.0-rc.3'
+VERSION='1.0.0-rc.4'
 RUN_LIMIT=240
 MIMES={'audio/wav','audio/x-wav','audio/mpeg','audio/mp4','audio/x-m4a','audio/flac','audio/ogg','audio/webm','audio/aac','video/x-m4v','video/mp4','video/quicktime','video/webm','application/octet-stream'}
 

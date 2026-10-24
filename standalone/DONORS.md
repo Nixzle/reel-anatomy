@@ -55,3 +55,10 @@ Primary references: https://mozilla.github.io/pdf.js/getting_started/ ; https://
 ## Production completion rc.3
 
 Reuses the existing cached Systran faster-whisper base.en English model and already-installed faster-whisper 1.2.1, CTranslate2 and PyAV 17.1.0. No new package, model weight, paid service or account is installed. The supervised desktop host uses word timestamps to propose caption timing; this is recognizer alignment, not a guarantee of transcript accuracy or a forced-alignment model. The existing source/rights review, SQLite/browser storage, browser media recorder and native Pillow/FFmpeg renderer are retained. Runtime/model notices are copied into the portable package. No font files are redistributed.
+
+
+## Authorised connections rc.4
+
+Reuse: existing SQLite exchange/validation, transactional IndexedDB restore, idb-keyval, browser WebCrypto and Google's official remotely hosted Identity Services SDK after explicit consent. No new npm/Python package, relay, model weight or paid provider was installed. The SDK is not vendored or republished. Google API permissions/data policies remain separate from our implementation licence; references and scope restrictions are in CONNECTIONS.md.
+
+Reproducibility repair: the Git-tracked WebLLM runtime contained normalised versions of 248 original CRLF line endings, while the exact retained donor and public deployed runtime matched MODEL_RUNTIME_PIN.json. The source copy was restored to those expected donor bytes; the SHA-256 pin and upstream executable code were not changed. The existing -text attribute now preserves the corrected Git blob. This corrects source rebuilds rather than changing the deployed model implementation or loading model weights.

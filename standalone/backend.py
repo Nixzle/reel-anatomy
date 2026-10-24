@@ -12,7 +12,7 @@ import release_services
 import creative_lab
 ROOT=Path('/reel-local')
 ROOT.mkdir(exist_ok=True)
-VERSION='1.0.0-rc.3'
+VERSION='1.0.0-rc.4'
 
 def restore(snapshot):
     for f in ROOT.iterdir():
