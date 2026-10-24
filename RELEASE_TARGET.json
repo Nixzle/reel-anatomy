@@ -1,6 +1,6 @@
 {
   "target": "1.0.0",
-  "candidate": "1.0.0-rc.3",
+  "candidate": "1.0.0-rc.4",
   "channel": "release-candidate",
   "stable_qualified": false,
   "owner": "Ultron Prime",
@@ -53,14 +53,16 @@
     {
       "id": "platforms",
       "title": "Authorised social-account intake",
-      "status": "open",
-      "acceptance": "Separately authorised platform connections with platform permission/policy checks and real retrieval receipts."
+      "status": "pending_verification",
+      "acceptance": "Separately authorised platform connections with platform permission/policy checks and real retrieval receipts.",
+      "implementation": "Optional official Google browser OAuth, session-only read-only YouTube reports and encrypted appDataFolder metadata sync. Registered app client, real consent and real two-device/account verification are not yet established."
     },
     {
       "id": "sync",
       "title": "Cross-device synchronisation",
-      "status": "open",
-      "acceptance": "Real authenticated sync, conflict/recovery and privacy checks. Explicit project-pack transfer is not live sync."
+      "status": "pending_verification",
+      "acceptance": "Real authenticated sync, conflict/recovery and privacy checks. Explicit project-pack transfer is not live sync.",
+      "implementation": "Optional official Google browser OAuth, session-only read-only YouTube reports and encrypted appDataFolder metadata sync. Registered app client, real consent and real two-device/account verification are not yet established."
     },
     {
       "id": "outcomes",
