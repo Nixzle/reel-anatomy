@@ -1,6 +1,6 @@
 {
   "candidate": "1.0.0-rc.4",
-  "published": false,
+  "published": true,
   "checked_at": "2026-10-24T12:41:00.983683+00:00",
   "checks": {
     "python": 220,
@@ -151,5 +151,30 @@
     "standalone/connections_ui.mjs": "8d93f7023b6660198dc407eb4724a3ba2befa645c67aa091a70da8adaca8bf64",
     "standalone/phone.mjs": "90b7312e7b14c69d0a2c1b3c1cfe57c7614a472b6c859043e3e0737fe63a7565",
     "scripts/build_standalone.py": "e6106a10a36f503f7e8d9bdd02bd5cf4775ffec932ee86b420987977cd15873f"
-  }
+  },
+  "publication": {
+    "version": "1.0.0-rc.4",
+    "source_commit": "4268d27df11bb9c7e5151f9592b2c7151ffb82b1",
+    "build": "28d36471bbde7386",
+    "rollback_commit": "3ccdbc21c3878458bf1bfa1e33cb2ff98bc64904",
+    "state": "verified-public",
+    "scope": "Existing public static app only; no account authorised, cloud data created, Windows packaging or relay deployment.",
+    "at": "2026-10-24T12:42:58.256075+00:00",
+    "url": "https://nixzle.github.io/reel-anatomy/",
+    "publication_commit": "62943ddab2244b6f44b16312e85291d8a0f6d333",
+    "prior_candidate_commit": "7395e2765fe4dabaf4cf2e543776ca0d8fb0e70e",
+    "public_files": 83,
+    "service_worker_matched": true,
+    "verified_at": "2026-10-24T12:55:46.948888+00:00"
+  },
+  "public_browser_checks": {
+    "public-connections": 22,
+    "public-sdk": 3,
+    "public-readiness": 31,
+    "public-sanctum": 51,
+    "public-creative": 20,
+    "public-captions": 17
+  },
+  "public_browser_total": 144,
+  "source_default_branch_integration": "To be reconciled through an exact-head PR; public deployment is already separately verified."
 }

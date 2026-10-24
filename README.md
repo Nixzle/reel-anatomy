@@ -24,7 +24,7 @@ YouTube channel/upload/Analytics reports are displayed only for the authorised a
 
 Encrypted metadata sync uses Drive's hidden appDataFolder, an independently saved recovery key, authenticated immutable checkpoints, explicit three-way conflict review and atomic local application. It covers all research projects in the device library, not only the selected project. Original media stays local and can be transferred with project packs. Upload outcomes are reconciled using the same reserved file ID; unknown writes are never silently duplicated. This is foreground, user-initiated sync, not a continuously running cloud account service.
 
-See `standalone/CONNECTIONS.md` and `standalone/CONNECTIONS_PRIVACY.html` for setup, data handling, recovery and limits. Actual registered-client consent, owner-account retrieval and physical two-device sync remain unverified; mocked protocol tests are not live-provider acceptance. Stable 1.0 is not promoted by these additions.
+See `standalone/CONNECTIONS.md` and `standalone/CONNECTIONS_PRIVACY.html` for setup, data handling, recovery and limits. The verified public implementation and precise test boundaries are in `standalone/CONNECTIONS_RELEASE.md`. Actual registered-client consent, owner-account retrieval and physical two-device sync remain unverified; mocked protocol tests are not live-provider acceptance. Stable 1.0 is not promoted by these additions.
 
 ## Narration-timed captions
 
