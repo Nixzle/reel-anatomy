@@ -1,5 +1,9 @@
 # Reel Anatomy Studio desktop candidate
 
+**Current delivery status:** source-mode inference and rendering are tested. OpenAI blocked the Windows packaging command before execution, so no new executable or portable archive exists. The existing stable Windows release is unchanged. The packaging instructions below describe the intended, unverified distributable, not a published download.
+
+To run the tested source on the existing development computer, open this repository and use `.venv\Scripts\python.exe desktop_studio.py`. This uses the already installed environment and model, not an installer or new download. A fresh recipient without that environment needs a separately verified package.
+
 Extract the entire archive, then run ReelAnatomyStudio.exe. Keep its _internal folder beside it. The app opens at http://127.0.0.1:8766 and serves only this computer. Closing the desktop process stops local speech jobs; the previously cached browser library remains on the device.
 
 This is the same research, Creative Lab and Reel Factory workspace as the current public app, with bundled English speech recognition. It is a release candidate, not a claim that every original 1.0 requirement has passed. It does not inherit your ChatGPT account, memory, permissions or reasoning model.
