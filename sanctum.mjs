@@ -8,7 +8,7 @@ const tell=s=>window.notice?.(s);
 const request=(route,data,workspace=ws())=>window.PhoneLocal.api('/api/research/'+route+(data===undefined?(route.includes('?')?'&':'?')+'workspace='+encodeURIComponent(workspace):''),data===undefined?undefined:{method:'POST',body:JSON.stringify({...data,workspace})});
 function bind(id,event,fn){$(id).addEventListener(event,async ev=>{try{await fn(ev);}catch(error){tell(error.message);console.error(error);const form=ev.target.closest?.('form');if(form){let p=form.querySelector('.research-error');if(!p){p=document.createElement('p');p.className='research-error';p.role='alert';form.append(p);}p.textContent=error.message;}}});}
 function room(name){
-  for(const id of ['sources','investigate','claims','ultron'])$('room-'+id).hidden=id!==name;
+  for(const id of ['sources','investigate','claims','ultron','lab'])$('room-'+id).hidden=id!==name;
   document.querySelectorAll('[data-room]').forEach(b=>{b.classList.toggle('selected',b.dataset.room===name);b.setAttribute('aria-pressed',b.dataset.room===name?'true':'false');});
 }
 function selectedNote(){

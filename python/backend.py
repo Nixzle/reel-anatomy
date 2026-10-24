@@ -8,9 +8,10 @@ from embedded_csv import csv_import
 import research_engine
 import factory_engine
 import release_services
+import creative_lab
 ROOT=Path('/reel-local')
 ROOT.mkdir(exist_ok=True)
-VERSION='1.0.0-rc.1'
+VERSION='1.0.0-rc.2'
 
 def restore(snapshot):
     for f in ROOT.iterdir():
@@ -25,6 +26,7 @@ def restore(snapshot):
     s=Store(ROOT)
     research_engine.setup(s)
     factory_engine.setup(s)
+    creative_lab.setup(s)
     with s.db() as c:c.execute('PRAGMA journal_mode=DELETE')
     return s
 
@@ -56,7 +58,7 @@ def exchange(s):
     for name in ('research','posts','snapshots','documents','experiments'):
         with s.db() as c:tables[name]=[json.loads(r[0]) for r in c.execute('SELECT body FROM '+name)]
     return {'format':'reel-anatomy-phone-backup','schema':1,'version':VERSION,'exported_at':now(),
-            'tables':tables,'assets':snapshot(s)['assets'],'research_bundle':research_engine.bundle(s),'factory_bundle':factory_engine.bundle(s),'note':'Video files are not embedded. Reattach original media after restoring.'}
+            'tables':tables,'assets':snapshot(s)['assets'],'research_bundle':research_engine.bundle(s),'factory_bundle':factory_engine.bundle(s),'creative_bundle':creative_lab.bundle(s),'note':'Video files are not embedded. Reattach original media after restoring.'}
 
 def validate_backup_document(r):
     if not isinstance(r,dict):raise ValueError('Invalid backup record.')
@@ -117,6 +119,7 @@ def import_exchange(s,d):
                 c.execute('INSERT INTO '+name+' VALUES (?,?,?)',(r['id'],r['workspace'],json.dumps(r)))
     research_engine.import_bundle(s,d.get('research_bundle'))
     factory_engine.import_bundle(s,d.get('factory_bundle'))
+    creative_lab.import_bundle(s,d.get('creative_bundle'))
     save_jobs(s,[])
     return {'restored':True,'posts':len(tables['posts'])}
 
@@ -167,10 +170,16 @@ def dispatch(s,path,method,d):
         return release_services.register_render(s,d,asset_save)
     if path=='/api/documents/import' and method=='POST':
         return release_services.import_document(s,d)
+    if path.startswith('/api/lab/'):
+        return creative_lab.route(s,path,method,d,q)
     if path.startswith('/api/factory/'):
         return factory_engine.route(s,path,method,d,q)
     if path.startswith('/api/research/'):
-        return research_engine.route(s,path,method,d,q)
+        result=research_engine.route(s,path,method,d,q)
+        if path.endswith('/context'):
+            p=creative_lab.profile(s,d.get('workspace','default'))
+            result['voice_profile']={k:p[k] for k in ('audience','voice','preferred','avoid','cta','example','revision')}
+        return result
     if method=='GET':
         if path=='/api/health':return {'ok':True,'version':VERSION,'ffmpeg':False,'speech':False,'local_only':True,'phone':True}
         if path=='/api/projects':
@@ -199,7 +208,7 @@ def dispatch(s,path,method,d):
     if path=='/api/studio/link':return s.add_post(d['asset_id'],d.get('workspace','default'),d.get('metadata',{}))
     if path=='/api/studio/metadata':return s.update_post(d)
     if path=='/api/studio/snapshot':return s.add_snapshot(d)
-    if path=='/api/studio/plan':return s.create_plan(d)
+    if path=='/api/studio/plan':return creative_lab.create_plan(s,d)
     if path=='/api/studio/save-plan':return s.save_document(d)
     if path=='/api/studio/review':return s.review_draft(d['plan_id'],d['post_id'])
     if path=='/api/studio/experiment':return s.create_experiment(d)
